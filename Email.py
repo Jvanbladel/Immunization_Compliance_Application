@@ -18,16 +18,21 @@ def read_template(filename):
         template_file_content = template_file.read()
     return Template(template_file_content)
 
-def main(names, emails):
-    message_template = read_template('email_template.txt')
-
+def main(patients):
+    names = patients[0]
+    emails = patients[1]
+    alertNums = patients[2]
     # set up the SMTP server
     s = smtplib.SMTP(host='smtp.gmail.com', port=587)
     s.starttls()
     s.login(MY_ADDRESS, PASSWORD)
 
     # For each contact, send the email:
-    for name, email in zip(names, emails):
+    for name, email, alertNum in zip(names, emails, alertNums):
+        
+        emailFile = "email_template_" + str(alertNum) + ".txt"
+        message_template = read_template(emailFile)
+        
         msg = MIMEMultipart()       # create a message
         # add in the actual person name to the message template
         message = message_template.substitute(PERSON_NAME=name.title())
@@ -51,4 +56,4 @@ def main(names, emails):
     s.quit()
     
 if __name__ == '__main__':
-    main(["Jason", "Daniel"], ["j_vanbladel@u.pacific.edu", "d_adler@u.pacific.edu"])
+    main((["Jason", "Daniel"], ["j_vanbladel@u.pacific.edu", "d_adler@u.pacific.edu"], [1,2]))
