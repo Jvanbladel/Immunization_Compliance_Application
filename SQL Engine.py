@@ -1,18 +1,22 @@
-import pandas as pd
-from sqlalchemy import create_engine
+import pyodbc
 
 
 def main():
     # build connection with the database
-    engine = create_engine('')
-    # dialect[+driver]://user:password@host/dbname[?key=value..]
-    # eg sql:///filename
-    connection = engine.connect()
+
+    conn = pyodbc.connect('Driver={SQL Server};'
+                            'Server=;'
+                            'Database=;'
+                            'Trusted_Connection=yes;')
+
+    cursor = conn.connect()
 
     # send sql query
     sql = '''
     SELECT *
     FROM table_1
     '''
-    df = pd.read_sql_query(sql, engine)
-    df
+    cursor.execute(sql)
+
+    for row in cursor:
+        print(row)
