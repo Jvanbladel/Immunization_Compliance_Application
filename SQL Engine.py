@@ -5,8 +5,8 @@ def main():
     # build connection with the database
 
     conn = pyodbc.connect('Driver={SQL Server};'
-                            'Server=;'
-                            'Database=;'
+                            'Server=160.153.93.66;'
+                            'Database=pacific_ica;'
                             'Trusted_Connection=yes;')
 
     cursor = conn.connect()
