@@ -11,12 +11,16 @@ def main():
 
     cursor = conn.connect()
 
+    string = "CREATE TABLE TestTable(symbol varchar(15), leverage double, shares integer, price double)"
+    cursor.execute(string)
+    conn.commit()
+
     # send sql query
-    sql = '''
+    """sql = '''
     SELECT *
     FROM table_1
     '''
     cursor.execute(sql)
 
     for row in cursor:
-        print(row)
+        print(row)"""
