@@ -1,5 +1,6 @@
 from tkinter import *
 from tkinter import messagebox
+from tkinter.ttk import Combobox
 import sqlite3
 import datetime
 
@@ -49,29 +50,53 @@ class mainMenu(icaSCREENS):
         searchFRAME = LabelFrame(self.root)
         searchFRAME.place(x=0,y=100,height=500,width=225)
     
-        
         searchTXT = Label(self.root, text = "Search: ")
         searchTXT.place(x=2.5,y=120)
         
         self.searchENTRY = Entry(self.root)
         self.searchENTRY.place(x=50,y=120,width=150)
 
-        var1 = IntVar()
-        LnameSearch = Checkbutton(self.root, text="Last Name", variable=var1)
+        #Options for last Name
+        self.var1 = IntVar()
+        LnameSearch = Checkbutton(self.root, text="Last Name", variable=self.var1)
         LnameSearch.place(x=2.5,y=160)
 
-        var2 = IntVar()
-        FnameSearch = Checkbutton(self.root, text="First Name", variable=var2)
-        FnameSearch.place(x=100,y=160)
-
-        var3 = IntVar()
-        MRNSearch = Checkbutton(self.root, text="MRN", variable=var3)
-        MRNSearch.place(x=2.5,y=190)
-
-        var4 = IntVar()
-        DueDateSearch = Checkbutton(self.root, text="Due Date", variable=var4)
-        DueDateSearch.place(x=100,y=190)
+        lNameSearchOptions=("Increasing", "Decreasing", "Exact Search", "Fuzy Search")
         
+        self.lNameCombo=Combobox(self.root, values=lNameSearchOptions)
+        self.lNameCombo.place(x=100, y=160, width = 100)
+
+        #Options for first Name
+        self.var2 = IntVar()
+        FnameSearch = Checkbutton(self.root, text="First Name", variable=self.var2)
+        FnameSearch.place(x=2.5,y=185)
+
+        fNameSearchOptions=("Increasing", "Decreasing", "Exact Search", "Fuzy Search")
+        
+        self.fNameCombo=Combobox(self.root, values=fNameSearchOptions)
+        self.fNameCombo.place(x=100, y=185, width = 100)
+
+        #Options for Due Date
+        self.var3 = IntVar()
+        dueDateSearch = Checkbutton(self.root, text="Due Date", variable=self.var3)
+        dueDateSearch.place(x=2.5,y=210)
+
+        dueDateSearchOptions=("Increasing", "Decreasing", "Exact Search", "Fuzy Search")
+        
+        self.fNameCombo=Combobox(self.root, values=dueDateSearchOptions)
+        self.fNameCombo.place(x=100, y=210, width = 100)
+
+        #Options for MRN
+        self.var4 = IntVar()
+        MRNSearch = Checkbutton(self.root, text="MRN", variable=self.var4)
+        MRNSearch.place(x=2.5,y=235)
+
+        MRNSearchOptions=("Increasing", "Decreasing", "Exact Search", "Fuzy Search")
+        
+        self.MRNCombo=Combobox(self.root, values=MRNSearchOptions)
+        self.MRNCombo.place(x=100, y=235, width = 100)
+
+        #
 
         infoDisplayFRAME = LabelFrame(self.root)
         infoDisplayFRAME.place(x=575,y=100,height=500,width=225)
@@ -316,7 +341,7 @@ class mainMenu(icaSCREENS):
             if patient.MRN == MRN:
                 self.showSummary(patient)
                 break
-            
+
     def showSummary(self, patient):
         self.clearPatient()
         self.summary = 1
@@ -429,8 +454,8 @@ class loginScreen(icaSCREENS):
 def main():
     window = Tk()
     window.resizable(0,0)
-    currentSCREEN = loginScreen(window, None)
-    #currentSCREEN = mainMenu(window, ["Jason Van Bladel"])
+    #currentSCREEN = loginScreen(window, None)
+    currentSCREEN = mainMenu(window, ["Jason Van Bladel"])
     window.mainloop()
 
 
