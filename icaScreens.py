@@ -13,11 +13,6 @@ class icaSCREENS():
     def __init__(self,window): #all screens must contain the root window
         self.root = window
 
-    def addTO(self): #add something new and its grid location
-        print("Say")
-    def remove(self,thisITEM): #remove this item from window.winfo.children
-        print("Soon")
-
     def clearSCREEN(self):
         #will clear the screen of everything
         for widget in self.root.winfo_children():
@@ -34,7 +29,9 @@ class mainMenu(icaSCREENS):
 
         self.root.geometry("800x600")
         menu = Menu(self.root)
-        
+        self.currentPopOut = 0
+
+
         myframe=Frame(self.root,relief=GROOVE,width=50,height=100,bd=1)
         myframe.place(x=225,y=100,height=500,width=350)
 
@@ -342,6 +339,26 @@ class mainMenu(icaSCREENS):
                 self.showSummary(patient)
                 break
 
+    def destroyPopOut(self,newWindow):
+        newWindow.destroy()
+        self.currentPopOut -= 1
+
+    def xPand(self,patient):
+
+        if self.currentPopOut >= 5:
+            messagebox.showerror("error window", "Too many windows already open!")
+            return
+
+        newWindow = Toplevel()
+        newWindow.title("This the patient info")
+        patientInfo = med_INFO_SCREEN(newWindow,patient)
+        self.currentPopOut += 1
+
+        closeButton = Button(newWindow,text="Go Back",command= lambda:self.destroyPopOut(newWindow))
+        closeButton.grid()
+
+        #newWindow.protocol("WM_DELETE_WINDOW",self.destroyPopOut(newWindow))
+
     def showSummary(self, patient):
         self.clearPatient()
         self.summary = 1
@@ -350,6 +367,10 @@ class mainMenu(icaSCREENS):
         
         self.pName = Label(self.root, text = "First Name: " + patient.fName)
         self.pName.place(x = 600, y = 135)
+
+        expand = Button(self.root,text="Expand Patient",command=lambda:self.xPand(patient))
+        expand.place(x=700,y=150)
+
 
     def clearPatient(self):
         if self.summary == 1:
@@ -375,12 +396,12 @@ class med_INFO_SCREEN(icaSCREENS):
     '''
     Currently very basic. will have more features soon
     '''
-    def __init__(self,window):
+    def __init__(self,window,Patient):
         super().__init__(window)
         self.dataBoxes = []
 
-        titles = ["First Name", "Last Name", "Medical ID", "Last Outreach", "Last Immunization", "Provider"]
-        defaultEntry = ["Colton", "Remmert", "some ID", "1/1/2000", "12/31/1999", "University of the Pacific"]
+        titles = ["First Name", "Last Name", "Score", "Due Date", "Days over Due", "MRN"]
+        defaultEntry = [Patient.fName,Patient.lName,Patient.score,Patient.dueDate,Patient.daysOverDue,Patient.MRN]
 
         for index in range(6):
             newLABEL = Label(self.root, text=titles[index])
