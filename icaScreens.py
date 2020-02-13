@@ -772,15 +772,3 @@ class loginScreen(icaSCREENS):
             messagebox.showerror("Login Unsuccessful", "Username or Password is invalid")
             self.passwordEntry.delete(0,END) #remove password
 
-
-
-def main():
-    window = Tk()
-    window.resizable(0,0)
-    #currentSCREEN = loginScreen(window, None)
-
-    currentSCREEN = mainMenu(window, ["Jason Van Bladel"])
-    window.mainloop()
-
-
-main()

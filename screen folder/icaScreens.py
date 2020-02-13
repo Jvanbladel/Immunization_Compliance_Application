@@ -41,3 +41,9 @@ class Patient():
         self.dueDate = data[3]
         self.MRN = data[4]
         self.daysOverDue = data[5]
+
+    def getHistory():
+        return None
+
+    def getContact():
+        return None
