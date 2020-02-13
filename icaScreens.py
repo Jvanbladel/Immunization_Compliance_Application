@@ -1,7 +1,7 @@
 from tkinter import *
 from tkinter import messagebox
 from tkinter.ttk import Combobox
-import sqlite3
+from PIL import ImageTk,Image
 import datetime
 
 class icaSCREENS():
@@ -12,6 +12,8 @@ class icaSCREENS():
     screenSTACK = []
     def __init__(self,window): #all screens must contain the root window
         self.root = window
+        self.root.protocol("WM_DELETE_WINDOW", self.exitICA)
+
 
     def clearSCREEN(self):
         #will clear the screen of everything
@@ -21,6 +23,12 @@ class icaSCREENS():
     def swapTO(self,newSCREEN, data): #pass the class of the screen you want to go to along with the window
         self.clearSCREEN()
         newSCREEN(self.root, data)
+
+    def exitICA(self): #prompt user if they want to close program
+        userChoice = messagebox.askyesno("Exiting ICA","Are you sure you want to exit ICA?")
+
+        if userChoice:
+            self.root.destroy()
 
 class mainMenu(icaSCREENS):
 
@@ -93,7 +101,6 @@ class mainMenu(icaSCREENS):
         self.MRNCombo=Combobox(self.root, values=MRNSearchOptions)
         self.MRNCombo.place(x=100, y=235, width = 100)
 
-        #
 
         infoDisplayFRAME = LabelFrame(self.root)
         infoDisplayFRAME.place(x=575,y=100,height=500,width=225)
@@ -438,45 +445,65 @@ class loginScreen(icaSCREENS):
     def __init__(self, window, data):
         super().__init__(window)
         self.root.title("ICA")
+        self.root.geometry("800x600")
+        self.background = Canvas(self.root,width=800,height=600,bg="light blue")
+        self.background.place(x=0,y=0)
+
+
+        self.loginBackGround = Canvas(self.root,width=500,height=250)
+        self.loginBackGround.place(x=150,y=275)
+
 
         self.userName = "Test01"
         self.passWord = "Test02"
 
-        menu = Label(window,text="Welcome to ICA! Please login!\n")
-        menu.grid(sticky=W)
+        image = Image.open("sources/ica picture.PNG")
+        image = image.resize((700,200), Image.ANTIALIAS)
+        self.titleIMAGE = ImageTk.PhotoImage(image)
 
-        nameLabel = Label(window,text="Username: ")
-        passLabel = Label(window,text="Password: ")
-        nameLabel.grid(row=2,sticky=W)
-        passLabel.grid(row=3,sticky=W)
+        self.imageLABEL = Label(self.root,image=self.titleIMAGE)
 
-        self.nameENTRY = Entry(window)
-        self.passENTRY = Entry(window,show="*")
-        self.nameENTRY.grid(row=2,column=1)
-        self.passENTRY.grid(row=3,column=1)
+        self.imageLABEL.place(x=50,y=25)
 
-        loginBUTTON = Button(window,text="Login!",bg="blue",fg="white",command=self.verifyUser)
-        loginBUTTON.grid(row=4,column=1)
 
+        self.userNameLabel = Label(self.root,text="Username: ",font=('Consolas', 16))
+        self.userNameLabel.place(x=200,y=300)
+
+        self.userNameEntry = Entry(self.root,width=25,font=(16))
+        self.userNameEntry.place(x=350,y=305)
+
+        self.passwordLabel = Label(self.root, text="Password: ", font=('Consolas', 16))
+        self.passwordLabel.place(x=200, y=350)
+
+        self.passwordEntry = Entry(self.root, width=25, font=(16),show="*")
+        self.passwordEntry.place(x=350, y=355)
+
+
+        self.loginButton = Button(self.root,text="Login!",bg="light blue",fg="black",width=13,height=2,command=self.verifyUser)
+        self.loginButton.place(x=350,y=400)
+
+        self.cancelButton = Button(self.root,text="Cancel",bg="light blue",fg="black",width=13,height=2,command=self.exitICA)
+        self.cancelButton.place(x=475,y=400)
 
     def verifyUser(self):
-        name = self.nameENTRY.get()
-        passWord = self.passENTRY.get()
+        name = self.userNameEntry.get()
+        passWord = self.passwordEntry.get()
 
         #Would hash and verify user with database here
         if name == self.userName and passWord == self.passWord:
             messagebox.showinfo("Login Successful!", "Welcome back " + str(name))
             self.swapTO(mainMenu, [self.userName])
-
         else:
             messagebox.showerror("Login Unsuccessful", "Username or Password is invalid")
-            self.passENTRY.delete(0,END) #remove password
+            self.passwordEntry.delete(0,END) #remove password
+
 
 def main():
     window = Tk()
     window.resizable(0,0)
-    #currentSCREEN = loginScreen(window, None)
-    currentSCREEN = mainMenu(window, ["Jason Van Bladel"])
+    currentSCREEN = loginScreen(window, None)
+
+    #currentSCREEN = mainMenu(window, ["Jason Van Bladel"])
     window.mainloop()
 
 
