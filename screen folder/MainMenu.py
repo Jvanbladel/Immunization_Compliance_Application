@@ -1,5 +1,5 @@
-from icaScreens import *
 from PatientScreen import *
+from icaScreens import *
 from loginScreen import *
 
 
@@ -11,7 +11,7 @@ class mainMenu(icaSCREENS):
         global versionNumber
         self.root.geometry("800x600")
         menu = Menu(self.root)
-        self.root.title("Immunization Compliance Application " + versionNumber)
+        #self.root.title("Immunization Compliance Application " + versionNumber)
 
         # Max windows open
         self.currentPopOut = 0
@@ -477,7 +477,7 @@ class mainMenu(icaSCREENS):
 
         newWindow = Toplevel()
         newWindow.title("This the patient info")
-        patientInfo = med_INFO_SCREEN(newWindow, patient)
+        patientInfo = PatientScreen(newWindow, patient)
         self.currentPopOut += 1
 
         # closeButton = Button(newWindow,text="Go Back",command= lambda:self.destroyPopOut(newWindow))
