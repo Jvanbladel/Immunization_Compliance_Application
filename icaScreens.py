@@ -4,6 +4,8 @@ from tkinter.ttk import Combobox
 import sqlite3
 import datetime
 
+versionNumber = "Alpha 1.1"
+
 class icaSCREENS():
     '''
     Base class for all screens. Currently will only contain the root,
@@ -26,14 +28,15 @@ class mainMenu(icaSCREENS):
 
     def __init__(self,window, data):
         super().__init__(window)
-
+        global versionNumber
         self.root.geometry("800x600")
         menu = Menu(self.root)
         self.currentPopOut = 0
 
+        self.root.title("Immunization Compliance Application " + versionNumber)
 
         myframe=Frame(self.root,relief=GROOVE,width=50,height=100,bd=1)
-        myframe.place(x=225,y=100,height=500,width=350)
+        myframe.place(x=225,y=125,height=475,width=350)
 
         self.canvas=Canvas(myframe)
         frame=Frame(self.canvas)
@@ -44,6 +47,13 @@ class mainMenu(icaSCREENS):
         self.canvas.create_window((0,0),window=frame,anchor='nw')
         frame.bind("<Configure>", self.myfunction)
 
+        scrollHeadFRAME = LabelFrame(self.root, height=25, width = 350)
+        scrollHeadFRAME.place(x=225, y=100)
+
+        headerLabels = '{0:<10} {1:<13} {2:<8} {3:<10}'.format("First Name", "Last Name", "Due Date", " Days Overdue")
+        headLABEL = Label(self.root, anchor= W, justify = LEFT, text = headerLabels, font = ("Consolas", 10))
+        headLABEL.place(x=227.5, y=102.5,height=20, width = 345)
+
         searchFRAME = LabelFrame(self.root)
         searchFRAME.place(x=0,y=100,height=500,width=225)
     
@@ -51,49 +61,79 @@ class mainMenu(icaSCREENS):
         searchTXT.place(x=2.5,y=120)
         
         self.searchENTRY = Entry(self.root)
-        self.searchENTRY.place(x=50,y=120,width=150)
-
-        #Options for last Name
-        self.var1 = IntVar()
-        LnameSearch = Checkbutton(self.root, text="Last Name", variable=self.var1)
-        LnameSearch.place(x=2.5,y=160)
-
-        lNameSearchOptions=("Increasing", "Decreasing", "Exact Search", "Fuzy Search")
-        
-        self.lNameCombo=Combobox(self.root, values=lNameSearchOptions)
-        self.lNameCombo.place(x=100, y=160, width = 100)
+        self.searchENTRY.place(x=50,y=120,width=160)
 
         #Options for first Name
-        self.var2 = IntVar()
-        FnameSearch = Checkbutton(self.root, text="First Name", variable=self.var2)
-        FnameSearch.place(x=2.5,y=185)
+        self.var1 = IntVar()
+        FnameSearch = Checkbutton(self.root, text="First Name", variable=self.var1)
+        FnameSearch.place(x=2.5,y=160)
 
-        fNameSearchOptions=("Increasing", "Decreasing", "Exact Search", "Fuzy Search")
+        fNameSearchOptions=("Exact Search", "Ascending", "Descending", "Fuzy Search")
         
         self.fNameCombo=Combobox(self.root, values=fNameSearchOptions)
-        self.fNameCombo.place(x=100, y=185, width = 100)
+        self.fNameCombo.place(x=110, y=160, width = 100)
+
+        #Options for last Name
+        self.var2 = IntVar()
+        LnameSearch = Checkbutton(self.root, text="Last Name", variable=self.var2)
+        LnameSearch.place(x=2.5,y=185)
+
+        lNameSearchOptions=("Exact Search", "Ascending", "Descending", "Fuzy Search")
+        
+        self.lNameCombo=Combobox(self.root, values=lNameSearchOptions)
+        self.lNameCombo.place(x=110, y=185, width = 100)
 
         #Options for Due Date
         self.var3 = IntVar()
         dueDateSearch = Checkbutton(self.root, text="Due Date", variable=self.var3)
         dueDateSearch.place(x=2.5,y=210)
 
-        dueDateSearchOptions=("Increasing", "Decreasing", "Exact Search", "Fuzy Search")
+        dueDateSearchOptions=("Exact Search", "Ascending", "Descending", "Fuzy Search")
         
         self.fNameCombo=Combobox(self.root, values=dueDateSearchOptions)
-        self.fNameCombo.place(x=100, y=210, width = 100)
+        self.fNameCombo.place(x=110, y=210, width = 100)
 
-        #Options for MRN
+
+        #Options for days Overdue
         self.var4 = IntVar()
-        MRNSearch = Checkbutton(self.root, text="MRN", variable=self.var4)
-        MRNSearch.place(x=2.5,y=235)
+        OVERDUESearch = Checkbutton(self.root, text="Days Overdue", variable=self.var4)
+        OVERDUESearch.place(x=2.5,y=235)
 
-        MRNSearchOptions=("Increasing", "Decreasing", "Exact Search", "Fuzy Search")
+        OVERDUESearchOptions=("Exact Search", "Ascending", "Descending")
+        
+        self.OVERDUECombo=Combobox(self.root, values=OVERDUESearchOptions)
+        self.OVERDUECombo.place(x=110, y=235, width = 100)
+        
+        #Options for MRN
+        self.var5 = IntVar()
+        MRNSearch = Checkbutton(self.root, text="MRN", variable=self.var5)
+        MRNSearch.place(x=2.5,y=260)
+
+        MRNSearchOptions=("Exact Search", "Ascending", "Descending", "Fuzy Search")
         
         self.MRNCombo=Combobox(self.root, values=MRNSearchOptions)
-        self.MRNCombo.place(x=100, y=235, width = 100)
+        self.MRNCombo.place(x=110, y=260, width = 100)
 
-        #
+        #Options for Immunizations Type
+        self.var6 = IntVar()
+        ImmunTypeSearch = Checkbutton(self.root, text="Immunization", variable=self.var6)
+        ImmunTypeSearch.place(x=2.5,y=285)
+
+        ImmunTypeSearchOptions=("Vaccine 1", "Vaccine 2", "Vaccine 3", "Vaccine 4")
+        
+        self.ImmunTypeCombo=Combobox(self.root, values=ImmunTypeSearchOptions)
+        self.ImmunTypeCombo.place(x=110, y=285, width = 100)
+
+        #Search Buttons
+
+        searchforBUTTON = Button(self.root, text = "Search",bg="blue",fg="white")
+        searchforBUTTON.place(x=122.5, y = 320, width = 75, height = 32.5)
+
+        advancedsearchBUTTON = Button(self.root, text = "More\nOptions")
+        advancedsearchBUTTON.place(x=20, y = 320, width = 75, height = 32.5)
+
+        advancedSearchFRAME = LabelFrame(self.root)
+        advancedSearchFRAME.place(x=0,y=370,height=230,width=225)
 
         infoDisplayFRAME = LabelFrame(self.root)
         infoDisplayFRAME.place(x=575,y=100,height=500,width=225)
@@ -170,7 +210,7 @@ class mainMenu(icaSCREENS):
         self.addToQueue(frame, self.queue)
         
     def myfunction(self,event):
-        self.canvas.configure(scrollregion=self.canvas.bbox("all"),width=350,height=500)
+        self.canvas.configure(scrollregion=self.canvas.bbox("all"),width=350,height=475)
     
     def togFileTab(self):
         if self.file == 0:
@@ -354,22 +394,38 @@ class mainMenu(icaSCREENS):
         patientInfo = med_INFO_SCREEN(newWindow,patient)
         self.currentPopOut += 1
 
-        closeButton = Button(newWindow,text="Go Back",command= lambda:self.destroyPopOut(newWindow))
-        closeButton.grid()
+        #closeButton = Button(newWindow,text="Go Back",command= lambda:self.destroyPopOut(newWindow))
+        #closeButton.grid()
 
+        newWindow.wm_protocol('WM_DELETE_WINDOW', lambda newWindow=newWindow: self.destroyPopOut(newWindow))
         #newWindow.protocol("WM_DELETE_WINDOW",self.destroyPopOut(newWindow))
 
     def showSummary(self, patient):
         self.clearPatient()
         self.summary = 1
-        self.summaryText = Label(self.root, text = "Patient Information:", font = (12))
-        self.summaryText.place(x = 577.5, y = 102.5)
+
+        info = Button(self.root, text = "Summary")
+        info.place(x = 575, y = 100, width = 75, height = 37.5)
+
+        med = Button(self.root, text = "Medical\nHistory")
+        med.place(x = 650, y = 100, width = 75, height = 37.5)
+
+        med = Button(self.root, text = "Contact")
+        med.place(x = 725, y = 100, width = 75, height = 37.5)
+        
+        #self.summaryText = Label(self.root, text = "Patient Information:", font = (12))
+        #self.summaryText.place(x = 577.5, y = 102.5)
+
+        
         
         self.pName = Label(self.root, text = "First Name: " + patient.fName)
-        self.pName.place(x = 600, y = 135)
+        self.pName.place(x = 600, y = 145)
 
         expand = Button(self.root,text="Expand Patient",command=lambda:self.xPand(patient))
-        expand.place(x=700,y=150)
+        expand.place(x=700,y=365, width = 90, height = 30)
+
+        outreach = Button(self.root,text="Outreach")
+        outreach.place(x=585,y=365, width = 90, height = 30)
 
 
     def clearPatient(self):
