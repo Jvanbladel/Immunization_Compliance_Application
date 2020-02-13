@@ -43,24 +43,15 @@ class mainMenu(icaSCREENS):
 
         self.root.title("Immunization Compliance Application " + versionNumber)
 
-        myframe=Frame(self.root,relief=GROOVE,width=50,height=100,bd=1)
-        myframe.place(x=225,y=125,height=475,width=350)
+        self.myframe = None
+        self.canvas = None
+        self.myscrollbar = None
+        self.frame = None
+        self.scrollHeadFRAME = None
+        self.headLABEL = None
 
-        self.canvas=Canvas(myframe)
-        frame=Frame(self.canvas)
-        myscrollbar=Scrollbar(myframe,orient="vertical",command=self.canvas.yview)
-        self.canvas.configure(yscrollcommand=myscrollbar.set)
-        myscrollbar.pack(side="right",fill="y")
-        self.canvas.pack(side="left")
-        self.canvas.create_window((0,0),window=frame,anchor='nw')
-        frame.bind("<Configure>", self.myfunction)
-
-        scrollHeadFRAME = LabelFrame(self.root, height=25, width = 350)
-        scrollHeadFRAME.place(x=225, y=100)
-
-        headerLabels = '{0:<10} {1:<13} {2:<8} {3:<10}'.format("First Name", "Last Name", "Due Date", " Days Overdue")
-        headLABEL = Label(self.root, anchor= W, justify = LEFT, text = headerLabels, font = ("Consolas", 10))
-        headLABEL.place(x=227.5, y=102.5,height=20, width = 345)
+        self.largeQueue = 0
+        self.togExpandQueue()
 
         searchFRAME = LabelFrame(self.root)
         searchFRAME.place(x=0,y=100,height=500,width=225)
@@ -70,6 +61,9 @@ class mainMenu(icaSCREENS):
         
         self.searchENTRY = Entry(self.root)
         self.searchENTRY.place(x=50,y=120,width=160)
+
+        self.closeSearch = Button(self.root, command=lambda: self.togExpandQueue())
+        self.closeSearch.place(x= 211, y=102.5, width = 10, height = 10)
 
         #Options for first Name
         self.var1 = IntVar()
@@ -211,15 +205,14 @@ class mainMenu(icaSCREENS):
 
         #patintInfo
         self.summary = 0
-
         self.queue = []
-
-        self.queue = self.createQueue()
-        
-        self.addToQueue(frame, self.queue)
         
     def myfunction(self,event):
-        self.canvas.configure(scrollregion=self.canvas.bbox("all"),width=350,height=475)
+        if self.largeQueue == 1:
+            self.canvas.configure(scrollregion=self.canvas.bbox("all"),width=350,height=475)
+        else:
+            self.canvas.configure(scrollregion=self.canvas.bbox("all"),width=575,height=475)
+        
     
     def togFileTab(self):
         if self.file == 0:
@@ -372,14 +365,25 @@ class mainMenu(icaSCREENS):
         return pList
 
     def addToQueue(self, frame, patientList):
-        bList = []
+        self.bList = []
         for i in range(len(patientList)):
-            pstr = '{0:<10} {1:<13} {2:<13} {3:<10}'.format(patientList[i].fName, patientList[i].lName, patientList[i].dueDate, patientList[i].daysOverDue)
+            if self.largeQueue == 1:
+                pstr = '{0:<10} {1:<13} {2:<13} {3:<10}'.format(patientList[i].fName, patientList[i].lName, patientList[i].dueDate, patientList[i].daysOverDue)
             
-            #FONT has to be monospaced or it wont work
-            b = Button(frame, text = pstr,anchor=W, justify=LEFT, width = 46, font = ('Consolas', 10), command=lambda i=i: self.showPatient(patientList[i].MRN))
-            b.grid(row=i)
-            bList.append(b)
+                #FONT has to be monospaced or it wont work
+            
+                b = Button(frame, text = pstr,anchor=W, justify=LEFT, width = 46, font = ('Consolas', 10), command=lambda i=i: self.showPatient(patientList[i].MRN))
+                b.grid(row=i)
+                self.bList.append(b)
+            else:
+                pstr = '{0:<15} {1:<13} {2:<13} {3:<10}'.format(patientList[i].fName, patientList[i].lName, patientList[i].dueDate, patientList[i].daysOverDue)
+            
+                #FONT has to be monospaced or it wont work
+            
+                b = Button(frame, text = pstr,anchor=W, justify=LEFT, width = 100, font = ('Consolas', 10), command=lambda i=i: self.showPatient(patientList[i].MRN))
+                b.grid(row=i)
+                self.bList.append(b)
+            
 
     def showPatient(self, MRN):
         #hash map would be better
@@ -446,6 +450,69 @@ class mainMenu(icaSCREENS):
         print("Logging out")
         self.swapTO(loginScreen, None)
         print("Successful Log out!")
+
+    def togExpandQueue(self):
+
+        if not self.myframe == None:
+            self.myframe.destroy()
+            self.canvas.destroy()
+            self.myscrollbar.destroy()
+            self.frame.destroy()
+            self.scrollHeadFRAME.destroy()
+            self.headLABEL.destroy()
+        
+        if self.largeQueue == 0:
+            print("Queue Set To Normal!")
+            self.myframe=Frame(self.root,relief=GROOVE,width=50,height=100,bd=1)
+            self.myframe.place(x=225,y=125,height=475,width=350)
+
+            self.canvas=Canvas(self.myframe)
+            self.frame=Frame(self.canvas)
+            self.myscrollbar=Scrollbar(self.myframe,orient="vertical",command=self.canvas.yview)
+            self.canvas.configure(yscrollcommand=self.myscrollbar.set)
+            self.myscrollbar.pack(side="right",fill="y")
+            self.canvas.pack(side="left")
+            self.canvas.create_window((0,0),window=self.frame,anchor='nw')
+            self.frame.bind("<Configure>", self.myfunction)
+
+            self.scrollHeadFRAME = LabelFrame(self.root, height = 25, width = 350)
+            self.scrollHeadFRAME.place(x=225, y=100)
+
+            self.headerLabels = '{0:<10} {1:<13} {2:<8} {3:<10}'.format("First Name", "Last Name", "Due Date", " Days Overdue")
+            self.headLABEL = Label(self.root, anchor= W, justify = LEFT, text = self.headerLabels, font = ("Consolas", 10))
+            self.headLABEL.place(x=227.5, y=102.5,height=20, width = 345)
+            
+            self.largeQueue = 1
+            
+        else:
+            print("Queue Expanded!")
+            self.myframe=Frame(self.root,relief=GROOVE,width=50,height=100,bd=1)
+            self.myframe.place(x=0,y=125,height=475,width=575)
+
+            self.canvas=Canvas(self.myframe)
+            self.frame=Frame(self.canvas)
+            self.myscrollbar=Scrollbar(self.myframe,orient="vertical",command=self.canvas.yview)
+            self.canvas.configure(yscrollcommand=self.myscrollbar.set)
+            self.myscrollbar.pack(side="right",fill="y")
+            self.canvas.pack(side="left")
+            self.canvas.create_window((0,0),window=self.frame,anchor='nw')
+            self.frame.bind("<Configure>", self.myfunction)
+
+            self.scrollHeadFRAME = LabelFrame(self.root, height = 25, width = 575)
+            self.scrollHeadFRAME.place(x=0, y=100)
+
+            self.headerLabels = '{0:<15} {1:<13} {2:<8} {3:<10}'.format("First Name", "Last Name", "Due Date", " Days Overdue")
+            self.headLABEL = Label(self.root, anchor= W, justify = LEFT, text = self.headerLabels, font = ("Consolas", 10))
+            self.headLABEL.place(x=2.5, y=102.5,height=20, width = 570)
+
+            self.minimizeButton = Button(self.root, command=lambda: self.togExpandQueue())
+            self.minimizeButton.place(x= 560, y=102.5, width = 10, height = 10)
+            
+            self.largeQueue = 0
+           
+
+        self.queue = self.createQueue()
+        self.addToQueue(self.frame, self.queue)
 
 class Patient():
     def __init__(self, data):
@@ -556,12 +623,13 @@ class loginScreen(icaSCREENS):
             self.passwordEntry.delete(0,END) #remove password
 
 
+
 def main():
     window = Tk()
     window.resizable(0,0)
-    currentSCREEN = loginScreen(window, None)
+    #currentSCREEN = loginScreen(window, None)
 
-    #currentSCREEN = mainMenu(window, ["Jason Van Bladel"])
+    currentSCREEN = mainMenu(window, ["Jason Van Bladel"])
     window.mainloop()
 
 
