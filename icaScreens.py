@@ -51,6 +51,7 @@ class mainMenu(icaSCREENS):
         self.headLABEL = None
 
         self.largeQueue = 0
+        self.queue = self.createQueue()
         self.togExpandQueue()
 
         searchFRAME = LabelFrame(self.root)
@@ -85,36 +86,46 @@ class mainMenu(icaSCREENS):
         self.lNameCombo=Combobox(self.root, values=lNameSearchOptions)
         self.lNameCombo.place(x=110, y=185, width = 100)
 
-        #Options for Due Date
+
+        #Options for DOB Search
         self.var3 = IntVar()
-        dueDateSearch = Checkbutton(self.root, text="Due Date", variable=self.var3)
-        dueDateSearch.place(x=2.5,y=210)
+        DOBSearch = Checkbutton(self.root, text="Date of Birth", variable=self.var3)
+        DOBSearch.place(x=2.5,y=210)
 
-        dueDateSearchOptions=("Exact Search", "Ascending", "Descending", "Fuzy Search")
+        DOBOptions=("Exact Search", "Ascending", "Descending")
         
-        self.fNameCombo=Combobox(self.root, values=dueDateSearchOptions)
-        self.fNameCombo.place(x=110, y=210, width = 100)
-
-
-        #Options for days Overdue
-        self.var4 = IntVar()
-        OVERDUESearch = Checkbutton(self.root, text="Days Overdue", variable=self.var4)
-        OVERDUESearch.place(x=2.5,y=235)
-
-        OVERDUESearchOptions=("Exact Search", "Ascending", "Descending")
+        self.DOBCombo=Combobox(self.root, values=DOBOptions)
+        self.DOBCombo.place(x=110, y=210, width = 100)
         
-        self.OVERDUECombo=Combobox(self.root, values=OVERDUESearchOptions)
-        self.OVERDUECombo.place(x=110, y=235, width = 100)
+        #Options for Due Date
+        #self.var3 = IntVar()
+        #dueDateSearch = Checkbutton(self.root, text="Due Date", variable=self.var3)
+        #dueDateSearch.place(x=2.5,y=210)
+
+        #dueDateSearchOptions=("Exact Search", "Ascending", "Descending", "Fuzy Search")
         
+        #self.fNameCombo=Combobox(self.root, values=dueDateSearchOptions)
+        #self.fNameCombo.place(x=110, y=210, width = 100)
+
         #Options for MRN
-        self.var5 = IntVar()
-        MRNSearch = Checkbutton(self.root, text="MRN", variable=self.var5)
-        MRNSearch.place(x=2.5,y=260)
+        self.var4 = IntVar()
+        MRNSearch = Checkbutton(self.root, text="MRN", variable=self.var4)
+        MRNSearch.place(x=2.5,y=235)
 
         MRNSearchOptions=("Exact Search", "Ascending", "Descending", "Fuzy Search")
         
         self.MRNCombo=Combobox(self.root, values=MRNSearchOptions)
-        self.MRNCombo.place(x=110, y=260, width = 100)
+        self.MRNCombo.place(x=110, y=235, width = 100)
+
+        #Options for days Overdue
+        self.var5 = IntVar()
+        OVERDUESearch = Checkbutton(self.root, text="Days Overdue", variable=self.var5)
+        OVERDUESearch.place(x=2.5,y=260)
+
+        OVERDUESearchOptions=("Exact Search", "Ascending", "Descending")
+        
+        self.OVERDUECombo=Combobox(self.root, values=OVERDUESearchOptions)
+        self.OVERDUECombo.place(x=110, y=260, width = 100)
 
         #Options for Immunizations Type
         self.var6 = IntVar()
@@ -191,6 +202,7 @@ class mainMenu(icaSCREENS):
         self.txt = None
         self.cvs = None
         self.pName = None
+        self.importData = None
         
         #TABS
         self.file = 0
@@ -205,7 +217,6 @@ class mainMenu(icaSCREENS):
 
         #patintInfo
         self.summary = 0
-        self.queue = []
         
     def myfunction(self,event):
         if self.largeQueue == 1:
@@ -218,16 +229,19 @@ class mainMenu(icaSCREENS):
         if self.file == 0:
             self.closeALLTabs()
             self.fileFRAME = LabelFrame(self.root)
-            self.fileFRAME.place(x=0,y=30,height=90,width=100)
+            self.fileFRAME.place(x=0,y=30,height=120,width=100)
+
+            self.importData = Button(self.root, text = "Import", justify = LEFT,anchor=W)
+            self.importData.place(x=0,y=30,height=30,width=100)
             
             self.export = Button(self.root, text = "Export", justify = LEFT,anchor=W, command=lambda: self.togExportTab())
-            self.export.place(x=0,y=30,height=30,width=100)
+            self.export.place(x=0,y=60,height=30,width=100)
 
             self.print = Button(self.root, text = "Print", justify = LEFT,anchor=W)
-            self.print.place(x=0,y=60,height=30,width=100)
+            self.print.place(x=0,y=90,height=30,width=100)
             
             self.logout = Button(self.root, text = "Log out", justify = LEFT,anchor=W, command=lambda: self.logoutofApp())
-            self.logout.place(x=0,y=90,height=30,width=100)
+            self.logout.place(x=0,y=120,height=30,width=100)
             
             self.file = 1
         else:
@@ -237,6 +251,7 @@ class mainMenu(icaSCREENS):
             self.logout.destroy()
             self.export.destroy()
             self.print.destroy()
+            self.importData.destroy()
             self.file = 0
 
     def togExportTab(self):
@@ -367,7 +382,7 @@ class mainMenu(icaSCREENS):
     def addToQueue(self, frame, patientList):
         self.bList = []
         for i in range(len(patientList)):
-            if self.largeQueue == 1:
+            if self.largeQueue == 0:
                 pstr = '{0:<10} {1:<13} {2:<13} {3:<10}'.format(patientList[i].fName, patientList[i].lName, patientList[i].dueDate, patientList[i].daysOverDue)
             
                 #FONT has to be monospaced or it wont work
@@ -462,7 +477,6 @@ class mainMenu(icaSCREENS):
             self.headLABEL.destroy()
         
         if self.largeQueue == 0:
-            print("Queue Set To Normal!")
             self.myframe=Frame(self.root,relief=GROOVE,width=50,height=100,bd=1)
             self.myframe.place(x=225,y=125,height=475,width=350)
 
@@ -481,11 +495,12 @@ class mainMenu(icaSCREENS):
             self.headerLabels = '{0:<10} {1:<13} {2:<8} {3:<10}'.format("First Name", "Last Name", "Due Date", " Days Overdue")
             self.headLABEL = Label(self.root, anchor= W, justify = LEFT, text = self.headerLabels, font = ("Consolas", 10))
             self.headLABEL.place(x=227.5, y=102.5,height=20, width = 345)
+
+            self.addToQueue(self.frame, self.queue)
             
             self.largeQueue = 1
             
         else:
-            print("Queue Expanded!")
             self.myframe=Frame(self.root,relief=GROOVE,width=50,height=100,bd=1)
             self.myframe.place(x=0,y=125,height=475,width=575)
 
@@ -507,12 +522,13 @@ class mainMenu(icaSCREENS):
 
             self.minimizeButton = Button(self.root, command=lambda: self.togExpandQueue())
             self.minimizeButton.place(x= 560, y=102.5, width = 10, height = 10)
+
+            self.addToQueue(self.frame, self.queue)
             
             self.largeQueue = 0
            
 
-        self.queue = self.createQueue()
-        self.addToQueue(self.frame, self.queue)
+       
 
 class Patient():
     def __init__(self, data):
