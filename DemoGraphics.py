@@ -1,5 +1,3 @@
-
-
 class DemoGraphics():
 
     def __init__(self):

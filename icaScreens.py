@@ -828,6 +828,27 @@ class Patient():
 
     def getContact(self):
         return [["(925)980-4048", "Mobile"], "austin@gmail.com", "English", "Phone"]
+
+    def getFullSummary(self):
+        return None
+    
+    def getFullHistory(self):
+        return None
+
+    def getFullContact(self):
+        return None
+
+    def getFullInsurance(self):
+        return None
+
+    def getGarentor(self):
+        return None
+
+    def getLastService(self):
+        return None
+
+    def getFullImmunizationHistory(self):
+        return None
            
 
 class med_INFO_SCREEN(icaSCREENS):
@@ -925,7 +946,7 @@ class loginScreen(icaSCREENS):
         super().__init__(window)
         self.root.title("ICA")
         self.root.geometry("800x600")
-        self.background = Canvas(self.root,width=800,height=600,bg="light blue")
+        self.background = Canvas(self.root,width=800,height=600)
         self.background.place(x=0,y=0)
 
 
