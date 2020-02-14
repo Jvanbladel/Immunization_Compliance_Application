@@ -4,7 +4,7 @@ from tkinter.ttk import Combobox
 from PIL import ImageTk,Image
 import datetime
 
-versionNumber = "Alpha 1.1"
+versionNumber = "Alpha 1.2"
 
 class icaSCREENS():
     '''
@@ -530,8 +530,34 @@ class mainMenu(icaSCREENS):
         med = Button(self.root, text = "Contact", command=lambda: self.showContact(patient))
         med.place(x = 725, y = 100, width = 75, height = 37.5)
 
-        self.pInfo = Label(self.root, text = "First Name: " + patient.fName)
-        self.pInfo.place(x = 600, y = 145)
+        patientData = patient.getSummary()
+        
+        
+        self.pFName = Label(self.root, text = "First Name: " +  patientData[0])
+        self.pFName.place(x = 590, y = 145)
+
+        self.pLName = Label(self.root, text = "Last Name: " +  patientData[1])
+        self.pLName.place(x = 590, y = 175)
+
+        self.pMName = Label(self.root, text = "MI: " +  patientData[2])
+        self.pMName.place(x = 730, y = 145)
+
+        self.pDOB = Label(self.root, text = "Date of Birth: " +  patientData[3])
+        self.pDOB.place(x = 590, y = 205)
+
+        self.pSex = Label(self.root, text = "Sex: " +  patientData[4])
+        self.pSex.place(x = 590, y = 235)
+
+        self.pAge = Label(self.root, text = "Age: " +  patientData[5])
+        self.pAge.place(x = 650, y = 235)
+        
+        self.pRace = Label(self.root, text = "Ethicity: " +  patientData[6])
+        self.pRace.place(x = 590, y = 265)
+
+        self.pPrefix = Label(self.root, text = "Prefix: " +  patientData[7])
+        self.pPrefix.place(x = 730, y = 175)
+
+
 
         expand = Button(self.root,text="Expand Patient",command=lambda:self.xPand(patient))
         expand.place(x=700,y=365, width = 90, height = 30)
@@ -552,9 +578,33 @@ class mainMenu(icaSCREENS):
         med = Button(self.root, text = "Contact", command=lambda: self.showContact(patient))
         med.place(x = 725, y = 100, width = 75, height = 37.5)
 
-        self.pInfo = Label(self.root, text = "History: ")
-        self.pInfo.place(x = 600, y = 145)
+        patientData = patient.getHistory()
 
+        self.pHistoryList = []
+
+        headerText = '{0:<11}{1:<9}{2:<10}'.format("Vaccine" , "Overdue", "Insurance")
+        self.pheaderLabel = Label(self.root, text = headerText, font = ("Consolas", 10))
+        self.pheaderLabel.place(x = 580, y = 145)
+
+        for history in range(len(patientData[0])):
+            newText = '{0:<14}{1:<8}'.format(patientData[0][history][0] , patientData[0][history][1])
+            newLabel = Label(self.root, text = newText, font = ("Consolas", 10))
+            newLabel.place(x = 580, y = 175 + 30 * history)
+            self.pHistoryList.append(newLabel)
+
+        for history in range(len(patientData[0])):
+            newText = patientData[0][history][2]
+            newLabel = Label(self.root, text = newText, font = ("Consolas", 10))
+            if newText == 'Covered':
+                newLabel.config(fg="Green")
+            else:
+                newLabel.config(fg="Red")
+            newLabel.place(x = 720, y = 175 + 30 * history)
+            self.pHistoryList.append(newLabel)
+
+        self.pLastVisit = Label(self.root, text = "Last Visit: " + patientData[1], font = ("Consolas", 10))
+        self.pLastVisit.place(x = 580, y = 340)
+        
         expand = Button(self.root,text="Expand Patient",command=lambda:self.xPand(patient))
         expand.place(x=700,y=365, width = 90, height = 30)
 
@@ -563,7 +613,7 @@ class mainMenu(icaSCREENS):
 
     def showContact(self, patient):
         self.clearPatient()
-        self.history = 1
+        self.contact = 1
 
         info = Button(self.root, text = "Summary", command=lambda: self.showSummary(patient))
         info.place(x = 575, y = 100, width = 75, height = 37.5)
@@ -574,8 +624,17 @@ class mainMenu(icaSCREENS):
         med = Button(self.root, text = "Contact", command=lambda: self.showContact(patient))
         med.place(x = 725, y = 100, width = 75, height = 37.5)
 
-        self.pInfo = Label(self.root, text = "Contact: ")
-        self.pInfo.place(x = 600, y = 145)
+        patientData = patient.getContact()
+        
+        self.pPhone = Label(self.root, text = "Phone: " + patientData[0][0] + "     Type: " + patientData[0][1])
+        self.pPhone.place(x = 580, y = 145)
+
+        self.pEmail = Label(self.root, text = "Email: " + patientData[1])
+        self.pEmail.place(x = 580, y = 175)
+
+        self.pLanguage = Label(self.root, text = "Lanague Preference: " + patientData[2])
+        self.pLanguage.place(x = 580, y = 205)
+        
 
         expand = Button(self.root,text="Expand Patient",command=lambda:self.xPand(patient))
         expand.place(x=700,y=365, width = 90, height = 30)
@@ -586,7 +645,27 @@ class mainMenu(icaSCREENS):
 
     def clearPatient(self):
         if self.summary == 1:
-            self.pInfo.destroy()
+            self.pFName.destroy()
+            self.pLName.destroy()
+            self.pMName.destroy()
+            self.pDOB.destroy()
+            self.pAge.destroy()
+            self.pRace.destroy()
+            self.pSex.destroy()
+            self.pPrefix.destroy()
+            self.summary = 0
+        if self.history == 1:
+            for elem in self.pHistoryList:
+                elem.destroy()
+            self.pheaderLabel.destroy()
+            self.pLastVisit.destroy()
+            self.history = 0
+        if self.contact == 1:
+            self.pPhone.destroy()
+            self.pEmail.destroy()
+            self.pLanguage.destroy()
+            self.contact = 0
+
             
     def logoutofApp(self):
         self.togFileTab()
@@ -667,11 +746,14 @@ class Patient():
         self.MRN = data[4]
         self.daysOverDue = data[5]
 
-    def getHistory():
-        return None
+    def getSummary(self):
+        return [self.fName, self.lName, 'D' ,"12/6/1987", 'M', "33", "African American", "Mr."]
 
-    def getContact():
-        return None
+    def getHistory(zelf):
+        return [[["Flu", "45", "Covered"], ["Hepatitis B", "12", "Covered"], ["Pollo", "325", "Uncovered"]], "3/23/14"]
+
+    def getContact(self):
+        return [["(925)980-4048", "Mobile"], "austin@gmail.com", "English"]
            
 
 class med_INFO_SCREEN(icaSCREENS):
@@ -777,9 +859,9 @@ def main(): # Main loop of ICA
     window.resizable(0, 0)
     window.title(versionNumber)
 
-    currentSCREEN = loginScreen(window, None)
+    #currentSCREEN = loginScreen(window, None)
 
-    # currentSCREEN = mainMenu(window, ["Jason Van Bladel"])
+    currentSCREEN = mainMenu(window, ["Jason Van Bladel"])
     window.mainloop()
 
 main()
