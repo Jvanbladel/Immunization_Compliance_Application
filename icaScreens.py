@@ -57,26 +57,38 @@ class mainMenu(icaSCREENS):
         userFRAME = Label(self.root,text=userInfo,anchor=E, justify=RIGHT)
         userFRAME.place(x=572.5,y=2.5,height=25,width=225)
 
-        #Add tabs
+        #Add tabs to top bar
         self.setUpTabs()
         
         #set Up Search Frame
         self.setUpSearchFrame()
 
-        #set Up Queue
+        #set Up Queue Frame
         self.setUpQueue()
         self.largeQueue = 0
         self.queue = self.createQueue()
         self.togExpandQueue()
         
-        #SetUpSummary Screen
+        #SetUpSummary Frame
         infoDisplayFRAME = LabelFrame(self.root)
         infoDisplayFRAME.place(x=575,y=100,height=500,width=225)
-        reportingFRAME = LabelFrame(self.root)
-        reportingFRAME.place(x=575,y=400,height=500,width=225)
         self.summary = 0
         self.contact = 0
         self.history = 0
+
+        #setUpContact Frame
+        reportingFRAME = LabelFrame(self.root)
+        reportingFRAME.place(x=575,y=400,height=200,width=225)
+
+        contactOptions=("Answered", "Missed Call", "Hung Up", "Will Call Back", "No Number on File", "Wrong Number", "Attempt Again Later")
+        self.callOptions=Combobox(self.root, values=contactOptions)
+        self.callOptions.place(x=590,y=420)
+
+        self.submittOutReach = Button(self.root, text = "Submit",command=lambda: self.submitOutReachAttempt())
+        self.submittOutReach.place(x= 700, y=450)
+
+    def submitOutReachAttempt(self):
+        print("Out Reach")
 
     def setUpTabs(self):
         fileBUTTON = Button(self.root,text="File",command=lambda: self.togFileTab())
@@ -455,24 +467,33 @@ class mainMenu(icaSCREENS):
             
                 #FONT has to be monospaced or it wont work
             
-                b = Button(frame, text = pstr,anchor=W, justify=LEFT, width = 46, font = ('Consolas', 10), command=lambda i=i: self.showPatient(patientList[i].MRN))
+                b = Button(frame, text = pstr,anchor=W, justify=LEFT, width = 46, font = ('Consolas', 10))
                 b.grid(row=i)
                 self.bList.append(b)
+                b.configure(command=lambda i=i: self.showPatient(patientList[i].MRN, self.bList[i]))
             else:
                 pstr = '{0:<15} {1:<13} {2:<13} {3:<10}'.format(patientList[i].fName, patientList[i].lName, patientList[i].dueDate, patientList[i].daysOverDue)
             
                 #FONT has to be monospaced or it wont work
             
-                b = Button(frame, text = pstr,anchor=W, justify=LEFT, width = 100, font = ('Consolas', 10), command=lambda i=i: self.showPatient(patientList[i].MRN))
+                b = Button(frame, text = pstr,anchor=W, justify=LEFT, width = 100, font = ('Consolas', 10), command=lambda i=i: self.showPatient(patientList[i].MRN, b))
                 b.grid(row=i)
                 self.bList.append(b)
             
 
-    def showPatient(self, MRN):
+    def showPatient(self, MRN, b):
         #hash map would be better
         for patient in self.queue:
             if patient.MRN == MRN:
                 self.showSummary(patient)
+                break
+        for button in self.bList:
+            button.configure(background = self.root.cget('bg'))
+
+        for button in self.bList:
+            #print(b == button)
+            if b == button:
+                b.configure(background = "green")
                 break
 
     def destroyPopOut(self,newWindow):
@@ -751,15 +772,14 @@ class loginScreen(icaSCREENS):
             messagebox.showerror("Login Unsuccessful", "Username or Password is invalid")
             self.passwordEntry.delete(0,END) #remove password
 
-
-
-def main():
+def main(): # Main loop of ICA
     window = Tk()
-    window.resizable(0,0)
-    #currentSCREEN = loginScreen(window, None)
+    window.resizable(0, 0)
+    window.title(versionNumber)
 
-    currentSCREEN = mainMenu(window, ["Jason Van Bladel"])
+    currentSCREEN = loginScreen(window, None)
+
+    # currentSCREEN = mainMenu(window, ["Jason Van Bladel"])
     window.mainloop()
-
 
 main()
