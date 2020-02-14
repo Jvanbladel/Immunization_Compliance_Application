@@ -3,6 +3,8 @@ from tkinter import messagebox
 from tkinter.ttk import Combobox
 from PIL import ImageTk,Image
 import datetime
+from tkinter import ttk
+
 
 versionNumber = "Alpha 1.2"
 
@@ -832,42 +834,90 @@ class med_INFO_SCREEN(icaSCREENS):
     '''
     Currently very basic. will have more features soon
     '''
-    def __init__(self,window,Patient):
+
+   
+
+
+    def __init__(self, window, Patient):
         super().__init__(window)
-        self.dataBoxes = []
+        self.root.geometry("800x600")
 
-        titles = ["First Name", "Last Name", "Score", "Due Date", "Days over Due", "MRN"]
-        defaultEntry = [Patient.fName,Patient.lName,Patient.score,Patient.dueDate,Patient.daysOverDue,Patient.MRN]
+        self.thisPatient = Patient
+        self.currentUser = None
+        self.insurance = None
+        self.demoGraphics = None
+        self.immunizationHistory = None
 
-        for index in range(6):
-            newLABEL = Label(self.root, text=titles[index])
-            newLABEL.grid(row=index, column=0)
 
-            newENTRY = Entry(self.root, width=30)
-            newENTRY.grid(row=index, column=1)
-            newENTRY.insert(0, defaultEntry[index])
-            self.dataBoxes.append(newENTRY)
+        #setup the notebook for patient screen
+        self.patientNotebook = ttk.Notebook(self.root,width=600,height=500)
+        self.demosPage = ttk.Frame(self.patientNotebook)
+        self.showService()
 
-        submitData = Button(self.root, text="Submit Changes", command=self.submitDATA)
-        submitData.grid(row=6, column=0, columnspan=2, padx=10, pady=10, ipadx=100)
+        self.servicePage = ttk.Frame(self.patientNotebook)
+        self.contactPage = ttk.Frame(self.patientNotebook)
 
-    def submitDATA(self):
-            data = []
 
-            for entry in self.dataBoxes:
-                # need some way to check for no changes/errors
-                thisDATA = entry.get()
+        self.patientNotebook.add(self.demosPage,text="Demographics")
+        self.patientNotebook.add(self.servicePage, text="Service History")
+        self.patientNotebook.add(self.contactPage, text="Outreach Report")
+        self.patientNotebook.place(x=100,y=100)
 
-                if not thisDATA:  # need an index checking
-                    messagebox.showinfo("missing data", "Missing an entry...")
-                    return
+        self.patientFrame = LabelFrame(self.root,width=1000,height=40)
+        self.patientFrame.place(x=0,y=0)
 
-                data.append(thisDATA)
+        self.patientFULL = Patient.fName + " " + Patient.lName
 
-                #entry.delete(0, END)  # clear entry box
+        self.patientLabelText = '{0:<5}{1:<20}{2:<15}{3:<5}{4:<5}{5:<10}'.format("Patient:", self.patientFULL,
+                                                                                 "Medical Record Number:", Patient.MRN,
+                                                                                 "Days Over DUE:", Patient.daysOverDue)
 
-            # send to database here
-            messagebox.showinfo("Data Sent!", "Data successfully sent to the database!")
+
+
+        self.patientLabel = Label(self.patientFrame, text=self.patientLabelText, font=('Consolas', 15))
+        self.patientLabel.place(x=0, y=0)
+
+
+        self.buttonFrame = LabelFrame(self.root, width=100, height=560)
+        self.buttonFrame.place(x=0, y=40)
+
+
+        #just throws in buttons onto the screen
+        for index in range(13):
+
+            menuButton = Button(self.buttonFrame,text="new Button" + str(index),width=12,height=2)
+            menuButton.pack()
+
+        #Contact info
+        self.nameLabel = None
+        self.language = None
+        self.address = None
+        self.email = None
+        self.phone = None
+        self.commentsBox = None
+        self.outreachDate = None
+        self.methodDropDown = None
+        self.outCome = None
+        self.apptDate = None
+
+
+
+
+    def showDemos(self): # uses patientCanvas for display
+        pass
+
+    def showService(self): # uses patient Canvas for display
+        pass
+
+    def showContact(self): # uses patient Canvas for display
+        pass
+
+    def getPatientHistory(self):
+        pass
+
+    def getPatientDemographics(self):
+        pass
+
 
 class loginScreen(icaSCREENS):
 
