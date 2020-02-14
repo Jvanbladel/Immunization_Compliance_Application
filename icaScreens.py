@@ -296,6 +296,7 @@ class mainMenu(icaSCREENS):
         self.searchforBUTTON = None
         self.advancedsearchBUTTON = None
         self.advancedSearchFRAME = None
+        self.currentPatient = None
 
         
     def myfunction(self,event):
@@ -483,18 +484,25 @@ class mainMenu(icaSCREENS):
 
     def showPatient(self, MRN, b):
         #hash map would be better
-        for patient in self.queue:
-            if patient.MRN == MRN:
-                self.showSummary(patient)
-                break
-        for button in self.bList:
-            button.configure(background = self.root.cget('bg'))
+        if self.currentPatient == MRN:
+            for button in self.bList:
+                button.configure(background = self.root.cget('bg'))
+            self.clearPatient()
+            self.currentPatient = None
+        else:
+            for patient in self.queue:
+                if patient.MRN == MRN:
+                    self.showSummary(patient)
+                    break
+            for button in self.bList:
+                button.configure(background = self.root.cget('bg'))
 
-        for button in self.bList:
-            #print(b == button)
-            if b == button:
-                b.configure(background = "green")
-                break
+            for button in self.bList:
+                #print(b == button)
+                if b == button:
+                    b.configure(background = "green")
+                    break
+            self.currentPatient = MRN
 
     def destroyPopOut(self,newWindow):
         newWindow.destroy()
@@ -521,14 +529,14 @@ class mainMenu(icaSCREENS):
         self.clearPatient()
         self.summary = 1
 
-        info = Button(self.root, text = "Summary", command=lambda: self.showSummary(patient))
-        info.place(x = 575, y = 100, width = 75, height = 37.5)
+        self.infoBUTTON = Button(self.root, text = "Summary", command=lambda: self.showSummary(patient))
+        self.infoBUTTON.place(x = 575, y = 100, width = 75, height = 37.5)
 
-        med = Button(self.root, text = "Medical\nHistory", command=lambda: self.showHistory(patient))
-        med.place(x = 650, y = 100, width = 75, height = 37.5)
+        self.medBUTTON = Button(self.root, text = "Medical\nHistory", command=lambda: self.showHistory(patient))
+        self.medBUTTON.place(x = 650, y = 100, width = 75, height = 37.5)
 
-        med = Button(self.root, text = "Contact", command=lambda: self.showContact(patient))
-        med.place(x = 725, y = 100, width = 75, height = 37.5)
+        self.contactBUTTON = Button(self.root, text = "Contact", command=lambda: self.showContact(patient))
+        self.contactBUTTON.place(x = 725, y = 100, width = 75, height = 37.5)
 
         patientData = patient.getSummary()
         
@@ -559,40 +567,62 @@ class mainMenu(icaSCREENS):
 
 
 
-        expand = Button(self.root,text="Expand Patient",command=lambda:self.xPand(patient))
-        expand.place(x=700,y=365, width = 90, height = 30)
+        self.expandBUTTON = Button(self.root,text="Expand Patient",command=lambda:self.xPand(patient))
+        self.expandBUTTON.place(x=700,y=365, width = 90, height = 30)
 
-        outreach = Button(self.root,text="Outreach")
-        outreach.place(x=585,y=365, width = 90, height = 30)
+        self.outreachBUTTON = Button(self.root,text="Outreach")
+        self.outreachBUTTON.place(x=585,y=365, width = 90, height = 30)
 
     def showHistory(self, patient):
         self.clearPatient()
         self.history = 1
 
-        info = Button(self.root, text = "Summary", command=lambda: self.showSummary(patient))
-        info.place(x = 575, y = 100, width = 75, height = 37.5)
+        self.infoBUTTON = Button(self.root, text = "Summary", command=lambda: self.showSummary(patient))
+        self.infoBUTTON.place(x = 575, y = 100, width = 75, height = 37.5)
 
-        med = Button(self.root, text = "Medical\nHistory", command=lambda: self.showHistory(patient))
-        med.place(x = 650, y = 100, width = 75, height = 37.5)
+        self.medBUTTON = Button(self.root, text = "Medical\nHistory", command=lambda: self.showHistory(patient))
+        self.medBUTTON.place(x = 650, y = 100, width = 75, height = 37.5)
 
-        med = Button(self.root, text = "Contact", command=lambda: self.showContact(patient))
-        med.place(x = 725, y = 100, width = 75, height = 37.5)
+        self.contactBUTTON = Button(self.root, text = "Contact", command=lambda: self.showContact(patient))
+        self.contactBUTTON.place(x = 725, y = 100, width = 75, height = 37.5)
 
         patientData = patient.getHistory()
 
         self.pHistoryList = []
 
-        headerText = '{0:<11}{1:<9}{2:<10}'.format("Vaccine" , "Overdue", "Insurance")
-        self.pheaderLabel = Label(self.root, text = headerText, font = ("Consolas", 10))
-        self.pheaderLabel.place(x = 580, y = 145)
+        
 
-        for history in range(len(patientData[0])):
+
+       
+        self.pmyframe=Frame(self.root,relief=GROOVE,width=50,height=100,bd=1)
+        self.pmyframe.place(x=575,y=165,height=170,width=222.5)
+        self.pcanvas=Canvas(self.pmyframe)
+        self.pframe=Frame(self.pcanvas)
+        self.pmyscrollbar=Scrollbar(self.pmyframe, orient="vertical",command=self.pcanvas.yview)
+        self.pcanvas.configure(yscrollcommand=self.pmyscrollbar.set)
+        self.pmyscrollbar.pack(side="right",fill="y")
+        self.pcanvas.pack(side="left")
+        self.pcanvas.create_window((0,0),window=self.pframe,anchor='nw')
+        self.pframe.bind("<Configure>", self.pmyfunction)
+
+        self.pVaccine(patientData[0])
+
+        headerText = '{0:<10}{1:<8}{2:<10}'.format("Vaccine" , "Overdue", "Insurance")
+        self.pheaderLabel = Label(self.root, text = headerText, font = ("Consolas", 10))
+        self.pheaderLabel.place(x = 577.5, y = 140)
+
+        #self.headerLabels = '{0:<10} {1:<13} {2:<8} {3:<10}'.format("First Name", "Last Name", "Due Date", " Days Overdue")
+        #self.headLABEL = Label(self.root, anchor= W, justify = LEFT, text = self.headerLabels, font = ("Consolas", 10))
+        #self.headLABEL.place(x=227.5, y=102.5,height=20, width = 225)
+
+
+        '''for history in range(len(patientData[0])):
             newText = '{0:<14}{1:<8}'.format(patientData[0][history][0] , patientData[0][history][1])
             newLabel = Label(self.root, text = newText, font = ("Consolas", 10))
             newLabel.place(x = 580, y = 175 + 30 * history)
-            self.pHistoryList.append(newLabel)
+            self.pHistoryList.append(newLabel)'''
 
-        for history in range(len(patientData[0])):
+        '''for history in range(len(patientData[0])):
             newText = patientData[0][history][2]
             newLabel = Label(self.root, text = newText, font = ("Consolas", 10))
             if newText == 'Covered':
@@ -600,29 +630,42 @@ class mainMenu(icaSCREENS):
             else:
                 newLabel.config(fg="Red")
             newLabel.place(x = 720, y = 175 + 30 * history)
-            self.pHistoryList.append(newLabel)
+            self.pHistoryList.append(newLabel)'''
 
         self.pLastVisit = Label(self.root, text = "Last Visit: " + patientData[1], font = ("Consolas", 10))
         self.pLastVisit.place(x = 580, y = 340)
         
-        expand = Button(self.root,text="Expand Patient",command=lambda:self.xPand(patient))
-        expand.place(x=700,y=365, width = 90, height = 30)
+        self.expandBUTTON = Button(self.root,text="Expand Patient",command=lambda:self.xPand(patient))
+        self.expandBUTTON.place(x=700,y=365, width = 90, height = 30)
 
-        outreach = Button(self.root,text="Outreach")
-        outreach.place(x=585,y=365, width = 90, height = 30)
+        self.outreachBUTTON = Button(self.root,text="Outreach")
+        self.outreachBUTTON.place(x=585,y=365, width = 90, height = 30)
+
+    def pmyfunction(self,event):
+            self.pcanvas.configure(scrollregion=self.pcanvas.bbox("all"),width=222.5,height=170)
+
+    def pVaccine(self, vList):
+        self.pVaccineList = []
+        for i in range(len(vList)):
+            pstr = '{0:<12} {1:<4} {2:<10}'.format(vList[i][0], vList[i][1], vList[i][2])
+            #FONT has to be monospaced or it wont work
+            b = Button(self.pframe, text = pstr,anchor=W, justify=LEFT, width = 46, font = ('Consolas', 10))
+            b.grid(row=i)
+            self.pVaccineList.append(b)
+            #b.configure(command=lambda i=i: self.showPatient(patientList[i].MRN, self.bList[i]))
 
     def showContact(self, patient):
         self.clearPatient()
         self.contact = 1
 
-        info = Button(self.root, text = "Summary", command=lambda: self.showSummary(patient))
-        info.place(x = 575, y = 100, width = 75, height = 37.5)
+        self.infoBUTTON = Button(self.root, text = "Summary", command=lambda: self.showSummary(patient))
+        self.infoBUTTON.place(x = 575, y = 100, width = 75, height = 37.5)
 
-        med = Button(self.root, text = "Medical\nHistory", command=lambda: self.showHistory(patient))
-        med.place(x = 650, y = 100, width = 75, height = 37.5)
+        self.medBUTTON = Button(self.root, text = "Medical\nHistory", command=lambda: self.showHistory(patient))
+        self.medBUTTON.place(x = 650, y = 100, width = 75, height = 37.5)
 
-        med = Button(self.root, text = "Contact", command=lambda: self.showContact(patient))
-        med.place(x = 725, y = 100, width = 75, height = 37.5)
+        self.contactBUTTON = Button(self.root, text = "Contact", command=lambda: self.showContact(patient))
+        self.contactBUTTON.place(x = 725, y = 100, width = 75, height = 37.5)
 
         patientData = patient.getContact()
         
@@ -634,17 +677,25 @@ class mainMenu(icaSCREENS):
 
         self.pLanguage = Label(self.root, text = "Lanague Preference: " + patientData[2])
         self.pLanguage.place(x = 580, y = 205)
+
+        self.pContactPreference = Label(self.root, text = "Contact Preference: " + patientData[3])
+        self.pContactPreference.place(x = 580, y = 235)
         
+        self.expandBUTTON = Button(self.root,text="Expand Patient",command=lambda:self.xPand(patient))
+        self.expandBUTTON.place(x=700,y=365, width = 90, height = 30)
 
-        expand = Button(self.root,text="Expand Patient",command=lambda:self.xPand(patient))
-        expand.place(x=700,y=365, width = 90, height = 30)
-
-        outreach = Button(self.root,text="Outreach")
-        outreach.place(x=585,y=365, width = 90, height = 30)  
+        self.outreachBUTTON = Button(self.root,text="Outreach")
+        self.outreachBUTTON.place(x=585,y=365, width = 90, height = 30)  
         
 
     def clearPatient(self):
         if self.summary == 1:
+            self.outreachBUTTON.destroy()
+            self.expandBUTTON.destroy()
+            self.infoBUTTON.destroy()
+            self.medBUTTON.destroy()
+            self.contactBUTTON.destroy()
+            
             self.pFName.destroy()
             self.pLName.destroy()
             self.pMName.destroy()
@@ -655,16 +706,37 @@ class mainMenu(icaSCREENS):
             self.pPrefix.destroy()
             self.summary = 0
         if self.history == 1:
+            self.outreachBUTTON.destroy()
+            self.expandBUTTON.destroy()
+            self.infoBUTTON.destroy()
+            self.medBUTTON.destroy()
+            self.contactBUTTON.destroy()
+            
             for elem in self.pHistoryList:
                 elem.destroy()
             self.pheaderLabel.destroy()
             self.pLastVisit.destroy()
+            self.pmyframe.destroy()
+            self.pcanvas.destroy()
+            self.pframe.destroy()
+            self.pmyscrollbar.destroy()
+            self.pheaderLabel.destroy()
+            for b in self.pVaccineList:
+                b.destroy()
             self.history = 0
         if self.contact == 1:
+            self.outreachBUTTON.destroy()
+            self.expandBUTTON.destroy()
+            self.infoBUTTON.destroy()
+            self.medBUTTON.destroy()
+            self.contactBUTTON.destroy()
+            
             self.pPhone.destroy()
             self.pEmail.destroy()
             self.pLanguage.destroy()
+            self.pContactPreference.destroy()
             self.contact = 0
+            
 
             
     def logoutofApp(self):
@@ -750,10 +822,10 @@ class Patient():
         return [self.fName, self.lName, 'D' ,"12/6/1987", 'M', "33", "African American", "Mr."]
 
     def getHistory(zelf):
-        return [[["Flu", "45", "Covered"], ["Hepatitis B", "12", "Covered"], ["Pollo", "325", "Uncovered"]], "3/23/14"]
+        return [[["Flu", "45", "Covered"], ["Hepatitis B", "12", "Covered"], ["Pollo", "325", "Uncovered"], ["Chickpox", "15", "Uncovered"], ["MMR", "749", "Partial"], ["Rotavirus","45", "Covered"], ["Yellow Fever", "365", "Partial"]], "3/23/14"]
 
     def getContact(self):
-        return [["(925)980-4048", "Mobile"], "austin@gmail.com", "English"]
+        return [["(925)980-4048", "Mobile"], "austin@gmail.com", "English", "Phone"]
            
 
 class med_INFO_SCREEN(icaSCREENS):
