@@ -6,7 +6,7 @@ import datetime
 from tkinter import ttk
 
 
-versionNumber = "Alpha 1.3"
+versionNumber = "(Version 1.6.0)"
 
 class icaSCREENS():
     '''
@@ -82,12 +82,30 @@ class mainMenu(icaSCREENS):
         reportingFRAME = LabelFrame(self.root)
         reportingFRAME.place(x=575,y=400,height=200,width=225)
 
+        reportText = Label(self.root, text = "Outreach Report")
+        reportText.place(x=580,y=402.5)
+        
+        outreachText = Label(self.root, text = "Outcome:")
+        outreachText.place(x=580,y=430)
+
+        outreachText = Label(self.root, text = "Notes:")
+        outreachText.place(x=580,y=455)
+        
         contactOptions=("Answered", "Missed Call", "Hung Up", "Will Call Back", "No Number on File", "Wrong Number", "Attempt Again Later")
         self.callOptions=Combobox(self.root, values=contactOptions)
-        self.callOptions.place(x=590,y=420)
+        self.callOptions.place(x=655,y=430, width = 130)
+
+        self.NotesTextArea = Text()
+        self.NotesScrollBar = Scrollbar(self.root)
+        self.NotesScrollBar.config(command=self.NotesTextArea.yview)
+        self.NotesTextArea.config(yscrollcommand=self.NotesScrollBar.set)
+        self.NotesScrollBar.place(x=772.5,y=475, height = 90, width = 20)
+        self.NotesTextArea.place(x=582.5,y=475, height = 90, width = 210)
 
         self.submittOutReach = Button(self.root, text = "Submit",command=lambda: self.submitOutReachAttempt())
-        self.submittOutReach.place(x= 700, y=450)
+        self.submittOutReach.place(x= 745, y=567.5)
+
+        
 
         #update current time
         self.clock()
