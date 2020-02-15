@@ -6,7 +6,7 @@ import datetime
 from tkinter import ttk
 
 
-versionNumber = "(Version 1.6.1)"
+versionNumber = "(Version 1.6.2)"
 
 class icaSCREENS():
     '''
@@ -78,40 +78,57 @@ class mainMenu(icaSCREENS):
         self.contact = 0
         self.history = 0
 
-        #setUpContact Frame
-        reportingFRAME = LabelFrame(self.root)
-        reportingFRAME.place(x=575,y=400,height=200,width=225)
-
-        reportText = Label(self.root, text = "Outreach Report")
-        reportText.place(x=580,y=402.5)
-        
-        outreachText = Label(self.root, text = "Outcome:")
-        outreachText.place(x=580,y=430)
-
-        outreachText = Label(self.root, text = "Notes:")
-        outreachText.place(x=580,y=455)
-        
-        contactOptions=("Answered", "Missed Call", "Hung Up", "Will Call Back", "No Number on File", "Wrong Number", "Attempt Again Later")
-        self.callOptions=Combobox(self.root, values=contactOptions)
-        self.callOptions.place(x=655,y=430, width = 130)
-
-        self.NotesTextArea = Text()
-        self.NotesScrollBar = Scrollbar(self.root)
-        self.NotesScrollBar.config(command=self.NotesTextArea.yview)
-        self.NotesTextArea.config(yscrollcommand=self.NotesScrollBar.set)
-        self.NotesScrollBar.place(x=772.5,y=475, height = 90, width = 20)
-        self.NotesTextArea.place(x=582.5,y=475, height = 90, width = 210)
-
-        self.submittOutReach = Button(self.root, text = "Submit",command=lambda: self.submitOutReachAttempt())
-        self.submittOutReach.place(x= 745, y=567.5)
-
-        
+        #setupOutReach
+        self.reportingFRAME = LabelFrame(self.root)
+        self.reportingFRAME.place(x=575,y=400,height=200,width=225)
+        self.outreach = 0
 
         #update current time
         self.clock()
 
-    def submitOutReachAttempt(self):
-        print("Out Reach")
+    def toggleOutReach(self, patient):
+        if self.outreach == 0:
+            
+
+            self.reportText = Label(self.root, text = "Outreach Report")
+            self.reportText.place(x=580,y=402.5)
+        
+            self.outreachText = Label(self.root, text = "Outcome:")
+            self.outreachText.place(x=580,y=430)
+
+            self.outreachText2 = Label(self.root, text = "Notes:")
+            self.outreachText2.place(x=580,y=455)
+        
+            contactOptions=("Answered", "Missed Call", "Hung Up", "Will Call Back", "No Number on File", "Wrong Number", "Attempt Again Later")
+            self.callOptions=Combobox(self.root, values=contactOptions)
+            self.callOptions.place(x=655,y=430, width = 130)
+
+            self.NotesTextArea = Text()
+            self.NotesScrollBar = Scrollbar(self.root)
+            self.NotesScrollBar.config(command=self.NotesTextArea.yview)
+            self.NotesTextArea.config(yscrollcommand=self.NotesScrollBar.set)
+            self.NotesScrollBar.place(x=772.5,y=475, height = 90, width = 20)
+            self.NotesTextArea.place(x=582.5,y=475, height = 90, width = 210)
+
+            self.submittOutReach = Button(self.root, text = "Submit",command=lambda: self.submitOutReachAttempt(patient))
+            self.submittOutReach.place(x= 745, y=567.5)
+            self.outreach = 1
+
+        else:
+            self.reportText.destroy()
+            self.outreachText.destroy()
+            self.outreachText2.destroy()
+            self.callOptions.destroy()
+            self.NotesTextArea.destroy()
+            self.NotesScrollBar.destroy()
+            self.submittOutReach.destroy()
+            
+            
+            self.outreach = 0
+            
+        
+    def submitOutReachAttempt(self, patient):
+        print("Out Reach", patient.fName)
 
     def setUpTabs(self):
         fileBUTTON = Button(self.root,text="File",command=lambda: self.togFileTab())
@@ -527,6 +544,16 @@ class mainMenu(icaSCREENS):
                     break
             self.currentPatient = MRN
 
+        if self.outreach == 1:
+            self.reportText.destroy()
+            self.outreachText.destroy()
+            self.outreachText2.destroy()
+            self.callOptions.destroy()
+            self.NotesTextArea.destroy()
+            self.NotesScrollBar.destroy()
+            self.submittOutReach.destroy()
+            self.outreach = 0
+
     def destroyPopOut(self,newWindow):
         newWindow.destroy()
         self.currentPopOut -= 1
@@ -593,7 +620,7 @@ class mainMenu(icaSCREENS):
         self.expandBUTTON = Button(self.root,text="Expand Patient",command=lambda:self.xPand(patient))
         self.expandBUTTON.place(x=700,y=365, width = 90, height = 30)
 
-        self.outreachBUTTON = Button(self.root,text="Outreach")
+        self.outreachBUTTON = Button(self.root,text="Outreach", command=lambda: self.toggleOutReach(patient))
         self.outreachBUTTON.place(x=585,y=365, width = 90, height = 30)
 
     def showHistory(self, patient):
@@ -661,7 +688,7 @@ class mainMenu(icaSCREENS):
         self.expandBUTTON = Button(self.root,text="Expand Patient",command=lambda:self.xPand(patient))
         self.expandBUTTON.place(x=700,y=365, width = 90, height = 30)
 
-        self.outreachBUTTON = Button(self.root,text="Outreach")
+        self.outreachBUTTON = Button(self.root,text="Outreach", command=lambda: self.toggleOutReach(patient))
         self.outreachBUTTON.place(x=585,y=365, width = 90, height = 30)
 
     def pmyfunction(self,event):
@@ -713,7 +740,7 @@ class mainMenu(icaSCREENS):
         self.expandBUTTON = Button(self.root,text="Expand Patient",command=lambda:self.xPand(patient))
         self.expandBUTTON.place(x=700,y=365, width = 90, height = 30)
 
-        self.outreachBUTTON = Button(self.root,text="Outreach")
+        self.outreachBUTTON = Button(self.root,text="Outreach", command=lambda: self.toggleOutReach(patient))
         self.outreachBUTTON.place(x=585,y=365, width = 90, height = 30)  
         
 
@@ -765,6 +792,9 @@ class mainMenu(icaSCREENS):
             self.pLanguage.destroy()
             self.pContactPreference.destroy()
             self.contact = 0
+            
+            
+            
             
     def clock(self):
         now = datetime.datetime.now()
@@ -1035,9 +1065,9 @@ def main(): # Main loop of ICA
     window.resizable(0, 0)
     window.title(versionNumber)
 
-    currentSCREEN = loginScreen(window, None)
+    #currentSCREEN = loginScreen(window, None)
 
-    #currentSCREEN = mainMenu(window, ["Jason Van Bladel"])
+    currentSCREEN = mainMenu(window, ["Jason Van Bladel"])
     window.mainloop()
 
 main()
