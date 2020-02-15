@@ -7,7 +7,7 @@ from tkinter import ttk
 from Patients import *
 
 
-versionNumber = "Alpha 1.2"
+versionNumber = "(Version 1.6.2)"
 
 class icaSCREENS():
     '''
@@ -53,12 +53,12 @@ class mainMenu(icaSCREENS):
         barFRAME.place(x=0,y=0,height=30,width=800)
 
         #Add Name/date to top bar
-        userName = data[0]
+        self.userName = data[0]
         now = datetime.datetime.now()
         current_time = now.strftime("%I:%M %p")
-        userInfo = userName + " " + str(current_time)
-        userFRAME = Label(self.root,text=userInfo,anchor=E, justify=RIGHT)
-        userFRAME.place(x=572.5,y=2.5,height=25,width=225)
+        userInfo = self.userName + " " + str(current_time)
+        self.userFRAME = Label(self.root,text=userInfo,anchor=E, justify=RIGHT)
+        self.userFRAME.place(x=572.5,y=2.5,height=25,width=225)
 
         #Add tabs to top bar
         self.setUpTabs()
@@ -83,12 +83,33 @@ class mainMenu(icaSCREENS):
         reportingFRAME = LabelFrame(self.root)
         reportingFRAME.place(x=575,y=400,height=200,width=225)
 
+        reportText = Label(self.root, text = "Outreach Report")
+        reportText.place(x=580,y=402.5)
+        
+        outreachText = Label(self.root, text = "Outcome:")
+        outreachText.place(x=580,y=430)
+
+        outreachText = Label(self.root, text = "Notes:")
+        outreachText.place(x=580,y=455)
+        
         contactOptions=("Answered", "Missed Call", "Hung Up", "Will Call Back", "No Number on File", "Wrong Number", "Attempt Again Later")
         self.callOptions=Combobox(self.root, values=contactOptions)
-        self.callOptions.place(x=590,y=420)
+        self.callOptions.place(x=655,y=430, width = 130)
+
+        self.NotesTextArea = Text()
+        self.NotesScrollBar = Scrollbar(self.root)
+        self.NotesScrollBar.config(command=self.NotesTextArea.yview)
+        self.NotesTextArea.config(yscrollcommand=self.NotesScrollBar.set)
+        self.NotesScrollBar.place(x=772.5,y=475, height = 90, width = 20)
+        self.NotesTextArea.place(x=582.5,y=475, height = 90, width = 210)
 
         self.submittOutReach = Button(self.root, text = "Submit",command=lambda: self.submitOutReachAttempt())
-        self.submittOutReach.place(x= 700, y=450)
+        self.submittOutReach.place(x= 745, y=567.5)
+
+        
+
+        #update current time
+        self.clock()
 
     def submitOutReachAttempt(self):
         print("Out Reach")
@@ -562,7 +583,7 @@ class mainMenu(icaSCREENS):
         self.pAge = Label(self.root, text = "Age: " +  patientData[5])
         self.pAge.place(x = 650, y = 235)
         
-        self.pRace = Label(self.root, text = "Ethicity: " +  patientData[6])
+        self.pRace = Label(self.root, text = "Ethnicity: " +  patientData[6])
         self.pRace.place(x = 590, y = 265)
 
         self.pPrefix = Label(self.root, text = "Prefix: " +  patientData[7])
@@ -650,6 +671,12 @@ class mainMenu(icaSCREENS):
     def pVaccine(self, vList):
         self.pVaccineList = []
         for i in range(len(vList)):
+
+            #pstr = '{0:<12} {1:<4}'.format(vList[i][0], vList[i][1])
+            #FONT has to be monospaced or it wont work
+            #b = Button(self.pframe, text = pstr,anchor=W, justify=LEFT, width = 46, font = ('Consolas', 10))
+
+            
             pstr = '{0:<12} {1:<4} {2:<10}'.format(vList[i][0], vList[i][1], vList[i][2])
             #FONT has to be monospaced or it wont work
             b = Button(self.pframe, text = pstr,anchor=W, justify=LEFT, width = 46, font = ('Consolas', 10))
@@ -678,7 +705,7 @@ class mainMenu(icaSCREENS):
         self.pEmail = Label(self.root, text = "Email: " + patientData[1])
         self.pEmail.place(x = 580, y = 175)
 
-        self.pLanguage = Label(self.root, text = "Lanague Preference: " + patientData[2])
+        self.pLanguage = Label(self.root, text = "Language Preference: " + patientData[2])
         self.pLanguage.place(x = 580, y = 205)
 
         self.pContactPreference = Label(self.root, text = "Contact Preference: " + patientData[3])
@@ -740,7 +767,13 @@ class mainMenu(icaSCREENS):
             self.pContactPreference.destroy()
             self.contact = 0
             
-
+    def clock(self):
+        now = datetime.datetime.now()
+        current_time = now.strftime("%I:%M %p")
+        userInfo = self.userName + " " + str(current_time)
+        self.userFRAME.config(text=userInfo)
+        #lab['text'] = time
+        self.root.after(1000, self.clock)
             
     def logoutofApp(self):
         self.togFileTab()
@@ -810,6 +843,33 @@ class mainMenu(icaSCREENS):
             self.addToQueue(self.frame, self.queue)
             
             self.largeQueue = 0
+
+    def getHistory(zelf):
+        return [[["Flu", "45", "Covered"], ["Hepatitis B", "12", "Covered"], ["Pollo", "325", "Uncovered"], ["Chickpox", "15", "Uncovered"], ["MMR", "749", "Partial"], ["Rotavirus","45", "Covered"], ["Yellow Fever", "365", "Partial"]], "3/23/14"]
+
+    def getContact(self):
+        return [["(925)980-4048", "Mobile"], "austin@gmail.com", "English", "Phone"]
+
+    def getFullSummary(self):
+        return None
+    
+    def getFullHistory(self):
+        return None
+
+    def getFullContact(self):
+        return None
+
+    def getFullInsurance(self):
+        return None
+
+    def getGarentor(self):
+        return None
+
+    def getLastService(self):
+        return None
+
+    def getFullImmunizationHistory(self):
+        return None
 
 
 class med_INFO_SCREEN(icaSCREENS):
@@ -988,7 +1048,7 @@ class loginScreen(icaSCREENS):
         super().__init__(window)
         self.root.title("ICA")
         self.root.geometry("800x600")
-        self.background = Canvas(self.root,width=800,height=600,bg="light blue")
+        self.background = Canvas(self.root,width=800,height=600)
         self.background.place(x=0,y=0)
 
 
@@ -1046,7 +1106,9 @@ def main(): # Main loop of ICA
     currentSCREEN = loginScreen(window, None)
 
     #currentSCREEN = mainMenu(window, ["Jason Van Bladel"])
+
     #currentSCREEN = med_INFO_SCREEN(window,Patient(["John","Smith","20","2/3/2013","32","30"]))
+
     window.mainloop()
 
 main()
