@@ -6,7 +6,7 @@ import datetime
 from tkinter import ttk
 
 
-versionNumber = "(Version 1.6.0)"
+versionNumber = "(Version 1.6.1)"
 
 class icaSCREENS():
     '''
@@ -582,7 +582,7 @@ class mainMenu(icaSCREENS):
         self.pAge = Label(self.root, text = "Age: " +  patientData[5])
         self.pAge.place(x = 650, y = 235)
         
-        self.pRace = Label(self.root, text = "Ethicity: " +  patientData[6])
+        self.pRace = Label(self.root, text = "Ethnicity: " +  patientData[6])
         self.pRace.place(x = 590, y = 265)
 
         self.pPrefix = Label(self.root, text = "Prefix: " +  patientData[7])
@@ -704,7 +704,7 @@ class mainMenu(icaSCREENS):
         self.pEmail = Label(self.root, text = "Email: " + patientData[1])
         self.pEmail.place(x = 580, y = 175)
 
-        self.pLanguage = Label(self.root, text = "Lanague Preference: " + patientData[2])
+        self.pLanguage = Label(self.root, text = "Language Preference: " + patientData[2])
         self.pLanguage.place(x = 580, y = 205)
 
         self.pContactPreference = Label(self.root, text = "Contact Preference: " + patientData[3])
@@ -1035,9 +1035,9 @@ def main(): # Main loop of ICA
     window.resizable(0, 0)
     window.title(versionNumber)
 
-    #currentSCREEN = loginScreen(window, None)
+    currentSCREEN = loginScreen(window, None)
 
-    currentSCREEN = mainMenu(window, ["Jason Van Bladel"])
+    #currentSCREEN = mainMenu(window, ["Jason Van Bladel"])
     window.mainloop()
 
 main()
