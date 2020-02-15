@@ -6,7 +6,7 @@ import datetime
 from tkinter import ttk
 
 
-versionNumber = "Alpha 1.2"
+versionNumber = "Alpha 1.3"
 
 class icaSCREENS():
     '''
@@ -52,12 +52,12 @@ class mainMenu(icaSCREENS):
         barFRAME.place(x=0,y=0,height=30,width=800)
 
         #Add Name/date to top bar
-        userName = data[0]
+        self.userName = data[0]
         now = datetime.datetime.now()
         current_time = now.strftime("%I:%M %p")
-        userInfo = userName + " " + str(current_time)
-        userFRAME = Label(self.root,text=userInfo,anchor=E, justify=RIGHT)
-        userFRAME.place(x=572.5,y=2.5,height=25,width=225)
+        userInfo = self.userName + " " + str(current_time)
+        self.userFRAME = Label(self.root,text=userInfo,anchor=E, justify=RIGHT)
+        self.userFRAME.place(x=572.5,y=2.5,height=25,width=225)
 
         #Add tabs to top bar
         self.setUpTabs()
@@ -88,6 +88,9 @@ class mainMenu(icaSCREENS):
 
         self.submittOutReach = Button(self.root, text = "Submit",command=lambda: self.submitOutReachAttempt())
         self.submittOutReach.place(x= 700, y=450)
+
+        #update current time
+        self.clock()
 
     def submitOutReachAttempt(self):
         print("Out Reach")
@@ -649,6 +652,12 @@ class mainMenu(icaSCREENS):
     def pVaccine(self, vList):
         self.pVaccineList = []
         for i in range(len(vList)):
+
+            #pstr = '{0:<12} {1:<4}'.format(vList[i][0], vList[i][1])
+            #FONT has to be monospaced or it wont work
+            #b = Button(self.pframe, text = pstr,anchor=W, justify=LEFT, width = 46, font = ('Consolas', 10))
+
+            
             pstr = '{0:<12} {1:<4} {2:<10}'.format(vList[i][0], vList[i][1], vList[i][2])
             #FONT has to be monospaced or it wont work
             b = Button(self.pframe, text = pstr,anchor=W, justify=LEFT, width = 46, font = ('Consolas', 10))
@@ -739,7 +748,13 @@ class mainMenu(icaSCREENS):
             self.pContactPreference.destroy()
             self.contact = 0
             
-
+    def clock(self):
+        now = datetime.datetime.now()
+        current_time = now.strftime("%I:%M %p")
+        userInfo = self.userName + " " + str(current_time)
+        self.userFRAME.config(text=userInfo)
+        #lab['text'] = time
+        self.root.after(1000, self.clock)
             
     def logoutofApp(self):
         self.togFileTab()
