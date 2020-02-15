@@ -4,6 +4,7 @@ from tkinter.ttk import Combobox
 from PIL import ImageTk,Image
 import datetime
 from tkinter import ttk
+from Patients import *
 
 
 versionNumber = "Alpha 1.2"
@@ -809,33 +810,9 @@ class mainMenu(icaSCREENS):
             self.addToQueue(self.frame, self.queue)
             
             self.largeQueue = 0
-       
 
-class Patient():
-    def __init__(self, data):
-        self.fName = data[0]
-        self.lName = data[1]
-        self.score = data[2]
-        self.dueDate = data[3]
-        self.MRN = data[4]
-        self.daysOverDue = data[5]
-
-    def getSummary(self):
-        return [self.fName, self.lName, 'D' ,"12/6/1987", 'M', "33", "African American", "Mr."]
-
-    def getHistory(zelf):
-        return [[["Flu", "45", "Covered"], ["Hepatitis B", "12", "Covered"], ["Pollo", "325", "Uncovered"], ["Chickpox", "15", "Uncovered"], ["MMR", "749", "Partial"], ["Rotavirus","45", "Covered"], ["Yellow Fever", "365", "Partial"]], "3/23/14"]
-
-    def getContact(self):
-        return [["(925)980-4048", "Mobile"], "austin@gmail.com", "English", "Phone"]
-           
 
 class med_INFO_SCREEN(icaSCREENS):
-    '''
-    Currently very basic. will have more features soon
-    '''
-
-   
 
 
     def __init__(self, window, Patient):
@@ -850,31 +827,31 @@ class med_INFO_SCREEN(icaSCREENS):
 
 
         #setup the notebook for patient screen
-        self.patientNotebook = ttk.Notebook(self.root,width=600,height=500)
+        self.patientNotebook = ttk.Notebook(self.root,width=500,height=500)
         self.demosPage = ttk.Frame(self.patientNotebook)
-        self.showService()
+
 
         self.servicePage = ttk.Frame(self.patientNotebook)
         self.contactPage = ttk.Frame(self.patientNotebook)
-
+        self.insurancePage = ttk.Frame(self.patientNotebook)
 
         self.patientNotebook.add(self.demosPage,text="Demographics")
         self.patientNotebook.add(self.servicePage, text="Service History")
         self.patientNotebook.add(self.contactPage, text="Outreach Report")
+        self.patientNotebook.add(self.insurancePage,text="Insurance")
+
         self.patientNotebook.place(x=100,y=100)
 
-        self.patientFrame = LabelFrame(self.root,width=1000,height=40)
+        self.patientFrame = LabelFrame(self.root,width=1000,height=30,bg="Blue")
         self.patientFrame.place(x=0,y=0)
 
         self.patientFULL = Patient.fName + " " + Patient.lName
 
-        self.patientLabelText = '{0:<5}{1:<20}{2:<15}{3:<5}{4:<5}{5:<10}'.format("Patient:", self.patientFULL,
-                                                                                 "Medical Record Number:", Patient.MRN,
-                                                                                 "Days Over DUE:", Patient.daysOverDue)
+        #format; FULL Name, Gender, Age <years> DOB, MRN
+        self.patientLabelText = '{0:<27}{1:<17}{2:<10}{3:<17}{4:<10}'.format("PATIENT:" + self.patientFULL,"GENDER: Female","AGE:50 ",
+                                                                             "DOB:3/21/2013","MRN:30")
 
-
-
-        self.patientLabel = Label(self.patientFrame, text=self.patientLabelText, font=('Consolas', 15))
+        self.patientLabel = Label(self.patientFrame, text=self.patientLabelText, font=('Consolas', 14),bg="Blue",fg="White")
         self.patientLabel.place(x=0, y=0)
 
 
@@ -882,10 +859,12 @@ class med_INFO_SCREEN(icaSCREENS):
         self.buttonFrame.place(x=0, y=40)
 
 
-        #just throws in buttons onto the screen
-        for index in range(13):
+        menuItems = ['Garantour ', 'Last Service', 'Create\n Outreach\n form', 'Immunization\nHistory',]
 
-            menuButton = Button(self.buttonFrame,text="new Button" + str(index),width=12,height=2)
+
+        for index in range(len(menuItems)):
+
+            menuButton = Button(self.buttonFrame,text=menuItems[index],width=12,height=3)
             menuButton.pack()
 
         #Contact info
@@ -900,17 +879,101 @@ class med_INFO_SCREEN(icaSCREENS):
         self.outCome = None
         self.apptDate = None
 
+        self.showDemos()
+
+
+        self.showContact()
+
+    def showDemos(self): # uses self.demosPage for display
+
+        patientFrame = LabelFrame(self.demosPage,text="<Patient>")
+        patientFrame.place(x=0,y=25)
+
+        self.label_and_Text(patientFrame,"Lastname",0,0,self.thisPatient.lName)
+
+        self.label_and_Text(patientFrame,"Firstname",0,4,self.thisPatient.fName)
+
+        self.label_and_Text(patientFrame,"Middle Initial",0,8,"Init")
+
+        self.label_and_Text(patientFrame, "Prefix", 0, 12, "Ms.")
+
+        self.label_and_Text(patientFrame, "NickName", 0,16, "nick")
+
+        patientFrame.grid_columnconfigure(4, minsize=100)
+        patientFrame.grid_rowconfigure(2,minsize=25)
+
+
+        demoFrame = LabelFrame(self.demosPage,text="<Demographics>")
+        demoFrame.place(x=0,y=100)
+
+        self.label_and_Text(demoFrame, "Sex", 0, 0, "Female")
+        self.label_and_Text(demoFrame, "DOB", 0, 2, "2/20/2013")
+        self.label_and_Text(demoFrame, "Pref. Language", 0, 4, "English")
+        self.label_and_Text(demoFrame, "Race", 0, 6, "Caucasian")
+        self.label_and_Text(demoFrame, "Ethnicity", 0, 8, "White")
+        self.label_and_Text(demoFrame, "Age", 0, 10, "50")
+
+        demoFrame.grid_columnconfigure(4, minsize=100)
+        demoFrame.grid_rowconfigure(2, minsize=25)
+
+        addressFrame = LabelFrame(self.demosPage,text="<Address>")
+        addressFrame.place(x=0,y=175)
+
+        self.label_and_Text(addressFrame,"Street 1",0,0,"1234 random Street")
+        self.label_and_Text(addressFrame, "Street 2", 4, 0, "1234 random Street 2")
+        self.label_and_Text(addressFrame, "Zipcode", 0, 2, "00000")
+        self.label_and_Text(addressFrame, "City", 0, 3, "Pacific City")
+        self.label_and_Text(addressFrame, "State", 4, 2, "CA")
+        self.label_and_Text(addressFrame, "County", 4,3, "randomCounty")
+        self.label_and_Text(addressFrame, "Country", 0,4, "Some Country")
+
+        addressFrame.grid_columnconfigure(4, minsize=120)
+        addressFrame.grid_rowconfigure(2, minsize=25)
+
+        contactFrame = LabelFrame(self.demosPage,text="<Contact>")
+        contactFrame.place(x=0,y=300)
+
+        self.label_and_Text(contactFrame, "Phone", 0, 0, "123-456-789")
+        self.label_and_Text(contactFrame, "Mobile", 4, 0, "987-654-321")
+        self.label_and_Text(contactFrame, "Work Phone", 0, 2, "123-456-789")
+        self.label_and_Text(contactFrame, "Email", 0, 4, "r_Andom@u.pacific.edu")
+        self.label_and_Text(contactFrame, "Preferred Contact", 4,2 , "Mobile")
+
+        contactLabel = Label(contactFrame,text= "Contact Notes")
+        contactLabel.grid(row=4, column=4)
 
 
 
-    def showDemos(self): # uses patientCanvas for display
-        pass
+        contactFrame.grid_columnconfigure(4, minsize=100)
+        contactFrame.grid_rowconfigure(2, minsize=25)
+
+
+    def label_and_Text(self,frame,labelText,labelRow,labelCol,boxText):
+        '''
+        Used to create format for demos page
+        '''
+
+        lNameLabel = Label(frame, text='{0:<10}'.format(labelText))
+        lNameLabel.grid(row=labelRow, column=labelCol,padx=10)
+
+        patientLname = Text(frame, width=len(boxText), height=1,padx=5)
+        patientLname.insert('end', boxText)
+        patientLname.configure(state=DISABLED)
+        patientLname.grid(row=labelRow+2, column=labelCol)
+
 
     def showService(self): # uses patient Canvas for display
         pass
 
     def showContact(self): # uses patient Canvas for display
-        pass
+
+        #place email/contact info this Frame
+        contactFrame = Frame(self.contactPage,width=100,height=100)
+        contactFrame.place(x=0,y=0)
+
+        contactEmail = Label(contactFrame,text="Patient Email: ")
+        contactEmail.place(x=25,y=25)
+
 
     def getPatientHistory(self):
         pass
@@ -931,7 +994,6 @@ class loginScreen(icaSCREENS):
 
         self.loginBackGround = Canvas(self.root,width=500,height=250)
         self.loginBackGround.place(x=150,y=275)
-
 
         self.userName = "Test01"
         self.passWord = "Test02"
@@ -981,9 +1043,10 @@ def main(): # Main loop of ICA
     window.resizable(0, 0)
     window.title(versionNumber)
 
-    #currentSCREEN = loginScreen(window, None)
+    currentSCREEN = loginScreen(window, None)
 
-    currentSCREEN = mainMenu(window, ["Jason Van Bladel"])
+    #currentSCREEN = mainMenu(window, ["Jason Van Bladel"])
+    #currentSCREEN = med_INFO_SCREEN(window,Patient(["John","Smith","20","2/3/2013","32","30"]))
     window.mainloop()
 
 main()
