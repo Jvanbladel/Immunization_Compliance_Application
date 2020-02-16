@@ -6,7 +6,7 @@ import datetime
 from tkinter import ttk
 
 
-versionNumber = "(Version 1.6.2)"
+versionNumber = "(Version 1.6.2a)"
 
 class icaSCREENS():
     '''
@@ -108,7 +108,7 @@ class mainMenu(icaSCREENS):
             self.NotesScrollBar.config(command=self.NotesTextArea.yview)
             self.NotesTextArea.config(yscrollcommand=self.NotesScrollBar.set)
             self.NotesScrollBar.place(x=772.5,y=475, height = 90, width = 20)
-            self.NotesTextArea.place(x=582.5,y=475, height = 90, width = 210)
+            self.NotesTextArea.place(x=582.5,y=475, height = 90, width = 190)
 
             self.submittOutReach = Button(self.root, text = "Submit",command=lambda: self.submitOutReachAttempt(patient))
             self.submittOutReach.place(x= 745, y=567.5)
@@ -791,10 +791,7 @@ class mainMenu(icaSCREENS):
             self.pEmail.destroy()
             self.pLanguage.destroy()
             self.pContactPreference.destroy()
-            self.contact = 0
-            
-            
-            
+            self.contact = 0      
             
     def clock(self):
         now = datetime.datetime.now()
@@ -1065,9 +1062,9 @@ def main(): # Main loop of ICA
     window.resizable(0, 0)
     window.title(versionNumber)
 
-    #currentSCREEN = loginScreen(window, None)
+    currentSCREEN = loginScreen(window, None)
 
-    currentSCREEN = mainMenu(window, ["Jason Van Bladel"])
+    #currentSCREEN = mainMenu(window, ["Jason Van Bladel"])
     window.mainloop()
 
 main()
