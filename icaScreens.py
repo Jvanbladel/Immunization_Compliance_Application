@@ -20,6 +20,9 @@ class icaSCREENS():
         self.root.protocol("WM_DELETE_WINDOW", self.exitICA)
 
 
+        # insert as "<KEYTYPE>",functionCall.
+        self.keyBinds = {}
+
     def clearSCREEN(self):
         #will clear the screen of everything
         for widget in self.root.winfo_children():
@@ -29,11 +32,25 @@ class icaSCREENS():
         self.clearSCREEN()
         newSCREEN(self.root, data)
 
+    def bindKey(self,key,functionCall): # pass a key you want to bind and the function it should call
+
+        self.root.bind(key,functionCall)
+        self.keyBinds[key] = functionCall
+
+    def removeKeyBind(self,key):
+
+        self.root.unbind(key)
+        del self.keyBinds[key]
+
     def exitICA(self): #prompt user if they want to close program
+
         userChoice = messagebox.askyesno("Exiting ICA","Are you sure you want to exit ICA?")
 
         if userChoice:
             self.root.destroy()
+
+    def escapePress(self,event):
+        self.exitICA()
 
 class mainMenu(icaSCREENS):
 
@@ -44,6 +61,10 @@ class mainMenu(icaSCREENS):
         self.root.geometry("800x600")
         menu = Menu(self.root)
         self.root.title("Immunization Compliance Application " + versionNumber)
+
+        self.bindKey("<Escape>",self.logOut)
+
+        self.clockUpdater = None
 
         #Max windows open
         self.currentPopOut = 0
@@ -65,7 +86,7 @@ class mainMenu(icaSCREENS):
         
         #set Up Search Frame
         self.setUpSearchFrame()
-        
+
         #setUp FilterFrame
         self.filter = 0
 
@@ -133,7 +154,7 @@ class mainMenu(icaSCREENS):
 
     def toggleOutReach(self, patient):
         if self.outreach == 0:
-            
+
 
             self.reportText = Label(self.root, text = "Outreach Report")
             self.reportText.place(x=580,y=402.5)
@@ -167,11 +188,11 @@ class mainMenu(icaSCREENS):
             self.NotesTextArea.destroy()
             self.NotesScrollBar.destroy()
             self.submittOutReach.destroy()
-            
-            
+
+
             self.outreach = 0
-            
-        
+
+
     def submitOutReachAttempt(self, patient):
         print("Out Reach", patient.fName)
 
@@ -292,7 +313,7 @@ class mainMenu(icaSCREENS):
             
             self.MRNCombo=Combobox(self.root, values=MRNSearchOptions)
             self.MRNCombo.place(x=110, y=235, width = 100)
-            
+
 
             #Options for Immunizations Type
             self.var5 = IntVar()
@@ -366,7 +387,7 @@ class mainMenu(icaSCREENS):
             self.OVERDUESearch.place(x=2.5,y=285)
 
             OVERDUESearchOptions=("Exact Search", "Ascending", "Descending")
-            
+
             self.OVERDUECombo=Combobox(self.root, values=OVERDUESearchOptions)
             self.OVERDUECombo.place(x=110, y=285, width = 100)
 
@@ -376,7 +397,7 @@ class mainMenu(icaSCREENS):
             self.ageSearch.place(x=2.5,y=310)
 
             ageSearchOptions=("Exact Search", "Ascending", "Descending")
-            
+
             self.ageCombo=Combobox(self.root, values=ageSearchOptions)
             self.ageCombo.place(x=110, y=310, width = 100)
 
@@ -386,7 +407,7 @@ class mainMenu(icaSCREENS):
             self.sexSearch.place(x=2.5,y=335)
 
             sexSearchOptions=("Male", "Female")
-            
+
             self.sexCombo=Combobox(self.root, values=sexSearchOptions)
             self.sexCombo.place(x=110, y=335, width = 100)
 
@@ -396,7 +417,7 @@ class mainMenu(icaSCREENS):
             self.languageSearch.place(x=2.5,y=360)
 
             languageSearchOptions=("English", "Spanish", "French")
-            
+
             self.languageCombo=Combobox(self.root, values=languageSearchOptions)
             self.languageCombo.place(x=110, y=360, width = 100)
 
@@ -405,12 +426,12 @@ class mainMenu(icaSCREENS):
             self.lastVisitSearch.place(x=2.5,y=385)
 
             lastVisitSearchOptions=("Exact Search", "Ascending", "Descending")
-            
+
             self.lastVisitCombo=Combobox(self.root, values=lastVisitSearchOptions)
             self.lastVisitCombo.place(x=110, y=385, width = 100)
 
-            
-            
+
+
             self.advancedSearch = 1
         else:
             self.advancedsearchBUTTON.destroy()
@@ -450,30 +471,30 @@ class mainMenu(icaSCREENS):
             self.filterVar1 = IntVar()
             self.fNameFilter = Checkbutton(self.root, text="First Name", variable=self.filterVar1)
             self.fNameFilter.place(x=2.5,y=400)
-            
+
             self.fNameFilterCombo=Combobox(self.root, values=filterOptions)
             self.fNameFilterCombo.place(x=110, y=400, width = 100)
 
             self.filterVar2 = IntVar()
             self.lNameFilter = Checkbutton(self.root, text="Last Name", variable=self.filterVar2)
             self.lNameFilter.place(x=2.5,y=425)
-            
+
             self.lNameFilterCombo=Combobox(self.root, values=filterOptions)
             self.lNameFilterCombo.place(x=110, y=425, width = 100)
 
             self.filterVar3 = IntVar()
             self.OverdueFilter = Checkbutton(self.root, text="Days Overdue", variable=self.filterVar3)
             self.OverdueFilter.place(x=2.5,y=450)
-            
+
             self.OverdueFilterCombo=Combobox(self.root, values=filterOptions)
             self.OverdueFilterCombo.place(x=110, y=450, width = 100)
 
             SexfiterOptions=("Male", "Female")
-            
+
             self.filterVar4 = IntVar()
             self.SexFilter = Checkbutton(self.root, text="Sex", variable=self.filterVar4)
             self.SexFilter.place(x=2.5,y=475)
-            
+
             self.SexFilterCombo=Combobox(self.root, values=SexfiterOptions)
             self.SexFilterCombo.place(x=110, y=475, width = 100)
 
@@ -481,14 +502,14 @@ class mainMenu(icaSCREENS):
             self.filterVar5 = IntVar()
             self.ImmunizationFilter = Checkbutton(self.root, text="Immunization", variable=self.filterVar5)
             self.ImmunizationFilter.place(x=2.5,y=500)
-            
+
             self.ImmunizationFilterCombo=Combobox(self.root, values=ImmunizationfilterOptions)
             self.ImmunizationFilterCombo.place(x=110, y=500, width = 100)
 
             self.filterVar6 = IntVar()
             self.AgeFilter = Checkbutton(self.root, text="Age", variable=self.filterVar6)
             self.AgeFilter.place(x=2.5,y=525)
-            
+
             self.AgeFilterCombo=Combobox(self.root, values=filterOptions)
             self.AgeFilterCombo.place(x=110, y=525, width = 100)
 
@@ -497,7 +518,7 @@ class mainMenu(icaSCREENS):
 
             self.defaultFilterBUTTON = Button(self.root, text = "Default")
             self.defaultFilterBUTTON.place(x=20, y = 555, width = 75, height = 32.5)
-            
+
             self.filter = 1
         else:
             self.fNameFilter.destroy()
@@ -515,9 +536,9 @@ class mainMenu(icaSCREENS):
             self.filterBUTTON.destroy()
             self.defaultFilterBUTTON.destroy()
             self.filterLABEL.destroy()
-            
+
             self.filter = 0
-        
+
 
     def setUpQueue(self):
         self.myframe = None
@@ -1011,7 +1032,7 @@ class mainMenu(icaSCREENS):
             self.pEmail.destroy()
             self.pLanguage.destroy()
             self.pContactPreference.destroy()
-            self.contact = 0      
+            self.contact = 0
             
     def clock(self):
         now = datetime.datetime.now()
@@ -1019,7 +1040,7 @@ class mainMenu(icaSCREENS):
         userInfo = self.userName + " " + str(current_time)
         self.userFRAME.config(text=userInfo)
         #lab['text'] = time
-        self.root.after(1000, self.clock)
+        self.clockUpdater = self.root.after(1000, self.clock)
             
     def logoutofApp(self):
         self.togFileTab()
@@ -1120,6 +1141,13 @@ class mainMenu(icaSCREENS):
     def getFullImmunizationHistory(self):
         return None
 
+    def logOut(self,event):
+        userChoice = messagebox.askyesno("Logging out", "Are you sure you want\nto log out?")
+
+        if userChoice:
+            self.root.after_cancel(self.clockUpdater) # prevents exception error on logout
+            self.clockUpdater = None
+            self.swapTO(loginScreen,None)
 
 class med_INFO_SCREEN(icaSCREENS):
 
@@ -1127,6 +1155,7 @@ class med_INFO_SCREEN(icaSCREENS):
     def __init__(self, window, Patient):
         super().__init__(window)
         self.root.geometry("800x600")
+        self.bindKey("<Escape>",self.closeWindow)
 
         self.thisPatient = Patient
         self.currentUser = None
@@ -1290,6 +1319,8 @@ class med_INFO_SCREEN(icaSCREENS):
     def getPatientDemographics(self):
         pass
 
+    def closeWindow(self,event):
+        self.root.destroy()
 
 class loginScreen(icaSCREENS):
 
@@ -1302,6 +1333,8 @@ class loginScreen(icaSCREENS):
         self.background = Canvas(self.root,width=800,height=600)
         self.background.place(x=0,y=0)
 
+        self.bindKey("<Return>",self.enterPress)
+        self.bindKey("<Escape>",self.escapePress)
 
         self.loginBackGround = Canvas(self.root,width=500,height=250)
         self.loginBackGround.place(x=150,y=275)
@@ -1348,20 +1381,25 @@ class loginScreen(icaSCREENS):
         #print(Hash.main(passWord))
         if Hash.main(name) == self.userName and Hash.main(passWord) == self.passWord:
             messagebox.showinfo("Login Successful!", "Welcome back " + "Admin")#needs to be User first name
+
+            self.removeKeyBind("<Return>")
             #querry User
             self.swapTO(mainMenu, ["Admin"])#needs to be user object
         else:
             messagebox.showerror("Login Unsuccessful", "Username or Password is invalid")
             self.passwordEntry.delete(0,END) #remove password
 
+    def enterPress(self,event):
+        self.verifyUser()
+
 def main(): # Main loop of ICA
     window = Tk()
     window.resizable(0, 0)
     window.title(versionNumber)
 
-    #currentSCREEN = loginScreen(window, None)
+    currentSCREEN = loginScreen(window, None)
 
-    currentSCREEN = mainMenu(window, ["Admin"])
+    #currentSCREEN = mainMenu(window, ["Jason Van Bladel"])
 
     #currentSCREEN = med_INFO_SCREEN(window,Patient(["John","Smith","20","2/3/2013","32","30"]))
 
