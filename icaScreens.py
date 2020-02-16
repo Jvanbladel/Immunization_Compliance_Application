@@ -7,7 +7,7 @@ from tkinter import ttk
 from Patients import *
 from Security import Hash
 
-versionNumber = "(Version 1.7.3)"
+versionNumber = "(Version 1.7.4)"
 
 
 class icaSCREENS():
@@ -23,9 +23,6 @@ class icaSCREENS():
 
         # insert as "<KEYTYPE>",functionCall.
         self.keyBinds = {}
-
-        # default key press
-        self.bindKey("<Escape>", self.escapePress)
 
     def clearSCREEN(self):
         #will clear the screen of everything
@@ -66,7 +63,9 @@ class mainMenu(icaSCREENS):
         menu = Menu(self.root)
         self.root.title("Immunization Compliance Application " + versionNumber)
 
+        self.bindKey("<Escape>",self.logOut)
 
+        self.clockUpdater = None
 
         #Max windows open
         self.currentPopOut = 0
@@ -997,7 +996,7 @@ class mainMenu(icaSCREENS):
         userInfo = self.userName + " " + str(current_time)
         self.userFRAME.config(text=userInfo)
         #lab['text'] = time
-        self.root.after(1000, self.clock)
+        self.clockUpdater = self.root.after(1000, self.clock)
             
     def logoutofApp(self):
         self.togFileTab()
@@ -1098,10 +1097,12 @@ class mainMenu(icaSCREENS):
     def getFullImmunizationHistory(self):
         return None
 
-    def exitICA(self): # exception error occurs from Clock when doing this
+    def logOut(self,event):
         userChoice = messagebox.askyesno("Logging out", "Are you sure you want\nto log out?")
 
         if userChoice:
+            self.root.after_cancel(self.clockUpdater) # prevents exception error on logout
+            self.clockUpdater = None
             self.swapTO(loginScreen,None)
 
 class med_INFO_SCREEN(icaSCREENS):
@@ -1289,6 +1290,7 @@ class loginScreen(icaSCREENS):
         self.background.place(x=0,y=0)
 
         self.bindKey("<Return>",self.enterPress)
+        self.bindKey("<Escape>",self.escapePress)
 
         self.loginBackGround = Canvas(self.root,width=500,height=250)
         self.loginBackGround.place(x=150,y=275)
@@ -1344,7 +1346,6 @@ class loginScreen(icaSCREENS):
             self.passwordEntry.delete(0,END) #remove password
 
     def enterPress(self,event):
-        print("Key Pressed!")
         self.verifyUser()
 
 def main(): # Main loop of ICA
