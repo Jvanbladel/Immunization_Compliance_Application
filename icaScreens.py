@@ -7,7 +7,7 @@ from tkinter import ttk
 from Patients import *
 from Security import Hash
 
-versionNumber = "(Version 1.7.1)"
+versionNumber = "(Version 1.7.3)"
 
 
 class icaSCREENS():
@@ -252,28 +252,22 @@ class mainMenu(icaSCREENS):
             
             self.MRNCombo=Combobox(self.root, values=MRNSearchOptions)
             self.MRNCombo.place(x=110, y=235, width = 100)
-
-            #Options for days Overdue
-            self.var5 = IntVar()
-            self.OVERDUESearch = Checkbutton(self.root, text="Days Overdue", variable=self.var5)
-            self.OVERDUESearch.place(x=2.5,y=260)
-
-            OVERDUESearchOptions=("Exact Search", "Ascending", "Descending")
             
-            self.OVERDUECombo=Combobox(self.root, values=OVERDUESearchOptions)
-            self.OVERDUECombo.place(x=110, y=260, width = 100)
 
             #Options for Immunizations Type
-            self.var6 = IntVar()
-            self.ImmunTypeSearch = Checkbutton(self.root, text="Immunization", variable=self.var6)
-            self.ImmunTypeSearch.place(x=2.5,y=285)
+            self.var5 = IntVar()
+            self.ImmunTypeSearch = Checkbutton(self.root, text="Immunization", variable=self.var5)
+            self.ImmunTypeSearch.place(x=2.5,y=260)
 
             ImmunTypeSearchOptions=("Vaccine 1", "Vaccine 2", "Vaccine 3", "Vaccine 4")
             
             self.ImmunTypeCombo=Combobox(self.root, values=ImmunTypeSearchOptions)
-            self.ImmunTypeCombo.place(x=110, y=285, width = 100)
+            self.ImmunTypeCombo.place(x=110, y=260, width = 100)
 
             #Search Buttons
+
+            self.defaultQueueBUTTON = Button(self.root, text = "Default Work Queue", command=lambda: self.resetQueueToDefault())
+            self.defaultQueueBUTTON.place(x=20, y = 290, width = 177.5, height = 25)
 
             self.searchforBUTTON = Button(self.root, text = "Search",bg="blue",fg="white")
             self.searchforBUTTON.place(x=122.5, y = 320, width = 75, height = 32.5)
@@ -300,14 +294,18 @@ class mainMenu(icaSCREENS):
             self.DOBCombo.destroy()
             self.MRNSearch.destroy()
             self.MRNCombo.destroy()
-            self.OVERDUESearch.destroy()
-            self.OVERDUECombo.destroy()
             self.ImmunTypeSearch.destroy()
             self.ImmunTypeCombo.destroy()
             self.searchforBUTTON.destroy()
             self.advancedsearchBUTTON.destroy()
             self.advancedSearchFRAME.destroy()
+            self.defaultQueueBUTTON.destroy()
+            if self.advancedSearch == 1:
+                self.togAdvancedSearch()
             self.searchBox = 0
+
+    def resetQueueToDefault(self):
+        pass
 
     def togAdvancedSearch(self):
         if self.advancedSearch == 0:
@@ -315,20 +313,86 @@ class mainMenu(icaSCREENS):
             self.advancedsearchBUTTON.destroy()
             self.advancedSearchFRAME.destroy()
             self.searchforBUTTON.destroy()
+            self.defaultQueueBUTTON.destroy()
             self.advancedsearchBUTTON = Button(self.root, text = "Less\nOptions", command=lambda: self.togAdvancedSearch())
             self.advancedsearchBUTTON.place(x=20, y = 555, width = 75, height = 32.5)
-            self.searchforBUTTON = Button(self.root, text = "Search",bg="blue",fg="white")
+            self.searchforBUTTON = Button(self.root, text = "Advanced\nSearch",bg="blue",fg="white")
             self.searchforBUTTON.place(x=122.5, y = 555, width = 75, height = 32.5)
+            self.defaultQueueBUTTON = Button(self.root, text = "Default Work Queue", command=lambda: self.resetQueueToDefault())
+            self.defaultQueueBUTTON.place(x=20, y = 525, width = 177.5, height = 25)
+
+            self.var6 = IntVar()
+            self.OVERDUESearch = Checkbutton(self.root, text="Days Overdue", variable=self.var6)
+            self.OVERDUESearch.place(x=2.5,y=285)
+
+            OVERDUESearchOptions=("Exact Search", "Ascending", "Descending")
+            
+            self.OVERDUECombo=Combobox(self.root, values=OVERDUESearchOptions)
+            self.OVERDUECombo.place(x=110, y=285, width = 100)
+
+
+            self.var7 = IntVar()
+            self.ageSearch = Checkbutton(self.root, text="Age", variable=self.var7)
+            self.ageSearch.place(x=2.5,y=310)
+
+            ageSearchOptions=("Exact Search", "Ascending", "Descending")
+            
+            self.ageCombo=Combobox(self.root, values=ageSearchOptions)
+            self.ageCombo.place(x=110, y=310, width = 100)
+
+
+            self.var8 = IntVar()
+            self.sexSearch = Checkbutton(self.root, text="Sex", variable=self.var8)
+            self.sexSearch.place(x=2.5,y=335)
+
+            sexSearchOptions=("Male", "Female")
+            
+            self.sexCombo=Combobox(self.root, values=sexSearchOptions)
+            self.sexCombo.place(x=110, y=335, width = 100)
+
+
+            self.var9 = IntVar()
+            self.languageSearch = Checkbutton(self.root, text="Language", variable=self.var9)
+            self.languageSearch.place(x=2.5,y=360)
+
+            languageSearchOptions=("English", "Spanish", "French")
+            
+            self.languageCombo=Combobox(self.root, values=languageSearchOptions)
+            self.languageCombo.place(x=110, y=360, width = 100)
+
+            self.var10 = IntVar()
+            self.lastVisitSearch = Checkbutton(self.root, text="Last Visit", variable=self.var10)
+            self.lastVisitSearch.place(x=2.5,y=385)
+
+            lastVisitSearchOptions=("Exact Search", "Ascending", "Descending")
+            
+            self.lastVisitCombo=Combobox(self.root, values=lastVisitSearchOptions)
+            self.lastVisitCombo.place(x=110, y=385, width = 100)
+
+            
             
             self.advancedSearch = 1
         else:
             self.advancedsearchBUTTON.destroy()
             self.advancedSearchFRAME.destroy()
             self.searchforBUTTON.destroy()
+            self.ageSearch.destroy()
+            self.ageCombo.destroy()
+            self.sexSearch.destroy()
+            self.sexCombo.destroy()
+            self.languageCombo.destroy()
+            self.languageSearch.destroy()
+            self.lastVisitCombo.destroy()
+            self.lastVisitSearch.destroy()
+            self.OVERDUESearch.destroy()
+            self.OVERDUECombo.destroy()
+            self.defaultQueueBUTTON.destroy()
             self.searchforBUTTON = Button(self.root, text = "Search",bg="blue",fg="white")
             self.searchforBUTTON.place(x=122.5, y = 320, width = 75, height = 32.5)
             self.advancedsearchBUTTON = Button(self.root, text = "More\nOptions", command=lambda: self.togAdvancedSearch())
             self.advancedsearchBUTTON.place(x=20, y = 320, width = 75, height = 32.5)
+            self.defaultQueueBUTTON = Button(self.root, text = "Default Work Queue", command=lambda: self.resetQueueToDefault())
+            self.defaultQueueBUTTON.place(x=20, y = 290, width = 177.5, height = 25)
             self.advancedSearchFRAME = LabelFrame(self.root)
             self.advancedSearchFRAME.place(x=0,y=370,height=230,width=225)
             self.togFilter()
@@ -390,6 +454,9 @@ class mainMenu(icaSCREENS):
 
             self.filterBUTTON = Button(self.root, text = "Filter",bg="blue",fg="white")
             self.filterBUTTON.place(x=122.5, y = 555, width = 75, height = 32.5)
+
+            self.defaultFilterBUTTON = Button(self.root, text = "Default")
+            self.defaultFilterBUTTON.place(x=20, y = 555, width = 75, height = 32.5)
             
             self.filter = 1
         else:
@@ -406,6 +473,7 @@ class mainMenu(icaSCREENS):
             self.AgeFilter.destroy()
             self.AgeFilterCombo.destroy()
             self.filterBUTTON.destroy()
+            self.defaultFilterBUTTON.destroy()
             self.filterLABEL.destroy()
             
             self.filter = 0
