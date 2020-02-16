@@ -7,7 +7,7 @@ from tkinter import ttk
 from Patients import *
 from Security import Hash
 
-versionNumber = "(Version 1.6.2b)"
+versionNumber = "(Version 1.7.1)"
 
 
 class icaSCREENS():
@@ -66,6 +66,9 @@ class mainMenu(icaSCREENS):
         
         #set Up Search Frame
         self.setUpSearchFrame()
+        
+        #setUp FilterFrame
+        self.filter = 0
 
         #set Up Queue Frame
         self.setUpQueue()
@@ -275,7 +278,7 @@ class mainMenu(icaSCREENS):
             self.searchforBUTTON = Button(self.root, text = "Search",bg="blue",fg="white")
             self.searchforBUTTON.place(x=122.5, y = 320, width = 75, height = 32.5)
 
-            self.advancedsearchBUTTON = Button(self.root, text = "More\nOptions")
+            self.advancedsearchBUTTON = Button(self.root, text = "More\nOptions", command=lambda: self.togAdvancedSearch())
             self.advancedsearchBUTTON.place(x=20, y = 320, width = 75, height = 32.5)
 
 
@@ -304,6 +307,86 @@ class mainMenu(icaSCREENS):
             self.advancedsearchBUTTON.destroy()
             self.advancedSearchFRAME.destroy()
             self.searchBox = 0
+
+    def togAdvancedSearch(self):
+        self.togFilter()
+
+    def togFilter(self):
+        if self.filter == 0:
+
+            self.filterLABEL = Label(self.root, text = "Queue Filters")
+            self.filterLABEL.place(x=5, y = 375)
+            #print("Test")
+
+            filterOptions=("Ascending", "Descending")
+
+            self.filterVar1 = IntVar()
+            self.fNameFilter = Checkbutton(self.root, text="First Name", variable=self.filterVar1)
+            self.fNameFilter.place(x=2.5,y=400)
+            
+            self.fNameFilterCombo=Combobox(self.root, values=filterOptions)
+            self.fNameFilterCombo.place(x=110, y=400, width = 100)
+
+            self.filterVar2 = IntVar()
+            self.lNameFilter = Checkbutton(self.root, text="Last Name", variable=self.filterVar2)
+            self.lNameFilter.place(x=2.5,y=425)
+            
+            self.lNameFilterCombo=Combobox(self.root, values=filterOptions)
+            self.lNameFilterCombo.place(x=110, y=425, width = 100)
+
+            self.filterVar3 = IntVar()
+            self.OverdueFilter = Checkbutton(self.root, text="Days Overdue", variable=self.filterVar3)
+            self.OverdueFilter.place(x=2.5,y=450)
+            
+            self.OverdueFilterCombo=Combobox(self.root, values=filterOptions)
+            self.OverdueFilterCombo.place(x=110, y=450, width = 100)
+
+            SexfiterOptions=("Male", "Female")
+            
+            self.filterVar4 = IntVar()
+            self.SexFilter = Checkbutton(self.root, text="Sex", variable=self.filterVar4)
+            self.SexFilter.place(x=2.5,y=475)
+            
+            self.SexFilterCombo=Combobox(self.root, values=SexfiterOptions)
+            self.SexFilterCombo.place(x=110, y=475, width = 100)
+
+            ImmunizationfilterOptions=("Vaccine 1", "Vaccine 2", "Vaccine 3", "Vaccine 4")
+            self.filterVar5 = IntVar()
+            self.ImmunizationFilter = Checkbutton(self.root, text="Immunization", variable=self.filterVar5)
+            self.ImmunizationFilter.place(x=2.5,y=500)
+            
+            self.ImmunizationFilterCombo=Combobox(self.root, values=ImmunizationfilterOptions)
+            self.ImmunizationFilterCombo.place(x=110, y=500, width = 100)
+
+            self.filterVar6 = IntVar()
+            self.AgeFilter = Checkbutton(self.root, text="Age", variable=self.filterVar6)
+            self.AgeFilter.place(x=2.5,y=525)
+            
+            self.AgeFilterCombo=Combobox(self.root, values=filterOptions)
+            self.AgeFilterCombo.place(x=110, y=525, width = 100)
+
+            self.filterBUTTON = Button(self.root, text = "Filter",bg="blue",fg="white")
+            self.filterBUTTON.place(x=122.5, y = 555, width = 75, height = 32.5)
+            
+            self.filter = 1
+        else:
+            self.fNameFilter.destroy()
+            self.fNameFilterCombo.destroy()
+            self.lNameFilter.destroy()
+            self.lNameFilterCombo.destroy()
+            self.OverdueFilter.destroy()
+            self.OverdueFilterCombo.destroy()
+            self.SexFilter.destroy()
+            self.SexFilterCombo.destroy()
+            self.ImmunizationFilter.destroy()
+            self.ImmunizationFilterCombo.destroy()
+            self.AgeFilter.destroy()
+            self.AgeFilterCombo.destroy()
+            self.filterBUTTON.destroy()
+            self.filterLABEL.destroy()
+            
+            self.filter = 0
+        
 
     def setUpQueue(self):
         self.myframe = None
@@ -821,6 +904,7 @@ class mainMenu(icaSCREENS):
         
         if self.largeQueue == 0:
             self.toggleSearchBox()
+            self.togFilter()
             self.myframe=Frame(self.root,relief=GROOVE,width=50,height=100,bd=1)
             self.myframe.place(x=225,y=125,height=475,width=350)
 
@@ -846,6 +930,8 @@ class mainMenu(icaSCREENS):
             
         else:
             self.toggleSearchBox()
+            if self.filter == 1:
+                self.togFilter()
             self.myframe=Frame(self.root,relief=GROOVE,width=50,height=100,bd=1)
             self.myframe.place(x=0,y=125,height=475,width=575)
 
@@ -1138,9 +1224,9 @@ def main(): # Main loop of ICA
     window.resizable(0, 0)
     window.title(versionNumber)
 
-    currentSCREEN = loginScreen(window, None)
+    #currentSCREEN = loginScreen(window, None)
 
-    #currentSCREEN = mainMenu(window, ["Admin"])
+    currentSCREEN = mainMenu(window, ["Admin"])
 
     #currentSCREEN = med_INFO_SCREEN(window,Patient(["John","Smith","20","2/3/2013","32","30"]))
 
