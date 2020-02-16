@@ -688,6 +688,8 @@ class mainMenu(icaSCREENS):
                 b.grid(row=i)
                 self.bList.append(b)
                 b.configure(command=lambda i=i: self.showPatient(patientList[i].MRN, self.bList[i]))
+                if patientList[i].MRN == self.currentPatient:
+                     b.configure(background = "green")
             else:
                 pstr = '{0:<15} {1:<13} {2:<13} {3:<10}'.format(patientList[i].fName, patientList[i].lName, patientList[i].dueDate, patientList[i].daysOverDue)
             
@@ -696,6 +698,8 @@ class mainMenu(icaSCREENS):
                 b = Button(frame, text = pstr,anchor=W, justify=LEFT, width = 100, font = ('Consolas', 10), command=lambda i=i: self.showPatient(patientList[i].MRN, b))
                 b.grid(row=i)
                 self.bList.append(b)
+                if patientList[i].MRN == self.currentPatient:
+                     b.configure(background = "green")
             
 
     def showPatient(self, MRN, b):
