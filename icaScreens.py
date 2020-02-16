@@ -7,8 +7,7 @@ from tkinter import ttk
 from Patients import *
 from Security import Hash
 
-versionNumber = "(Version 1.7.3)"
-
+versionNumber = "(Version 1.7.4)"
 
 class icaSCREENS():
     '''
@@ -88,8 +87,49 @@ class mainMenu(icaSCREENS):
         self.reportingFRAME.place(x=575,y=400,height=200,width=225)
         self.outreach = 0
 
+        #Notifications
+        self.setUpNotifications([[3,"Very Important Message!"],[2,"Important Message."],[1,"Notification Message"]])
+
+        #imageSource = "sources/notifications/notification_" + str(1) + ".PNG"
+        #notificationImage = Image.open(imageSource)
+        #notificationImage = notificationImage.resize((18,18), Image.ANTIALIAS)
+        #self.notificationIMAGE = ImageTk.PhotoImage(notificationImage)
+        #self.notificationLABEL = Label(self.root,image=self.notificationIMAGE)
+        #self.notificationLABEL.place(x=2.5,y= 32.5)
+
         #update current time
         self.clock()
+
+    def setUpNotifications(self, notifications):
+        imageSource = "sources/notifications/notification_1.PNG"
+        notificationImage = Image.open(imageSource)
+        notificationImage = notificationImage.resize((18,18), Image.ANTIALIAS)
+        self.notificationIMAGE1 = ImageTk.PhotoImage(notificationImage)
+        imageSource = "sources/notifications/notification_2.PNG"
+        notificationImage = Image.open(imageSource)
+        notificationImage = notificationImage.resize((18,18), Image.ANTIALIAS)
+        self.notificationIMAGE2 = ImageTk.PhotoImage(notificationImage)
+        imageSource = "sources/notifications/notification_3.PNG"
+        notificationImage = Image.open(imageSource)
+        notificationImage = notificationImage.resize((18,18), Image.ANTIALIAS)
+        self.notificationIMAGE3 = ImageTk.PhotoImage(notificationImage)
+        
+        for n in range(len(notifications)):
+            if notifications[n][0] == 1:
+                notificationLABEL = Label(self.root,image=self.notificationIMAGE1)
+                notificationLABEL.place(x=2.5,y= 32.5 + (n * 22.5))
+                notificationLABEL1 = Label(self.root, text = notifications[n][1])
+                notificationLABEL1.place(x=25,y= 32.5 + (n * 22.5))
+            if notifications[n][0] == 2:
+                notificationLABEL = Label(self.root,image=self.notificationIMAGE2)
+                notificationLABEL.place(x=2.5,y= 32.5 + (n * 22.5))
+                notificationLABEL1 = Label(self.root, text = notifications[n][1])
+                notificationLABEL1.place(x=25,y= 32.5 + (n * 22.5))
+            if notifications[n][0] == 3:
+                notificationLABEL = Label(self.root,image=self.notificationIMAGE3)
+                notificationLABEL.place(x=2.5,y= 32.5 + (n * 22.5))
+                notificationLABEL1 = Label(self.root, text = notifications[n][1])
+                notificationLABEL1.place(x=25,y= 32.5 + (n * 22.5))
 
     def toggleOutReach(self, patient):
         if self.outreach == 0:
