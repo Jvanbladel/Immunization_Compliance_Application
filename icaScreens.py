@@ -5,9 +5,10 @@ from PIL import ImageTk,Image
 import datetime
 from tkinter import ttk
 from Patients import *
+from Security import Hash
 
+versionNumber = "(Version 1.7.3)"
 
-versionNumber = "(Version 1.6.2)"
 
 class icaSCREENS():
     '''
@@ -19,7 +20,7 @@ class icaSCREENS():
         self.root = window
         self.root.protocol("WM_DELETE_WINDOW", self.exitICA)
 
-        
+
         # insert as "<KEYTYPE>",functionCall.
         self.keyBinds = {}
 
@@ -88,6 +89,9 @@ class mainMenu(icaSCREENS):
         #set Up Search Frame
         self.setUpSearchFrame()
 
+        #setUp FilterFrame
+        self.filter = 0
+
         #set Up Queue Frame
         self.setUpQueue()
         self.largeQueue = 0
@@ -101,40 +105,57 @@ class mainMenu(icaSCREENS):
         self.contact = 0
         self.history = 0
 
-        #setUpContact Frame
-        reportingFRAME = LabelFrame(self.root)
-        reportingFRAME.place(x=575,y=400,height=200,width=225)
-
-        reportText = Label(self.root, text = "Outreach Report")
-        reportText.place(x=580,y=402.5)
-        
-        outreachText = Label(self.root, text = "Outcome:")
-        outreachText.place(x=580,y=430)
-
-        outreachText = Label(self.root, text = "Notes:")
-        outreachText.place(x=580,y=455)
-        
-        contactOptions=("Answered", "Missed Call", "Hung Up", "Will Call Back", "No Number on File", "Wrong Number", "Attempt Again Later")
-        self.callOptions=Combobox(self.root, values=contactOptions)
-        self.callOptions.place(x=655,y=430, width = 130)
-
-        self.NotesTextArea = Text()
-        self.NotesScrollBar = Scrollbar(self.root)
-        self.NotesScrollBar.config(command=self.NotesTextArea.yview)
-        self.NotesTextArea.config(yscrollcommand=self.NotesScrollBar.set)
-        self.NotesScrollBar.place(x=772.5,y=475, height = 90, width = 20)
-        self.NotesTextArea.place(x=582.5,y=475, height = 90, width = 210)
-
-        self.submittOutReach = Button(self.root, text = "Submit",command=lambda: self.submitOutReachAttempt())
-        self.submittOutReach.place(x= 745, y=567.5)
-
-        
+        #setupOutReach
+        self.reportingFRAME = LabelFrame(self.root)
+        self.reportingFRAME.place(x=575,y=400,height=200,width=225)
+        self.outreach = 0
 
         #update current time
         self.clock()
 
-    def submitOutReachAttempt(self):
-        print("Out Reach")
+    def toggleOutReach(self, patient):
+        if self.outreach == 0:
+
+
+            self.reportText = Label(self.root, text = "Outreach Report")
+            self.reportText.place(x=580,y=402.5)
+        
+            self.outreachText = Label(self.root, text = "Outcome:")
+            self.outreachText.place(x=580,y=430)
+
+            self.outreachText2 = Label(self.root, text = "Notes:")
+            self.outreachText2.place(x=580,y=455)
+        
+            contactOptions=("Answered", "Missed Call", "Hung Up", "Will Call Back", "No Number on File", "Wrong Number", "Attempt Again Later")
+            self.callOptions=Combobox(self.root, values=contactOptions)
+            self.callOptions.place(x=655,y=430, width = 130)
+
+            self.NotesTextArea = Text()
+            self.NotesScrollBar = Scrollbar(self.root)
+            self.NotesScrollBar.config(command=self.NotesTextArea.yview)
+            self.NotesTextArea.config(yscrollcommand=self.NotesScrollBar.set)
+            self.NotesScrollBar.place(x=772.5,y=475, height = 90, width = 20)
+            self.NotesTextArea.place(x=582.5,y=475, height = 90, width = 190)
+
+            self.submittOutReach = Button(self.root, text = "Submit",command=lambda: self.submitOutReachAttempt(patient))
+            self.submittOutReach.place(x= 745, y=567.5)
+            self.outreach = 1
+
+        else:
+            self.reportText.destroy()
+            self.outreachText.destroy()
+            self.outreachText2.destroy()
+            self.callOptions.destroy()
+            self.NotesTextArea.destroy()
+            self.NotesScrollBar.destroy()
+            self.submittOutReach.destroy()
+
+
+            self.outreach = 0
+
+
+    def submitOutReachAttempt(self, patient):
+        print("Out Reach", patient.fName)
 
     def setUpTabs(self):
         fileBUTTON = Button(self.root,text="File",command=lambda: self.togFileTab())
@@ -254,32 +275,26 @@ class mainMenu(icaSCREENS):
             self.MRNCombo=Combobox(self.root, values=MRNSearchOptions)
             self.MRNCombo.place(x=110, y=235, width = 100)
 
-            #Options for days Overdue
-            self.var5 = IntVar()
-            self.OVERDUESearch = Checkbutton(self.root, text="Days Overdue", variable=self.var5)
-            self.OVERDUESearch.place(x=2.5,y=260)
-
-            OVERDUESearchOptions=("Exact Search", "Ascending", "Descending")
-            
-            self.OVERDUECombo=Combobox(self.root, values=OVERDUESearchOptions)
-            self.OVERDUECombo.place(x=110, y=260, width = 100)
 
             #Options for Immunizations Type
-            self.var6 = IntVar()
-            self.ImmunTypeSearch = Checkbutton(self.root, text="Immunization", variable=self.var6)
-            self.ImmunTypeSearch.place(x=2.5,y=285)
+            self.var5 = IntVar()
+            self.ImmunTypeSearch = Checkbutton(self.root, text="Immunization", variable=self.var5)
+            self.ImmunTypeSearch.place(x=2.5,y=260)
 
             ImmunTypeSearchOptions=("Vaccine 1", "Vaccine 2", "Vaccine 3", "Vaccine 4")
             
             self.ImmunTypeCombo=Combobox(self.root, values=ImmunTypeSearchOptions)
-            self.ImmunTypeCombo.place(x=110, y=285, width = 100)
+            self.ImmunTypeCombo.place(x=110, y=260, width = 100)
 
             #Search Buttons
+
+            self.defaultQueueBUTTON = Button(self.root, text = "Default Work Queue", command=lambda: self.resetQueueToDefault())
+            self.defaultQueueBUTTON.place(x=20, y = 290, width = 177.5, height = 25)
 
             self.searchforBUTTON = Button(self.root, text = "Search",bg="blue",fg="white")
             self.searchforBUTTON.place(x=122.5, y = 320, width = 75, height = 32.5)
 
-            self.advancedsearchBUTTON = Button(self.root, text = "More\nOptions")
+            self.advancedsearchBUTTON = Button(self.root, text = "More\nOptions", command=lambda: self.togAdvancedSearch())
             self.advancedsearchBUTTON.place(x=20, y = 320, width = 75, height = 32.5)
 
 
@@ -287,6 +302,7 @@ class mainMenu(icaSCREENS):
             self.advancedSearchFRAME.place(x=0,y=370,height=230,width=225)
         
             self.searchBox = 1
+            self.advancedSearch = 0
         else:
             self.searchFRAME.destroy()
             self.searchTXT.destroy()
@@ -300,14 +316,190 @@ class mainMenu(icaSCREENS):
             self.DOBCombo.destroy()
             self.MRNSearch.destroy()
             self.MRNCombo.destroy()
-            self.OVERDUESearch.destroy()
-            self.OVERDUECombo.destroy()
             self.ImmunTypeSearch.destroy()
             self.ImmunTypeCombo.destroy()
             self.searchforBUTTON.destroy()
             self.advancedsearchBUTTON.destroy()
             self.advancedSearchFRAME.destroy()
+            self.defaultQueueBUTTON.destroy()
+            if self.advancedSearch == 1:
+                self.togAdvancedSearch()
             self.searchBox = 0
+
+    def resetQueueToDefault(self):
+        pass
+
+    def togAdvancedSearch(self):
+        if self.advancedSearch == 0:
+            self.togFilter()
+            self.advancedsearchBUTTON.destroy()
+            self.advancedSearchFRAME.destroy()
+            self.searchforBUTTON.destroy()
+            self.defaultQueueBUTTON.destroy()
+            self.advancedsearchBUTTON = Button(self.root, text = "Less\nOptions", command=lambda: self.togAdvancedSearch())
+            self.advancedsearchBUTTON.place(x=20, y = 555, width = 75, height = 32.5)
+            self.searchforBUTTON = Button(self.root, text = "Advanced\nSearch",bg="blue",fg="white")
+            self.searchforBUTTON.place(x=122.5, y = 555, width = 75, height = 32.5)
+            self.defaultQueueBUTTON = Button(self.root, text = "Default Work Queue", command=lambda: self.resetQueueToDefault())
+            self.defaultQueueBUTTON.place(x=20, y = 525, width = 177.5, height = 25)
+
+            self.var6 = IntVar()
+            self.OVERDUESearch = Checkbutton(self.root, text="Days Overdue", variable=self.var6)
+            self.OVERDUESearch.place(x=2.5,y=285)
+
+            OVERDUESearchOptions=("Exact Search", "Ascending", "Descending")
+
+            self.OVERDUECombo=Combobox(self.root, values=OVERDUESearchOptions)
+            self.OVERDUECombo.place(x=110, y=285, width = 100)
+
+
+            self.var7 = IntVar()
+            self.ageSearch = Checkbutton(self.root, text="Age", variable=self.var7)
+            self.ageSearch.place(x=2.5,y=310)
+
+            ageSearchOptions=("Exact Search", "Ascending", "Descending")
+
+            self.ageCombo=Combobox(self.root, values=ageSearchOptions)
+            self.ageCombo.place(x=110, y=310, width = 100)
+
+
+            self.var8 = IntVar()
+            self.sexSearch = Checkbutton(self.root, text="Sex", variable=self.var8)
+            self.sexSearch.place(x=2.5,y=335)
+
+            sexSearchOptions=("Male", "Female")
+
+            self.sexCombo=Combobox(self.root, values=sexSearchOptions)
+            self.sexCombo.place(x=110, y=335, width = 100)
+
+
+            self.var9 = IntVar()
+            self.languageSearch = Checkbutton(self.root, text="Language", variable=self.var9)
+            self.languageSearch.place(x=2.5,y=360)
+
+            languageSearchOptions=("English", "Spanish", "French")
+
+            self.languageCombo=Combobox(self.root, values=languageSearchOptions)
+            self.languageCombo.place(x=110, y=360, width = 100)
+
+            self.var10 = IntVar()
+            self.lastVisitSearch = Checkbutton(self.root, text="Last Visit", variable=self.var10)
+            self.lastVisitSearch.place(x=2.5,y=385)
+
+            lastVisitSearchOptions=("Exact Search", "Ascending", "Descending")
+
+            self.lastVisitCombo=Combobox(self.root, values=lastVisitSearchOptions)
+            self.lastVisitCombo.place(x=110, y=385, width = 100)
+
+
+
+            self.advancedSearch = 1
+        else:
+            self.advancedsearchBUTTON.destroy()
+            self.advancedSearchFRAME.destroy()
+            self.searchforBUTTON.destroy()
+            self.ageSearch.destroy()
+            self.ageCombo.destroy()
+            self.sexSearch.destroy()
+            self.sexCombo.destroy()
+            self.languageCombo.destroy()
+            self.languageSearch.destroy()
+            self.lastVisitCombo.destroy()
+            self.lastVisitSearch.destroy()
+            self.OVERDUESearch.destroy()
+            self.OVERDUECombo.destroy()
+            self.defaultQueueBUTTON.destroy()
+            self.searchforBUTTON = Button(self.root, text = "Search",bg="blue",fg="white")
+            self.searchforBUTTON.place(x=122.5, y = 320, width = 75, height = 32.5)
+            self.advancedsearchBUTTON = Button(self.root, text = "More\nOptions", command=lambda: self.togAdvancedSearch())
+            self.advancedsearchBUTTON.place(x=20, y = 320, width = 75, height = 32.5)
+            self.defaultQueueBUTTON = Button(self.root, text = "Default Work Queue", command=lambda: self.resetQueueToDefault())
+            self.defaultQueueBUTTON.place(x=20, y = 290, width = 177.5, height = 25)
+            self.advancedSearchFRAME = LabelFrame(self.root)
+            self.advancedSearchFRAME.place(x=0,y=370,height=230,width=225)
+            self.togFilter()
+            self.advancedSearch = 0
+
+    def togFilter(self):
+        if self.filter == 0:
+
+            self.filterLABEL = Label(self.root, text = "Queue Filters")
+            self.filterLABEL.place(x=5, y = 375)
+            #print("Test")
+
+            filterOptions=("Ascending", "Descending")
+
+            self.filterVar1 = IntVar()
+            self.fNameFilter = Checkbutton(self.root, text="First Name", variable=self.filterVar1)
+            self.fNameFilter.place(x=2.5,y=400)
+
+            self.fNameFilterCombo=Combobox(self.root, values=filterOptions)
+            self.fNameFilterCombo.place(x=110, y=400, width = 100)
+
+            self.filterVar2 = IntVar()
+            self.lNameFilter = Checkbutton(self.root, text="Last Name", variable=self.filterVar2)
+            self.lNameFilter.place(x=2.5,y=425)
+
+            self.lNameFilterCombo=Combobox(self.root, values=filterOptions)
+            self.lNameFilterCombo.place(x=110, y=425, width = 100)
+
+            self.filterVar3 = IntVar()
+            self.OverdueFilter = Checkbutton(self.root, text="Days Overdue", variable=self.filterVar3)
+            self.OverdueFilter.place(x=2.5,y=450)
+
+            self.OverdueFilterCombo=Combobox(self.root, values=filterOptions)
+            self.OverdueFilterCombo.place(x=110, y=450, width = 100)
+
+            SexfiterOptions=("Male", "Female")
+
+            self.filterVar4 = IntVar()
+            self.SexFilter = Checkbutton(self.root, text="Sex", variable=self.filterVar4)
+            self.SexFilter.place(x=2.5,y=475)
+
+            self.SexFilterCombo=Combobox(self.root, values=SexfiterOptions)
+            self.SexFilterCombo.place(x=110, y=475, width = 100)
+
+            ImmunizationfilterOptions=("Vaccine 1", "Vaccine 2", "Vaccine 3", "Vaccine 4")
+            self.filterVar5 = IntVar()
+            self.ImmunizationFilter = Checkbutton(self.root, text="Immunization", variable=self.filterVar5)
+            self.ImmunizationFilter.place(x=2.5,y=500)
+
+            self.ImmunizationFilterCombo=Combobox(self.root, values=ImmunizationfilterOptions)
+            self.ImmunizationFilterCombo.place(x=110, y=500, width = 100)
+
+            self.filterVar6 = IntVar()
+            self.AgeFilter = Checkbutton(self.root, text="Age", variable=self.filterVar6)
+            self.AgeFilter.place(x=2.5,y=525)
+
+            self.AgeFilterCombo=Combobox(self.root, values=filterOptions)
+            self.AgeFilterCombo.place(x=110, y=525, width = 100)
+
+            self.filterBUTTON = Button(self.root, text = "Filter",bg="blue",fg="white")
+            self.filterBUTTON.place(x=122.5, y = 555, width = 75, height = 32.5)
+
+            self.defaultFilterBUTTON = Button(self.root, text = "Default")
+            self.defaultFilterBUTTON.place(x=20, y = 555, width = 75, height = 32.5)
+
+            self.filter = 1
+        else:
+            self.fNameFilter.destroy()
+            self.fNameFilterCombo.destroy()
+            self.lNameFilter.destroy()
+            self.lNameFilterCombo.destroy()
+            self.OverdueFilter.destroy()
+            self.OverdueFilterCombo.destroy()
+            self.SexFilter.destroy()
+            self.SexFilterCombo.destroy()
+            self.ImmunizationFilter.destroy()
+            self.ImmunizationFilterCombo.destroy()
+            self.AgeFilter.destroy()
+            self.AgeFilterCombo.destroy()
+            self.filterBUTTON.destroy()
+            self.defaultFilterBUTTON.destroy()
+            self.filterLABEL.destroy()
+
+            self.filter = 0
+
 
     def setUpQueue(self):
         self.myframe = None
@@ -550,6 +742,16 @@ class mainMenu(icaSCREENS):
                     break
             self.currentPatient = MRN
 
+        if self.outreach == 1:
+            self.reportText.destroy()
+            self.outreachText.destroy()
+            self.outreachText2.destroy()
+            self.callOptions.destroy()
+            self.NotesTextArea.destroy()
+            self.NotesScrollBar.destroy()
+            self.submittOutReach.destroy()
+            self.outreach = 0
+
     def destroyPopOut(self,newWindow):
         newWindow.destroy()
         self.currentPopOut -= 1
@@ -616,7 +818,7 @@ class mainMenu(icaSCREENS):
         self.expandBUTTON = Button(self.root,text="Expand Patient",command=lambda:self.xPand(patient))
         self.expandBUTTON.place(x=700,y=365, width = 90, height = 30)
 
-        self.outreachBUTTON = Button(self.root,text="Outreach")
+        self.outreachBUTTON = Button(self.root,text="Outreach", command=lambda: self.toggleOutReach(patient))
         self.outreachBUTTON.place(x=585,y=365, width = 90, height = 30)
 
     def showHistory(self, patient):
@@ -684,7 +886,7 @@ class mainMenu(icaSCREENS):
         self.expandBUTTON = Button(self.root,text="Expand Patient",command=lambda:self.xPand(patient))
         self.expandBUTTON.place(x=700,y=365, width = 90, height = 30)
 
-        self.outreachBUTTON = Button(self.root,text="Outreach")
+        self.outreachBUTTON = Button(self.root,text="Outreach", command=lambda: self.toggleOutReach(patient))
         self.outreachBUTTON.place(x=585,y=365, width = 90, height = 30)
 
     def pmyfunction(self,event):
@@ -736,7 +938,7 @@ class mainMenu(icaSCREENS):
         self.expandBUTTON = Button(self.root,text="Expand Patient",command=lambda:self.xPand(patient))
         self.expandBUTTON.place(x=700,y=365, width = 90, height = 30)
 
-        self.outreachBUTTON = Button(self.root,text="Outreach")
+        self.outreachBUTTON = Button(self.root,text="Outreach", command=lambda: self.toggleOutReach(patient))
         self.outreachBUTTON.place(x=585,y=365, width = 90, height = 30)  
         
 
@@ -815,6 +1017,7 @@ class mainMenu(icaSCREENS):
         
         if self.largeQueue == 0:
             self.toggleSearchBox()
+            self.togFilter()
             self.myframe=Frame(self.root,relief=GROOVE,width=50,height=100,bd=1)
             self.myframe.place(x=225,y=125,height=475,width=350)
 
@@ -840,6 +1043,8 @@ class mainMenu(icaSCREENS):
             
         else:
             self.toggleSearchBox()
+            if self.filter == 1:
+                self.togFilter()
             self.myframe=Frame(self.root,relief=GROOVE,width=50,height=100,bd=1)
             self.myframe.place(x=0,y=125,height=475,width=575)
 
@@ -900,6 +1105,7 @@ class mainMenu(icaSCREENS):
             self.swapTO(loginScreen,None)
 
 class med_INFO_SCREEN(icaSCREENS):
+
 
     def __init__(self, window, Patient):
         super().__init__(window)
@@ -1075,8 +1281,10 @@ class loginScreen(icaSCREENS):
 
     def __init__(self, window, data):
         super().__init__(window)
-        self.root.title("ICA")
         self.root.geometry("800x600")
+        global versionNumber
+        self.root.title("Immunization Compliance Application " + versionNumber)
+
         self.background = Canvas(self.root,width=800,height=600)
         self.background.place(x=0,y=0)
 
@@ -1085,8 +1293,8 @@ class loginScreen(icaSCREENS):
         self.loginBackGround = Canvas(self.root,width=500,height=250)
         self.loginBackGround.place(x=150,y=275)
 
-        self.userName = "Test01"
-        self.passWord = "Test02"
+        self.userName = "f69ddcc92c44eb5a6320e241183ef551d9287d7fa6e4b2c77459145d8dd0bb37"
+        self.passWord = "b575f55adf6ed25767832bdf6fe6cbc4af4889938bf48ba99698ec683f9047de"
 
         image = Image.open("sources/ica picture.PNG")
         image = image.resize((700,200), Image.ANTIALIAS)
@@ -1116,16 +1324,21 @@ class loginScreen(icaSCREENS):
         self.cancelButton = Button(self.root,text="Cancel",bg="light blue",fg="black",width=13,height=2,command=self.exitICA)
         self.cancelButton.place(x=475,y=400)
 
+        self.userNameLabel = Label(self.root,text=versionNumber[1:-1],font=('Consolas', 16))
+        self.userNameLabel.place(x=5,y=575)
+
     def verifyUser(self):
         name = self.userNameEntry.get()
         passWord = self.passwordEntry.get()
 
         #Would hash and verify user with database here
-        if name == self.userName and passWord == self.passWord:
-            messagebox.showinfo("Login Successful!", "Welcome back " + str(name))
+        #print(Hash.main(passWord))
+        if Hash.main(name) == self.userName and Hash.main(passWord) == self.passWord:
+            messagebox.showinfo("Login Successful!", "Welcome back " + "Admin")#needs to be User first name
 
             self.removeKeyBind("<Return>")
-            self.swapTO(mainMenu, [self.userName])
+            #querry User
+            self.swapTO(mainMenu, ["Admin"])#needs to be user object
         else:
             messagebox.showerror("Login Unsuccessful", "Username or Password is invalid")
             self.passwordEntry.delete(0,END) #remove password
