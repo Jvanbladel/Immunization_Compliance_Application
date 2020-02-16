@@ -18,7 +18,13 @@ class icaSCREENS():
     def __init__(self,window): #all screens must contain the root window
         self.root = window
         self.root.protocol("WM_DELETE_WINDOW", self.exitICA)
-        self.root.bind("<Escape>",self.escapePress)
+
+        
+        # insert as "<KEYTYPE>",functionCall.
+        self.keyBinds = {}
+
+        # default key press
+        self.bindKey("<Escape>", self.escapePress)
 
     def clearSCREEN(self):
         #will clear the screen of everything
@@ -29,7 +35,18 @@ class icaSCREENS():
         self.clearSCREEN()
         newSCREEN(self.root, data)
 
+    def bindKey(self,key,functionCall): # pass a key you want to bind and the function it should call
+
+        self.root.bind(key,functionCall)
+        self.keyBinds[key] = functionCall
+
+    def removeKeyBind(self,key):
+
+        self.root.unbind(key)
+        del self.keyBinds[key]
+
     def exitICA(self): #prompt user if they want to close program
+
         userChoice = messagebox.askyesno("Exiting ICA","Are you sure you want to exit ICA?")
 
         if userChoice:
@@ -47,6 +64,7 @@ class mainMenu(icaSCREENS):
         self.root.geometry("800x600")
         menu = Menu(self.root)
         self.root.title("Immunization Compliance Application " + versionNumber)
+
 
 
         #Max windows open
@@ -875,13 +893,18 @@ class mainMenu(icaSCREENS):
     def getFullImmunizationHistory(self):
         return None
 
+    def exitICA(self): # exception error occurs from Clock when doing this
+        userChoice = messagebox.askyesno("Logging out", "Are you sure you want\nto log out?")
+
+        if userChoice:
+            self.swapTO(loginScreen,None)
 
 class med_INFO_SCREEN(icaSCREENS):
-
 
     def __init__(self, window, Patient):
         super().__init__(window)
         self.root.geometry("800x600")
+        self.bindKey("<Escape>",self.closeWindow)
 
         self.thisPatient = Patient
         self.currentUser = None
@@ -1045,6 +1068,8 @@ class med_INFO_SCREEN(icaSCREENS):
     def getPatientDemographics(self):
         pass
 
+    def closeWindow(self,event):
+        self.root.destroy()
 
 class loginScreen(icaSCREENS):
 
@@ -1055,7 +1080,7 @@ class loginScreen(icaSCREENS):
         self.background = Canvas(self.root,width=800,height=600)
         self.background.place(x=0,y=0)
 
-        self.root.bind("<Return>",self.enterPress)
+        self.bindKey("<Return>",self.enterPress)
 
         self.loginBackGround = Canvas(self.root,width=500,height=250)
         self.loginBackGround.place(x=150,y=275)
@@ -1098,7 +1123,8 @@ class loginScreen(icaSCREENS):
         #Would hash and verify user with database here
         if name == self.userName and passWord == self.passWord:
             messagebox.showinfo("Login Successful!", "Welcome back " + str(name))
-            self.root.unbind("<Return>")
+
+            self.removeKeyBind("<Return>")
             self.swapTO(mainMenu, [self.userName])
         else:
             messagebox.showerror("Login Unsuccessful", "Username or Password is invalid")
@@ -1107,8 +1133,6 @@ class loginScreen(icaSCREENS):
     def enterPress(self,event):
         print("Key Pressed!")
         self.verifyUser()
-
-
 
 def main(): # Main loop of ICA
     window = Tk()
