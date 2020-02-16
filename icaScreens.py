@@ -18,7 +18,7 @@ class icaSCREENS():
     def __init__(self,window): #all screens must contain the root window
         self.root = window
         self.root.protocol("WM_DELETE_WINDOW", self.exitICA)
-
+        self.root.bind("<Escape>",self.escapePress)
 
     def clearSCREEN(self):
         #will clear the screen of everything
@@ -35,6 +35,9 @@ class icaSCREENS():
         if userChoice:
             self.root.destroy()
 
+    def escapePress(self,event):
+        self.exitICA()
+
 class mainMenu(icaSCREENS):
 
     def __init__(self,window, data):
@@ -44,6 +47,7 @@ class mainMenu(icaSCREENS):
         self.root.geometry("800x600")
         menu = Menu(self.root)
         self.root.title("Immunization Compliance Application " + versionNumber)
+
 
         #Max windows open
         self.currentPopOut = 0
@@ -1051,6 +1055,7 @@ class loginScreen(icaSCREENS):
         self.background = Canvas(self.root,width=800,height=600)
         self.background.place(x=0,y=0)
 
+        self.root.bind("<Return>",self.enterPress)
 
         self.loginBackGround = Canvas(self.root,width=500,height=250)
         self.loginBackGround.place(x=150,y=275)
@@ -1093,10 +1098,17 @@ class loginScreen(icaSCREENS):
         #Would hash and verify user with database here
         if name == self.userName and passWord == self.passWord:
             messagebox.showinfo("Login Successful!", "Welcome back " + str(name))
+            self.root.unbind("<Return>")
             self.swapTO(mainMenu, [self.userName])
         else:
             messagebox.showerror("Login Unsuccessful", "Username or Password is invalid")
             self.passwordEntry.delete(0,END) #remove password
+
+    def enterPress(self,event):
+        print("Key Pressed!")
+        self.verifyUser()
+
+
 
 def main(): # Main loop of ICA
     window = Tk()
