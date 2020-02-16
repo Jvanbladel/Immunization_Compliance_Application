@@ -286,6 +286,7 @@ class mainMenu(icaSCREENS):
             self.advancedSearchFRAME.place(x=0,y=370,height=230,width=225)
         
             self.searchBox = 1
+            self.advancedSearch = 0
         else:
             self.searchFRAME.destroy()
             self.searchTXT.destroy()
@@ -309,7 +310,29 @@ class mainMenu(icaSCREENS):
             self.searchBox = 0
 
     def togAdvancedSearch(self):
-        self.togFilter()
+        if self.advancedSearch == 0:
+            self.togFilter()
+            self.advancedsearchBUTTON.destroy()
+            self.advancedSearchFRAME.destroy()
+            self.searchforBUTTON.destroy()
+            self.advancedsearchBUTTON = Button(self.root, text = "Less\nOptions", command=lambda: self.togAdvancedSearch())
+            self.advancedsearchBUTTON.place(x=20, y = 555, width = 75, height = 32.5)
+            self.searchforBUTTON = Button(self.root, text = "Search",bg="blue",fg="white")
+            self.searchforBUTTON.place(x=122.5, y = 555, width = 75, height = 32.5)
+            
+            self.advancedSearch = 1
+        else:
+            self.advancedsearchBUTTON.destroy()
+            self.advancedSearchFRAME.destroy()
+            self.searchforBUTTON.destroy()
+            self.searchforBUTTON = Button(self.root, text = "Search",bg="blue",fg="white")
+            self.searchforBUTTON.place(x=122.5, y = 320, width = 75, height = 32.5)
+            self.advancedsearchBUTTON = Button(self.root, text = "More\nOptions", command=lambda: self.togAdvancedSearch())
+            self.advancedsearchBUTTON.place(x=20, y = 320, width = 75, height = 32.5)
+            self.advancedSearchFRAME = LabelFrame(self.root)
+            self.advancedSearchFRAME.place(x=0,y=370,height=230,width=225)
+            self.togFilter()
+            self.advancedSearch = 0
 
     def togFilter(self):
         if self.filter == 0:
