@@ -5,6 +5,7 @@ from PIL import ImageTk,Image
 import datetime
 from tkinter import ttk
 from Patients import *
+from Security import Hash
 
 versionNumber = "(Version 1.6.2b)"
 
@@ -1073,8 +1074,10 @@ class loginScreen(icaSCREENS):
 
     def __init__(self, window, data):
         super().__init__(window)
-        self.root.title("ICA")
         self.root.geometry("800x600")
+        global versionNumber
+        self.root.title("Immunization Compliance Application " + versionNumber)
+
         self.background = Canvas(self.root,width=800,height=600)
         self.background.place(x=0,y=0)
 
@@ -1082,8 +1085,8 @@ class loginScreen(icaSCREENS):
         self.loginBackGround = Canvas(self.root,width=500,height=250)
         self.loginBackGround.place(x=150,y=275)
 
-        self.userName = "Test01"
-        self.passWord = "Test02"
+        self.userName = "f69ddcc92c44eb5a6320e241183ef551d9287d7fa6e4b2c77459145d8dd0bb37"
+        self.passWord = "b575f55adf6ed25767832bdf6fe6cbc4af4889938bf48ba99698ec683f9047de"
 
         image = Image.open("sources/ica picture.PNG")
         image = image.resize((700,200), Image.ANTIALIAS)
@@ -1113,14 +1116,19 @@ class loginScreen(icaSCREENS):
         self.cancelButton = Button(self.root,text="Cancel",bg="light blue",fg="black",width=13,height=2,command=self.exitICA)
         self.cancelButton.place(x=475,y=400)
 
+        self.userNameLabel = Label(self.root,text=versionNumber[1:-1],font=('Consolas', 16))
+        self.userNameLabel.place(x=5,y=575)
+
     def verifyUser(self):
         name = self.userNameEntry.get()
         passWord = self.passwordEntry.get()
 
         #Would hash and verify user with database here
-        if name == self.userName and passWord == self.passWord:
-            messagebox.showinfo("Login Successful!", "Welcome back " + str(name))
-            self.swapTO(mainMenu, [self.userName])
+        #print(Hash.main(passWord))
+        if Hash.main(name) == self.userName and Hash.main(passWord) == self.passWord:
+            messagebox.showinfo("Login Successful!", "Welcome back " + "Admin")#needs to be User first name
+            #querry User
+            self.swapTO(mainMenu, ["Admin"])#needs to be user object
         else:
             messagebox.showerror("Login Unsuccessful", "Username or Password is invalid")
             self.passwordEntry.delete(0,END) #remove password
@@ -1132,7 +1140,7 @@ def main(): # Main loop of ICA
 
     currentSCREEN = loginScreen(window, None)
 
-    #currentSCREEN = mainMenu(window, ["Jason Van Bladel"])
+    #currentSCREEN = mainMenu(window, ["Admin"])
 
     #currentSCREEN = med_INFO_SCREEN(window,Patient(["John","Smith","20","2/3/2013","32","30"]))
 
