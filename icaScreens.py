@@ -7,7 +7,7 @@ from tkinter import ttk
 from Patients import *
 from Security import Hash
 
-versionNumber = "(Version 1.7.5)"
+versionNumber = "(Version 1.7.5a)"
 
 class icaSCREENS():
     '''
@@ -122,6 +122,14 @@ class mainMenu(icaSCREENS):
         #update current time
         self.logout = 0
         self.clock()
+        
+    def exitICA(self): #prompt user if they want to close program
+
+        userChoice = messagebox.askyesno("Exiting ICA","Are you sure you want to exit ICA?")
+
+        if userChoice:
+            self.logoutofApp()
+            self.root.destroy()
 
     def setUpNotifications(self, notifications):
         if not self.user.userType == "Admin":
