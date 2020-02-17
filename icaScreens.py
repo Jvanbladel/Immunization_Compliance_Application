@@ -7,7 +7,7 @@ from tkinter import ttk
 from Patients import *
 from Security import Hash
 
-versionNumber = "(Version 1.7.5a)"
+versionNumber = "(Version 1.7.6)"
 
 class icaSCREENS():
     '''
@@ -218,7 +218,6 @@ class mainMenu(icaSCREENS):
         b.destroy()
 
         self.resetWorkQueue(patient.MRN)
-        print(self.largeQueue)
         
 
         
