@@ -1510,7 +1510,8 @@ def main(): # Main loop of ICA
 
     currentSCREEN = loginScreen(window, None)
 
-    #currentSCREEN = mainMenu(window, ["Jason Van Bladel"])
+    #currentUser = User([0, "Jason", "Van Bladel", "Admin"], 1)
+    #currentSCREEN = mainMenu(window, currentUser)
 
     #currentSCREEN = med_INFO_SCREEN(window,Patient(["John","Smith","20","2/3/2013","32","30"]))
 
