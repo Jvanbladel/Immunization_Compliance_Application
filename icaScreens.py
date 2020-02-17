@@ -251,7 +251,7 @@ class mainMenu(icaSCREENS):
         self.analyticsFRAME = None
         self.logout = None
         self.permissions = None
-        self.userHistory = None
+        self.systemOptions = None
         self.accountManager = None
         self.aboutUs = None
         self.guide = None
@@ -274,6 +274,9 @@ class mainMenu(icaSCREENS):
 
         #SubTabs
         self.exportTAB = 0
+
+        #Tab Pages
+        self.accountMangerPage = 0
         
 
     def toggleSearchBox(self):
@@ -718,23 +721,39 @@ class mainMenu(icaSCREENS):
             self.adminFRAME = LabelFrame(self.root)
             self.adminFRAME.place(x=260,y=30,height=90,width=110)
 
-            self.accountManager = Button(self.root, text = "Account Manager", justify = LEFT,anchor=W)
+            self.accountManager = Button(self.root, text = "Account Manager", justify = LEFT,anchor=W, command=lambda: self.createAccountMangerPage(self.user))
             self.accountManager.place(x=260,y=30,height=30,width=110)
 
-            self.userHistory = Button(self.root, text = "User History", justify = LEFT, anchor=W)
-            self.userHistory.place(x=260,y=60,height=30,width=110)
-
             self.permissions = Button(self.root, text = "Permissions", justify = LEFT,anchor=W)
-            self.permissions.place(x=260,y=90,height=30,width=110)
+            self.permissions.place(x=260,y=60,height=30,width=110)
+
+            self.systemOptions = Button(self.root, text = "System Options", justify = LEFT, anchor=W)
+            self.systemOptions.place(x=260,y=90,height=30,width=110)
           
             self.admin = 1
         else:
             self.adminFRAME.destroy()
             self.accountManager.destroy()
-            self.userHistory.destroy()
+            self.systemOptions.destroy()
             self.permissions.destroy()
             
             self.admin = 0
+
+    def createAccountMangerPage(self, user):
+        if self.accountMangerPage == 1:
+            messagebox.showerror("error window", "Already open!")
+            return
+
+        newWindow = Toplevel()
+        newWindow.title("Immunization Compliance Application Account Manger")
+        manager = adminUserScreen(newWindow,user)
+        self.accountMangerPage = 1
+
+        newWindow.wm_protocol('WM_DELETE_WINDOW', lambda newWindow=newWindow: self.accountMangerPagePopOut(newWindow))
+
+    def accountMangerPagePopOut(self, newWindow):
+        newWindow.destroy()
+        self.accountMangerPage = 0
 
     def closeALLTabs(self):
         if self.file == 1:
@@ -1506,14 +1525,43 @@ class loginScreen(icaSCREENS):
 
 class adminUserScreen(icaSCREENS):
 
-    def __init__(self, window, data):
+    def __init__(self, window, user):
+        self.user = user
         super().__init__(window)
         self.root.geometry("800x600")
         global versionNumber
         self.root.title("Immunization Compliance Application " + versionNumber)
+        self.bindKey("<Escape>",self.closeWindow)
 
         self.background = Canvas(self.root,width=800,height=600)
         self.background.place(x=0,y=0)
+
+        #Set Up  Top Bar
+        barFRAME = LabelFrame(self.root)
+        barFRAME.place(x=0,y=0,height=30,width=800)
+
+        #Add Name/date to top bar
+        self.userName = self.user.userFirstName + " " + self.user.userLastName
+        now = datetime.datetime.now()
+        current_time = now.strftime("%I:%M %p")
+        userInfo = self.userName + " " + str(current_time)
+        self.userFRAME = Label(self.root,text=userInfo,anchor=E, justify=RIGHT)
+        self.userFRAME.place(x=572.5,y=2.5,height=25,width=225)
+
+        #update current time
+        self.logout = 0
+        self.clock()
+        
+    def closeWindow(self,event):
+        self.root.destroy()
+
+    def clock(self):
+        if self.logout == 0:
+            now = datetime.datetime.now()
+            current_time = now.strftime("%I:%M %p")
+            userInfo = self.userName + " " + str(current_time)
+            self.userFRAME.config(text=userInfo)
+            self.clockUpdater = self.root.after(1000, self.clock)
 
 def main(): # Main loop of ICA
     window = Tk()
