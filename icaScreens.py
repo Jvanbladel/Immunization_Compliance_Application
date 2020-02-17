@@ -207,6 +207,22 @@ class mainMenu(icaSCREENS):
     def submitOutReachAttempt(self, patient):
         print("Out Reach", patient.fName)
 
+        #clear patient from queue
+    
+        
+        b = self.currentButton
+       
+        self.showPatient(patient.MRN, b)
+        
+        self.bList.remove(b)
+        b.destroy()
+
+        self.resetWorkQueue(patient.MRN)
+        print(self.largeQueue)
+        
+
+        
+
     def setUpTabs(self):
         fileBUTTON = Button(self.root,text="File",command=lambda: self.togFileTab())
         fileBUTTON.place(x=0,y=0,height=30,width=50)
@@ -752,7 +768,7 @@ class mainMenu(icaSCREENS):
     def addToQueue(self, frame, patientList):
         self.bList = []
         for i in range(len(patientList)):
-            if self.largeQueue == 0:
+            if self.largeQueue == 1:
                 pstr = '{0:<10} {1:<13} {2:<13} {3:<10}'.format(patientList[i].fName, patientList[i].lName, patientList[i].dueDate, patientList[i].daysOverDue)
             
                 #FONT has to be monospaced or it wont work
@@ -762,6 +778,7 @@ class mainMenu(icaSCREENS):
                 self.bList.append(b)
                 b.configure(command=lambda i=i: self.showPatient(patientList[i].MRN, self.bList[i]))
                 if patientList[i].MRN == self.currentPatient:
+                     self.currentButton = b
                      b.configure(background = "green")
             else:
                 pstr = '{0:<15} {1:<13} {2:<13} {3:<10}'.format(patientList[i].fName, patientList[i].lName, patientList[i].dueDate, patientList[i].daysOverDue)
@@ -772,8 +789,18 @@ class mainMenu(icaSCREENS):
                 b.grid(row=i)
                 self.bList.append(b)
                 if patientList[i].MRN == self.currentPatient:
+                     self.currentButton = b
                      b.configure(background = "green")
-            
+                     
+    def resetWorkQueue(self, mrn):
+        for p in self.queue:
+            if p.MRN == mrn:
+                self.queue.remove(p)
+                break
+        for b in self.bList:
+            b.destroy()
+
+        self.addToQueue(self.frame, self.queue)
 
     def showPatient(self, MRN, b):
         #hash map would be better
@@ -782,6 +809,7 @@ class mainMenu(icaSCREENS):
                 button.configure(background = self.root.cget('bg'))
             self.clearPatient()
             self.currentPatient = None
+            self.currentButton = None
         else:
             for patient in self.queue:
                 if patient.MRN == MRN:
@@ -794,8 +822,10 @@ class mainMenu(icaSCREENS):
                 #print(b == button)
                 if b == button:
                     b.configure(background = "green")
+                    self.currentButton = button
                     break
             self.currentPatient = MRN
+           
 
         if self.outreach == 1:
             self.reportText.destroy()
@@ -818,7 +848,7 @@ class mainMenu(icaSCREENS):
             return
 
         newWindow = Toplevel()
-        newWindow.title("This the patient info")
+        newWindow.title("Patient Details MRN: " + patient.MRN)
         patientInfo = med_INFO_SCREEN(newWindow,patient)
         self.currentPopOut += 1
 
@@ -893,10 +923,6 @@ class mainMenu(icaSCREENS):
 
         self.pHistoryList = []
 
-        
-
-
-       
         self.pmyframe=Frame(self.root,relief=GROOVE,width=50,height=100,bd=1)
         self.pmyframe.place(x=575,y=165,height=170,width=222.5)
         self.pcanvas=Canvas(self.pmyframe)
@@ -1094,9 +1120,10 @@ class mainMenu(icaSCREENS):
             self.headLABEL = Label(self.root, anchor= W, justify = LEFT, text = self.headerLabels, font = ("Consolas", 10))
             self.headLABEL.place(x=227.5, y=102.5,height=20, width = 345)
 
+            self.largeQueue = 1
             self.addToQueue(self.frame, self.queue)
             
-            self.largeQueue = 1
+            
             
         else:
             self.toggleSearchBox()
@@ -1124,36 +1151,10 @@ class mainMenu(icaSCREENS):
             self.minimizeButton = Button(self.root, command=lambda: self.togExpandQueue())
             self.minimizeButton.place(x= 560, y=102.5, width = 10, height = 10)
 
+            self.largeQueue = 0
             self.addToQueue(self.frame, self.queue)
             
-            self.largeQueue = 0
-
-    def getHistory(zelf):
-        return [[["Flu", "45", "Covered"], ["Hepatitis B", "12", "Covered"], ["Pollo", "325", "Uncovered"], ["Chickpox", "15", "Uncovered"], ["MMR", "749", "Partial"], ["Rotavirus","45", "Covered"], ["Yellow Fever", "365", "Partial"]], "3/23/14"]
-
-    def getContact(self):
-        return [["(925)980-4048", "Mobile"], "austin@gmail.com", "English", "Phone"]
-
-    def getFullSummary(self):
-        return None
-    
-    def getFullHistory(self):
-        return None
-
-    def getFullContact(self):
-        return None
-
-    def getFullInsurance(self):
-        return None
-
-    def getGarentor(self):
-        return None
-
-    def getLastService(self):
-        return None
-
-    def getFullImmunizationHistory(self):
-        return None
+            
 
     def logOut(self,event):
         userChoice = messagebox.askyesno("Logging out", "Are you sure you want\nto log out?")
@@ -1503,15 +1504,27 @@ class loginScreen(icaSCREENS):
     def enterPress(self,event):
         self.verifyUser()
 
+
+class adminUserScreen(icaSCREENS):
+
+    def __init__(self, window, data):
+        super().__init__(window)
+        self.root.geometry("800x600")
+        global versionNumber
+        self.root.title("Immunization Compliance Application " + versionNumber)
+
+        self.background = Canvas(self.root,width=800,height=600)
+        self.background.place(x=0,y=0)
+
 def main(): # Main loop of ICA
     window = Tk()
     window.resizable(0, 0)
     window.title(versionNumber)
 
-    currentSCREEN = loginScreen(window, None)
+    #currentSCREEN = loginScreen(window, None)
 
-    #currentUser = User([0, "Jason", "Van Bladel", "Admin"], 1)
-    #currentSCREEN = mainMenu(window, currentUser)
+    currentUser = User([0, "Jason", "Van Bladel", "Admin"], 1)
+    currentSCREEN = mainMenu(window, currentUser)
 
     #currentSCREEN = med_INFO_SCREEN(window,Patient(["John","Smith","20","2/3/2013","32","30"]))
 
