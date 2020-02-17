@@ -120,38 +120,40 @@ class mainMenu(icaSCREENS):
         #self.notificationLABEL.place(x=2.5,y= 32.5)
 
         #update current time
+        self.logout = 0
         self.clock()
 
     def setUpNotifications(self, notifications):
-        imageSource = "sources/notifications/notification_1.PNG"
-        notificationImage = Image.open(imageSource)
-        notificationImage = notificationImage.resize((18,18), Image.ANTIALIAS)
-        self.notificationIMAGE1 = ImageTk.PhotoImage(notificationImage)
-        imageSource = "sources/notifications/notification_2.PNG"
-        notificationImage = Image.open(imageSource)
-        notificationImage = notificationImage.resize((18,18), Image.ANTIALIAS)
-        self.notificationIMAGE2 = ImageTk.PhotoImage(notificationImage)
-        imageSource = "sources/notifications/notification_3.PNG"
-        notificationImage = Image.open(imageSource)
-        notificationImage = notificationImage.resize((18,18), Image.ANTIALIAS)
-        self.notificationIMAGE3 = ImageTk.PhotoImage(notificationImage)
-        
-        for n in range(len(notifications)):
-            if notifications[n][0] == 1:
-                notificationLABEL = Label(self.root,image=self.notificationIMAGE1)
-                notificationLABEL.place(x=2.5,y= 32.5 + (n * 22.5))
-                notificationLABEL1 = Label(self.root, text = notifications[n][1])
-                notificationLABEL1.place(x=25,y= 32.5 + (n * 22.5))
-            if notifications[n][0] == 2:
-                notificationLABEL = Label(self.root,image=self.notificationIMAGE2)
-                notificationLABEL.place(x=2.5,y= 32.5 + (n * 22.5))
-                notificationLABEL1 = Label(self.root, text = notifications[n][1])
-                notificationLABEL1.place(x=25,y= 32.5 + (n * 22.5))
-            if notifications[n][0] == 3:
-                notificationLABEL = Label(self.root,image=self.notificationIMAGE3)
-                notificationLABEL.place(x=2.5,y= 32.5 + (n * 22.5))
-                notificationLABEL1 = Label(self.root, text = notifications[n][1])
-                notificationLABEL1.place(x=25,y= 32.5 + (n * 22.5))
+        if not self.user.userType == "Admin":
+            imageSource = "sources/notifications/notification_1.PNG"
+            notificationImage = Image.open(imageSource)
+            notificationImage = notificationImage.resize((18,18), Image.ANTIALIAS)
+            self.notificationIMAGE1 = ImageTk.PhotoImage(notificationImage)
+            imageSource = "sources/notifications/notification_2.PNG"
+            notificationImage = Image.open(imageSource)
+            notificationImage = notificationImage.resize((18,18), Image.ANTIALIAS)
+            self.notificationIMAGE2 = ImageTk.PhotoImage(notificationImage)
+            imageSource = "sources/notifications/notification_3.PNG"
+            notificationImage = Image.open(imageSource)
+            notificationImage = notificationImage.resize((18,18), Image.ANTIALIAS)
+            self.notificationIMAGE3 = ImageTk.PhotoImage(notificationImage)
+            
+            for n in range(len(notifications)):
+                if notifications[n][0] == 1:
+                    notificationLABEL = Label(self.root,image=self.notificationIMAGE1)
+                    notificationLABEL.place(x=2.5,y= 32.5 + (n * 22.5))
+                    notificationLABEL1 = Label(self.root, text = notifications[n][1])
+                    notificationLABEL1.place(x=25,y= 32.5 + (n * 22.5))
+                if notifications[n][0] == 2:
+                    notificationLABEL = Label(self.root,image=self.notificationIMAGE2)
+                    notificationLABEL.place(x=2.5,y= 32.5 + (n * 22.5))
+                    notificationLABEL1 = Label(self.root, text = notifications[n][1])
+                    notificationLABEL1.place(x=25,y= 32.5 + (n * 22.5))
+                if notifications[n][0] == 3:
+                    notificationLABEL = Label(self.root,image=self.notificationIMAGE3)
+                    notificationLABEL.place(x=2.5,y= 32.5 + (n * 22.5))
+                    notificationLABEL1 = Label(self.root, text = notifications[n][1])
+                    notificationLABEL1.place(x=25,y= 32.5 + (n * 22.5))
 
     def toggleOutReach(self, patient):
         if self.outreach == 0:
@@ -209,12 +211,13 @@ class mainMenu(icaSCREENS):
 
         helpBUTTON = Button(self.root,text="Help",command=lambda: self.togHelpTab())
         helpBUTTON.place(x=150,y=0,height=30,width=50)
+        
+        if self.user.userType == "Admin":
+            analyticBUTTON = Button(self.root,text="Analytics",command=lambda: self.togAnalyticsTab())
+            analyticBUTTON.place(x=200,y=0,height=30,width=60)
 
-        analyticBUTTON = Button(self.root,text="Analytics",command=lambda: self.togAnalyticsTab())
-        analyticBUTTON.place(x=200,y=0,height=30,width=60)
-
-        adminBUTTON = Button(self.root,text="Admin",command=lambda: self.togAdminTab())
-        adminBUTTON.place(x=260,y=0,height=30,width=50)
+            adminBUTTON = Button(self.root,text="Admin",command=lambda: self.togAdminTab())
+            adminBUTTON.place(x=260,y=0,height=30,width=50)
 
         #Set Up for TABS
         self.fileFRAME = None
@@ -1036,16 +1039,18 @@ class mainMenu(icaSCREENS):
             self.contact = 0
             
     def clock(self):
-        now = datetime.datetime.now()
-        current_time = now.strftime("%I:%M %p")
-        userInfo = self.userName + " " + str(current_time)
-        self.userFRAME.config(text=userInfo)
-        #lab['text'] = time
-        self.clockUpdater = self.root.after(1000, self.clock)
+        if self.logout == 0:
+            now = datetime.datetime.now()
+            current_time = now.strftime("%I:%M %p")
+            userInfo = self.userName + " " + str(current_time)
+            self.userFRAME.config(text=userInfo)
+            self.clockUpdater = self.root.after(1000, self.clock)
             
     def logoutofApp(self):
         self.togFileTab()
         print("Logging out")
+        self.user.endSession()
+        self.logout = 1
         self.swapTO(loginScreen, None)
         print("Successful Log out!")
 
@@ -1455,9 +1460,9 @@ class loginScreen(icaSCREENS):
         #Would send Hash.main(name) to data base and recieve hashed pword from database
         #check if Hash.main(passWord) == recieved hashed pword
         
-        tempUserName = "f69ddcc92c44eb5a6320e241183ef551d9287d7fa6e4b2c77459145d8dd0bb37" # Admin01
+        tempUserName = "f69ddcc92c44eb5a6320e241183ef551d9287d7fa6e4b2c77459145d8dd0bb37" # Test01
 
-        tempPassWord = "b575f55adf6ed25767832bdf6fe6cbc4af4889938bf48ba99698ec683f9047de" # Admin02
+        tempPassWord = "b575f55adf6ed25767832bdf6fe6cbc4af4889938bf48ba99698ec683f9047de" # Test02
 
         tempUserName1 = "67ed235e1e075a7214902e1af0cb4bb4ad3ba0fcf084411418074cf4247004cc" # User01
 
