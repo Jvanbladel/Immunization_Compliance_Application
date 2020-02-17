@@ -1,19 +1,22 @@
 import pyodbc
 
 
-def main():
+def select(column, table):
     # build connection with the database
 
-    conn = pyodbc.connect('Driver={SQL Server};'
-                            'Server=160.153.93.66;'
-                            'Database=pacific_ica;'
-                            'Trusted_Connection=yes;')
+    conn = pyodbc.connect('Driver={SQL Server};\
+                            Server=pacific-ica.cvb4dklzq2km.us-west-1.rds.amazonaws.com, 1433;\
+                            Database=db_pacific_ica;uid=admin;pwd=Animal05')
 
-    cursor = conn.connect()
+    cursor = conn.cursor()
+    print("connected")
 
-    string = "CREATE TABLE TestTable(symbol varchar(15), leverage double, shares integer, price double)"
+    string = "SELECT TOP 10 "+column+" FROM " +table
     cursor.execute(string)
-    conn.commit()
+    # conn.commit()-- save any changes to the database
+    for row in cursor:
+        print(row)
+    # print results
 
     # send sql query
     """sql = '''
@@ -24,3 +27,8 @@ def main():
 
     for row in cursor:
         print(row)"""
+
+    conn.close()
+
+
+select("PatientID", "Patient_Table")
