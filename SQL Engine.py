@@ -11,11 +11,11 @@ def select(column, table):
     cursor = conn.cursor()
     print("connected")
 
-    string = "SELECT TOP 10 "+column+" FROM " +table
+    string = "SELECT "+column+" FROM " + table
     cursor.execute(string)
     # conn.commit()-- save any changes to the database
-    for row in cursor:
-        print(row)
+    # for row in cursor:
+    #    print(row)
     # print results
 
     # send sql query
@@ -29,6 +29,7 @@ def select(column, table):
         print(row)"""
 
     conn.close()
+    return cursor
 
 
 select("PatientID", "Patient_Table")
