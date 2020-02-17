@@ -756,7 +756,7 @@ class mainMenu(icaSCREENS):
             
                 #FONT has to be monospaced or it wont work
             
-                b = Button(frame, text = pstr,anchor=W, justify=LEFT, width = 100, font = ('Consolas', 10), command=lambda i=i: self.showPatient(patientList[i].MRN, b))
+                b = Button(frame, text = pstr,anchor=W, justify=LEFT, width = 100, font = ('Consolas', 10), command=lambda i=i: self.showPatient(patientList[i].MRN, self.bList[i]))
                 b.grid(row=i)
                 self.bList.append(b)
                 if patientList[i].MRN == self.currentPatient:
