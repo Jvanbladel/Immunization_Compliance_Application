@@ -247,7 +247,7 @@ class mainMenu(icaSCREENS):
             historyButton.place(x=currentX,y=0,height=30,width=50)
             currentX = currentX + 50
             
-        if self.user.permissions.approveUsers == 1 or self.user.permissions.setPermissions == 1 or self.user.permissions.createAlerts == 1:
+        if self.user.permissions.approveUsers == 1 or self.user.permissions.setPermissions == 1 or self.user.permissions.createAlerts == 1 or self.user.permissions.createAlerts == 1:
             self.adminTABX = currentX
             adminBUTTON = Button(self.root,text="Admin",command=lambda: self.togAdminTab())
             adminBUTTON.place(x=currentX,y=0,height=30,width=50)
@@ -774,20 +774,38 @@ class mainMenu(icaSCREENS):
         if self.admin == 0:
             self.closeALLTabs()
 
-            self.accountManager = Button(self.root, text = "Account Manager", justify = LEFT,anchor=W)
-            self.accountManager.place(x=self.adminTABX,y=30,height=30,width=110)
+            currentY = 30
 
-            self.permissions = Button(self.root, text = "Permissions", justify = LEFT,anchor=W)
-            self.permissions.place(x=self.adminTABX,y=60,height=30,width=110)
+            if self.user.permissions.createAlerts == 1:
+                self.createAlerts = Button(self.root, text = "Alert Manger", justify = LEFT,anchor=W)
+                self.createAlerts.place(x=self.adminTABX,y=currentY,height=30,width=125)
+                currentY = currentY + 30
+            
+            if self.user.permissions.approveUsers == 1:
+                self.accountManager = Button(self.root, text = "Account Manager", justify = LEFT,anchor=W)
+                self.accountManager.place(x=self.adminTABX,y=currentY,height=30,width=125)
+                currentY = currentY + 30
 
-            self.systemOptions = Button(self.root, text = "System Options", justify = LEFT, anchor=W)
-            self.systemOptions.place(x=self.adminTABX,y=90,height=30,width=110)
+            if self.user.permissions.setPermissions == 1:
+                self.permissions = Button(self.root, text = "Permission Manager", justify = LEFT,anchor=W)
+                self.permissions.place(x=self.adminTABX,y=currentY,height=30,width=125)
+                currentY = currentY + 30
+
+            if self.user.permissions.setSystemOptions == 1:
+                self.systemOptions = Button(self.root, text = "System Manager", justify = LEFT, anchor=W)
+                self.systemOptions.place(x=self.adminTABX,y=currentY,height=30,width=125)
+                currentY = currentY + 30
           
             self.admin = 1
         else:
-            self.accountManager.destroy()
-            self.systemOptions.destroy()
-            self.permissions.destroy()
+            if self.user.permissions.createAlerts == 1:
+                self.createAlerts.destroy()
+            if self.user.permissions.approveUsers == 1:
+                self.accountManager.destroy()
+            if self.user.permissions.setSystemOptions == 1:
+                self.systemOptions.destroy()
+            if self.user.permissions.setPermissions == 1:
+                self.permissions.destroy()
             
             self.admin = 0
 
@@ -900,7 +918,7 @@ class mainMenu(icaSCREENS):
 
     def xPand(self,patient):
 
-        if self.currentPopOut >= 5:
+        if self.currentPopOut >= self.user.permissions.numberOfPatientsOpen:
             messagebox.showerror("error window", "Too many windows already open!")
             return
 
@@ -1577,6 +1595,7 @@ class Permissions():
         self.approveUsers = permissionList[11]
         self.numberOfPatientsOpen = permissionList[12]
         self.goalNumberOfOutReaches = permissionList[13]
+        self.setSystemOptions = permissionList[14]
 
 class UserAction():
     def __init__(self, actionType, data):
@@ -1635,9 +1654,9 @@ class User():
             self.currentUserSession = UserSession(self.userId, None)
         #Querry User Permissions Here
         if self.userType == "Admin":
-            self.permissions = Permissions([1,1,1,1,1,1,1,1,1,1,1,1,10,100])
+            self.permissions = Permissions([1,1,1,1,1,1,1,1,1,1,1,1,10,100, 1])
         else:
-            self.permissions = Permissions([0,0,1,0,1,0,0,0,1,1,0,0,5,50])
+            self.permissions = Permissions([0,0,1,0,1,0,0,0,1,1,0,0,5,50, 0])
         
     def addAction(self, action):
         self.currentUserSession.addAction(action)
