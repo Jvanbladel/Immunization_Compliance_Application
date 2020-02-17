@@ -7,7 +7,7 @@ from tkinter import ttk
 from Patients import *
 from Security import Hash
 
-versionNumber = "(Version 1.7.7)"
+versionNumber = "(Version 1.7.7b)"
 
 class icaSCREENS():
     '''
@@ -1164,7 +1164,7 @@ class mainMenu(icaSCREENS):
         print("Successful Log out!")
 
     def togExpandQueue(self):
-
+        self.closeALLTabs()
         if not self.myframe == None:
             self.myframe.destroy()
             self.canvas.destroy()
@@ -1654,9 +1654,9 @@ class User():
             self.currentUserSession = UserSession(self.userId, None)
         #Querry User Permissions Here
         if self.userType == "Admin":
-            self.permissions = Permissions([1,1,1,1,1,1,1,1,1,1,1,1,10,100, 1])
+            self.permissions = Permissions([1,1,1,1,1,1,1,1,1,1,1,1,10,100,1])
         else:
-            self.permissions = Permissions([0,0,1,0,1,0,0,0,1,1,0,0,5,50, 0])
+            self.permissions = Permissions([0,0,1,0,1,0,0,0,1,1,0,0,5,50,0])
         
     def addAction(self, action):
         self.currentUserSession.addAction(action)
