@@ -7,7 +7,7 @@ from tkinter import ttk
 from Patients import *
 from Security import Hash
 
-versionNumber = "(Version 1.7.4)"
+versionNumber = "(Version 1.7.7b)"
 
 class icaSCREENS():
     '''
@@ -18,7 +18,6 @@ class icaSCREENS():
     def __init__(self,window): #all screens must contain the root window
         self.root = window
         self.root.protocol("WM_DELETE_WINDOW", self.exitICA)
-
 
         # insert as "<KEYTYPE>",functionCall.
         self.keyBinds = {}
@@ -59,7 +58,8 @@ class icaSCREENS():
 
 class mainMenu(icaSCREENS):
 
-    def __init__(self,window, data):
+    def __init__(self,window, user):
+        self.user = user
         super().__init__(window)
         #setUpWindow
         global versionNumber
@@ -79,7 +79,7 @@ class mainMenu(icaSCREENS):
         barFRAME.place(x=0,y=0,height=30,width=800)
 
         #Add Name/date to top bar
-        self.userName = data[0]
+        self.userName = self.user.userFirstName + " " + self.user.userLastName
         now = datetime.datetime.now()
         current_time = now.strftime("%I:%M %p")
         userInfo = self.userName + " " + str(current_time)
@@ -113,7 +113,7 @@ class mainMenu(icaSCREENS):
         self.reportingFRAME.place(x=575,y=400,height=200,width=225)
         self.outreach = 0
 
-        #Notifications
+        #Notifications based on user in future
         self.setUpNotifications([[3,"Very Important Message!"],[2,"Important Message."],[1,"Notification Message"]])
 
         #imageSource = "sources/notifications/notification_" + str(1) + ".PNG"
@@ -124,7 +124,16 @@ class mainMenu(icaSCREENS):
         #self.notificationLABEL.place(x=2.5,y= 32.5)
 
         #update current time
+        self.logout = 0
         self.clock()
+
+    def exitICA(self): #prompt user if they want to close program
+
+        userChoice = messagebox.askyesno("Exiting ICA","Are you sure you want to exit ICA?")
+
+        if userChoice:
+            self.logoutofApp()
+            self.root.destroy()
 
     def setUpNotifications(self, notifications):
         imageSource = "sources/notifications/notification_1.PNG"
@@ -139,7 +148,7 @@ class mainMenu(icaSCREENS):
         notificationImage = Image.open(imageSource)
         notificationImage = notificationImage.resize((18,18), Image.ANTIALIAS)
         self.notificationIMAGE3 = ImageTk.PhotoImage(notificationImage)
-        
+
         for n in range(len(notifications)):
             if notifications[n][0] == 1:
                 notificationLABEL = Label(self.root,image=self.notificationIMAGE1)
@@ -199,7 +208,22 @@ class mainMenu(icaSCREENS):
 
 
     def submitOutReachAttempt(self, patient):
+        if self.user.permissions.outReach == 0:
+            return
         print("Out Reach", patient.fName)
+
+        #clear patient from queue
+
+
+        b = self.currentButton
+
+        self.showPatient(patient.MRN, b)
+
+        self.bList.remove(b)
+        b.destroy()
+
+        self.resetWorkQueue(patient.MRN)
+
 
     def setUpTabs(self):
         fileBUTTON = Button(self.root,text="File",command=lambda: self.togFileTab())
@@ -214,11 +238,27 @@ class mainMenu(icaSCREENS):
         helpBUTTON = Button(self.root,text="Help",command=lambda: self.togHelpTab())
         helpBUTTON.place(x=150,y=0,height=30,width=50)
 
-        analyticBUTTON = Button(self.root,text="Analytics",command=lambda: self.togAnalyticsTab())
-        analyticBUTTON.place(x=200,y=0,height=30,width=60)
+        currentX = 200
 
-        adminBUTTON = Button(self.root,text="Admin",command=lambda: self.togAdminTab())
-        adminBUTTON.place(x=260,y=0,height=30,width=50)
+        if self.user.permissions.viewSelfAnalytics == 1 or self.user.permissions.viewSystemAnalytics == 1:
+            self.analyticTABX = currentX
+            analyticBUTTON = Button(self.root,text="Analytics",command=lambda: self.togAnalyticsTab())
+            analyticBUTTON.place(x=currentX,y=0,height=30,width=60)
+            currentX = currentX + 60
+
+        if self.user.permissions.viewHistoryOfSelf == 1 or self.user.permissions.viewHistoryOfEntireSystem == 1:
+            self.historyTABX = currentX
+            historyButton = Button(self.root,text="History",command=lambda: self.togHistoryTab())
+            historyButton.place(x=currentX,y=0,height=30,width=50)
+            currentX = currentX + 50
+
+        if self.user.permissions.approveUsers == 1 or self.user.permissions.setPermissions == 1 or self.user.permissions.createAlerts == 1 or self.user.permissions.createAlerts == 1:
+            self.adminTABX = currentX
+            adminBUTTON = Button(self.root,text="Admin",command=lambda: self.togAdminTab())
+            adminBUTTON.place(x=currentX,y=0,height=30,width=50)
+            currentX = currentX + 50
+
+
 
         #Set Up for TABS
         self.fileFRAME = None
@@ -229,7 +269,7 @@ class mainMenu(icaSCREENS):
         self.analyticsFRAME = None
         self.logout = None
         self.permissions = None
-        self.userHistory = None
+        self.systemOptions = None
         self.accountManager = None
         self.aboutUs = None
         self.guide = None
@@ -249,10 +289,14 @@ class mainMenu(icaSCREENS):
         self.help = 0
         self.admin = 0
         self.analytics = 0
+        self.history = 0
 
         #SubTabs
         self.exportTAB = 0
-        
+
+        #Tab Pages
+        self.accountMangerPage = 0
+
 
     def toggleSearchBox(self):
         if self.searchBox == 0:
@@ -591,36 +635,44 @@ class mainMenu(icaSCREENS):
     def togFileTab(self):
         if self.file == 0:
             self.closeALLTabs()
-            self.fileFRAME = LabelFrame(self.root)
-            self.fileFRAME.place(x=0,y=30,height=120,width=100)
+            #self.fileFRAME = LabelFrame(self.root)
+            #self.fileFRAME.place(x=0,y=30,height=120,width=100)
+            currentY = 30
+            if self.user.permissions.importData == 1:
+                self.importData = Button(self.root, text = "Import", justify = LEFT,anchor=W)
+                self.importData.place(x=0,y=currentY,height=30,width=100)
+                currentY = currentY + 30
 
-            self.importData = Button(self.root, text = "Import", justify = LEFT,anchor=W)
-            self.importData.place(x=0,y=30,height=30,width=100)
-            
-            self.export = Button(self.root, text = "Export", justify = LEFT,anchor=W, command=lambda: self.togExportTab())
-            self.export.place(x=0,y=60,height=30,width=100)
+            if self.user.permissions.exportData == 1:
+                self.export = Button(self.root, text = "Export", justify = LEFT,anchor=W, command=lambda: self.togExportTab())
+                self.export.place(x=0,y=currentY,height=30,width=100)
+                currentY = currentY + 30
 
-            self.print = Button(self.root, text = "Print", justify = LEFT,anchor=W)
-            self.print.place(x=0,y=90,height=30,width=100)
+
+            if self.user.permissions.printFiles == 1:
+                self.print = Button(self.root, text = "Print", justify = LEFT,anchor=W)
+                self.print.place(x=0,y=currentY,height=30,width=100)
+                currentY = currentY + 30
             
             self.logout = Button(self.root, text = "Log out", justify = LEFT,anchor=W, command=lambda: self.logoutofApp())
-            self.logout.place(x=0,y=120,height=30,width=100)
+            self.logout.place(x=0,y=currentY,height=30,width=100)
             
             self.file = 1
         else:
-            if self.exportTAB == 1:
-                self.togExportTab()
-            self.fileFRAME.destroy()
+            #self.fileFRAME.destroy()
             self.logout.destroy()
-            self.export.destroy()
-            self.print.destroy()
-            self.importData.destroy()
+            if self.user.permissions.exportData == 1:
+                if self.exportTAB == 1:
+                    self.togExportTab()
+                self.export.destroy()
+            if self.user.permissions.printFiles == 1:
+                self.print.destroy()
+            if self.user.permissions.importData == 1:
+                self.importData.destroy()
             self.file = 0
 
     def togExportTab(self):
         if self.exportTAB == 0:
-            self.exportFRAME = LabelFrame(self.root)
-            self.exportFRAME.place(x=100,y=30,height=90,width=50)
 
             self.pdf = Button(self.root, text = ".PDF", justify = LEFT,anchor=W)
             self.pdf.place(x=100,y=30,height=30,width=50)
@@ -633,7 +685,6 @@ class mainMenu(icaSCREENS):
             
             self.exportTAB = 1
         else:
-            self.exportFRAME.destroy()
             self.pdf.destroy()
             self.txt.destroy()
             self.cvs.destroy()
@@ -642,21 +693,15 @@ class mainMenu(icaSCREENS):
     def togOptionsTab(self):
         if self.option == 0:
             self.closeALLTabs()
-            self.optionFRAME = LabelFrame(self.root)
-            self.optionFRAME.place(x=50,y=30,height=200,width=100)
             self.option = 1
         else:
-            self.optionFRAME.destroy()
             self.option = 0
             
     def togReportTab(self):
         if self.report == 0:
             self.closeALLTabs()
-            self.reportFRAME = LabelFrame(self.root)
-            self.reportFRAME.place(x=100,y=30,height=200,width=100)
             self.report = 1
         else:
-            self.reportFRAME.destroy()
             self.report = 0
 
     def togHelpTab(self):
@@ -682,35 +727,90 @@ class mainMenu(icaSCREENS):
     def togAnalyticsTab(self):
         if self.analytics == 0:
             self.closeALLTabs()
-            self.analyticsFRAME = LabelFrame(self.root)
-            self.analyticsFRAME.place(x=200,y=30,height=200,width=100)
+            #self.analyticsFRAME = LabelFrame(self.root)
+            #self.analyticsFRAME.place(x=200,y=30,height=200,width=100)
+
+            currentY = 30
+
+            if self.user.permissions.viewSelfAnalytics == 1:
+                self.myAnalytics = Button(self.root, text = "My Analytics", justify = LEFT,anchor=W)
+                self.myAnalytics.place(x=self.analyticTABX,y=currentY,height=30,width=110)
+                currentY = currentY + 30
+
+            if self.user.permissions.viewSystemAnalytics == 1:
+                self.systemAnalytics = Button(self.root, text = "System Analytics", justify = LEFT,anchor=W)
+                self.systemAnalytics.place(x=self.analyticTABX,y=currentY,height=30,width=110)
+                currentY = currentY + 30
             
             self.analytics = 1
         else:
-            self.analyticsFRAME.destroy()
+            #self.analyticsFRAME.destroy()
+            if self.user.permissions.viewSelfAnalytics == 1:
+                self.myAnalytics.destroy()
+            if self.user.permissions.viewSystemAnalytics == 1:
+                self.systemAnalytics.destroy()
             self.analytics = 0
+
+    def togHistoryTab(self):
+        if self.history == 0:
+            self.closeALLTabs()
+
+            currentY = 30
+
+            if self.user.permissions.viewHistoryOfSelf == 1:
+                self.myHistory = Button(self.root, text = "My History", justify = LEFT,anchor=W)
+                self.myHistory.place(x=self.historyTABX,y=currentY,height=30,width=100)
+                currentY = currentY + 30
+
+            if self.user.permissions.viewHistoryOfEntireSystem == 1:
+                self.systemHistory = Button(self.root, text = "System History", justify = LEFT,anchor=W)
+                self.systemHistory.place(x=self.historyTABX,y=currentY,height=30,width=100)
+                currentY = currentY + 30
+
+            self.history = 1
+        else:
+            if self.user.permissions.viewHistoryOfSelf == 1:
+                self.myHistory.destroy()
+            if self.user.permissions.viewHistoryOfEntireSystem == 1:
+                self.systemHistory.destroy()
+            self.history = 0
 
     def togAdminTab(self):
         if self.admin == 0:
             self.closeALLTabs()
-            self.adminFRAME = LabelFrame(self.root)
-            self.adminFRAME.place(x=260,y=30,height=90,width=110)
 
-            self.accountManager = Button(self.root, text = "Account Manager", justify = LEFT,anchor=W)
-            self.accountManager.place(x=260,y=30,height=30,width=110)
+            currentY = 30
 
-            self.userHistory = Button(self.root, text = "User History", justify = LEFT, anchor=W)
-            self.userHistory.place(x=260,y=60,height=30,width=110)
+            if self.user.permissions.createAlerts == 1:
+                self.createAlerts = Button(self.root, text = "Alert Manger", justify = LEFT,anchor=W)
+                self.createAlerts.place(x=self.adminTABX,y=currentY,height=30,width=125)
+                currentY = currentY + 30
 
-            self.permissions = Button(self.root, text = "Permissions", justify = LEFT,anchor=W)
-            self.permissions.place(x=260,y=90,height=30,width=110)
+            if self.user.permissions.approveUsers == 1:
+                self.accountManager = Button(self.root, text = "Account Manager", justify = LEFT,anchor=W)
+                self.accountManager.place(x=self.adminTABX,y=currentY,height=30,width=125)
+                currentY = currentY + 30
+
+            if self.user.permissions.setPermissions == 1:
+                self.permissions = Button(self.root, text = "Permission Manager", justify = LEFT,anchor=W)
+                self.permissions.place(x=self.adminTABX,y=currentY,height=30,width=125)
+                currentY = currentY + 30
+
+            if self.user.permissions.setSystemOptions == 1:
+                self.systemOptions = Button(self.root, text = "System Manager", justify = LEFT, anchor=W)
+                self.systemOptions.place(x=self.adminTABX,y=currentY,height=30,width=125)
+                currentY = currentY + 30
           
             self.admin = 1
         else:
-            self.adminFRAME.destroy()
-            self.accountManager.destroy()
-            self.userHistory.destroy()
-            self.permissions.destroy()
+            if self.user.permissions.createAlerts == 1:
+                self.createAlerts.destroy()
+            if self.user.permissions.approveUsers == 1:
+                self.accountManager.destroy()
+            if self.user.permissions.setSystemOptions == 1:
+                self.systemOptions.destroy()
+            if self.user.permissions.setPermissions == 1:
+                self.permissions.destroy()
             
             self.admin = 0
 
@@ -733,6 +833,9 @@ class mainMenu(icaSCREENS):
         if self.analytics == 1:
             self.togAnalyticsTab()
 
+        if self.history ==1:
+            self.togHistoryTab()
+
     def createQueue(self):
         f = open("UITestData.txt", "r")
         pList = []
@@ -745,7 +848,7 @@ class mainMenu(icaSCREENS):
     def addToQueue(self, frame, patientList):
         self.bList = []
         for i in range(len(patientList)):
-            if self.largeQueue == 0:
+            if self.largeQueue == 1:
                 pstr = '{0:<10} {1:<13} {2:<13} {3:<10}'.format(patientList[i].fName, patientList[i].lName, patientList[i].dueDate, patientList[i].daysOverDue)
             
                 #FONT has to be monospaced or it wont work
@@ -755,18 +858,29 @@ class mainMenu(icaSCREENS):
                 self.bList.append(b)
                 b.configure(command=lambda i=i: self.showPatient(patientList[i].MRN, self.bList[i]))
                 if patientList[i].MRN == self.currentPatient:
+                     self.currentButton = b
                      b.configure(background = "green")
             else:
                 pstr = '{0:<15} {1:<13} {2:<13} {3:<10}'.format(patientList[i].fName, patientList[i].lName, patientList[i].dueDate, patientList[i].daysOverDue)
             
                 #FONT has to be monospaced or it wont work
             
-                b = Button(frame, text = pstr,anchor=W, justify=LEFT, width = 100, font = ('Consolas', 10), command=lambda i=i: self.showPatient(patientList[i].MRN, b))
+                b = Button(frame, text = pstr,anchor=W, justify=LEFT, width = 100, font = ('Consolas', 10), command=lambda i=i: self.showPatient(patientList[i].MRN, self.bList[i]))
                 b.grid(row=i)
                 self.bList.append(b)
                 if patientList[i].MRN == self.currentPatient:
+                     self.currentButton = b
                      b.configure(background = "green")
-            
+
+    def resetWorkQueue(self, mrn):
+        for p in self.queue:
+            if p.MRN == mrn:
+                self.queue.remove(p)
+                break
+        for b in self.bList:
+            b.destroy()
+
+        self.addToQueue(self.frame, self.queue)
 
     def showPatient(self, MRN, b):
         #hash map would be better
@@ -775,6 +889,7 @@ class mainMenu(icaSCREENS):
                 button.configure(background = self.root.cget('bg'))
             self.clearPatient()
             self.currentPatient = None
+            self.currentButton = None
         else:
             for patient in self.queue:
                 if patient.MRN == MRN:
@@ -787,8 +902,10 @@ class mainMenu(icaSCREENS):
                 #print(b == button)
                 if b == button:
                     b.configure(background = "green")
+                    self.currentButton = button
                     break
             self.currentPatient = MRN
+
 
         if self.outreach == 1:
             self.reportText.destroy()
@@ -806,12 +923,12 @@ class mainMenu(icaSCREENS):
 
     def xPand(self,patient):
 
-        if self.currentPopOut >= 5:
+        if self.currentPopOut >= self.user.permissions.numberOfPatientsOpen:
             messagebox.showerror("error window", "Too many windows already open!")
             return
 
         newWindow = Toplevel()
-        newWindow.title("This the patient info")
+        newWindow.title("Patient Details MRN: " + patient.MRN)
         patientInfo = med_INFO_SCREEN(newWindow,patient)
         self.currentPopOut += 1
 
@@ -886,10 +1003,6 @@ class mainMenu(icaSCREENS):
 
         self.pHistoryList = []
 
-        
-
-
-       
         self.pmyframe=Frame(self.root,relief=GROOVE,width=50,height=100,bd=1)
         self.pmyframe.place(x=575,y=165,height=170,width=222.5)
         self.pcanvas=Canvas(self.pmyframe)
@@ -1040,23 +1153,25 @@ class mainMenu(icaSCREENS):
             self.contact = 0
             
     def clock(self):
-        now = datetime.datetime.now()
-        current_time = now.strftime("%I:%M %p")
-        userInfo = self.userName + " " + str(current_time)
-        self.userFRAME.config(text=userInfo)
-        #lab['text'] = time
-        self.clockUpdater = self.root.after(1000, self.clock)
+        if self.logout == 0:
+            now = datetime.datetime.now()
+            current_time = now.strftime("%I:%M %p")
+            userInfo = self.userName + " " + str(current_time)
+            self.userFRAME.config(text=userInfo)
+            self.clockUpdater = self.root.after(1000, self.clock)
             
     def logoutofApp(self):
         self.togFileTab()
         print("Logging out")
+        self.user.endSession()
+        self.logout = 1
         self.root.after_cancel(self.clockUpdater)
         self.clockUpdater = None
         self.swapTO(loginScreen, None)
         print("Successful Log out!")
 
     def togExpandQueue(self):
-
+        self.closeALLTabs()
         if not self.myframe == None:
             self.myframe.destroy()
             self.canvas.destroy()
@@ -1087,9 +1202,10 @@ class mainMenu(icaSCREENS):
             self.headLABEL = Label(self.root, anchor= W, justify = LEFT, text = self.headerLabels, font = ("Consolas", 10))
             self.headLABEL.place(x=227.5, y=102.5,height=20, width = 345)
 
+            self.largeQueue = 1
             self.addToQueue(self.frame, self.queue)
             
-            self.largeQueue = 1
+
             
         else:
             self.toggleSearchBox()
@@ -1117,36 +1233,10 @@ class mainMenu(icaSCREENS):
             self.minimizeButton = Button(self.root, command=lambda: self.togExpandQueue())
             self.minimizeButton.place(x= 560, y=102.5, width = 10, height = 10)
 
-            self.addToQueue(self.frame, self.queue)
-            
             self.largeQueue = 0
+            self.addToQueue(self.frame, self.queue)
 
-    def getHistory(zelf):
-        return [[["Flu", "45", "Covered"], ["Hepatitis B", "12", "Covered"], ["Pollo", "325", "Uncovered"], ["Chickpox", "15", "Uncovered"], ["MMR", "749", "Partial"], ["Rotavirus","45", "Covered"], ["Yellow Fever", "365", "Partial"]], "3/23/14"]
 
-    def getContact(self):
-        return [["(925)980-4048", "Mobile"], "austin@gmail.com", "English", "Phone"]
-
-    def getFullSummary(self):
-        return None
-    
-    def getFullHistory(self):
-        return None
-
-    def getFullContact(self):
-        return None
-
-    def getFullInsurance(self):
-        return None
-
-    def getGarentor(self):
-        return None
-
-    def getLastService(self):
-        return None
-
-    def getFullImmunizationHistory(self):
-        return None
 
     def logOut(self,event):
         userChoice = messagebox.askyesno("Logging out", "Are you sure you want\nto log out?")
@@ -1479,6 +1569,83 @@ class med_INFO_SCREEN(icaSCREENS):
             widget.destroy()
 
 
+#History of action classes
+
+class UserAction():
+    def __init__(self, actionType, data):
+        self.actionTime = str(datetime.datetime.now())
+        self.actionType = actionType
+        self.acionID = data[0]
+        self.data = data[1]
+
+class UserSession():
+    def __init__(self, userId, data):
+        self.userId = userId
+        if data == None:
+            self.sessionID = self.createUniqueSessionID()
+            self.UserLogin = str(datetime.datetime.now())
+            self.UserActionList = []
+            self.Userlogout = None
+        else:
+            self.sessionID = data[0]
+            self.UserLogin = data[1]
+            self.UserActionList = data[2]
+            self.Userlogout = data[3]
+
+    def createUniqueSessionID(self):
+        #To DO
+        return 12345
+
+    def addAction(self, action):
+        self.UserActionList.append(action)
+
+    def endSession(self):
+        self.Userlogout = str(datetime.datetime.now())
+
+
+class UserHistory():
+    def __init__(self, history):
+        self.UserSessions = history
+
+    def getSession(self, sessionID):
+        for session in self.UserSessions:
+            if session.sessionID == sessionID:
+                return session
+        return None
+
+    def addSession(self, session):
+        self.UserSessions.append(session)
+
+#History Classes End
+
+class User():
+    def __init__(self, data, isNewSession):
+        self.userId = data[0]
+        self.userFirstName = data[1]
+        self.userLastName = data[2]
+        self.userType = data[3]
+        if isNewSession == 1:
+            self.currentUserSession = UserSession(self.userId, None)
+
+    def addAction(self, action):
+        self.currentUserSession.addAction(action)
+
+    def getHistoy(self):
+
+        #querry history
+        return UserHistory(None)
+
+    def endSession(self):
+        self.currentUserSession.endSession()
+
+        #send self.currentUserSession to database
+
+        return 1
+
+    def getHistory(self):
+        self.history = UserHistory(userId)
+        return
+
 class loginScreen(icaSCREENS):
 
     def __init__(self, window, data):
@@ -1495,9 +1662,6 @@ class loginScreen(icaSCREENS):
 
         self.loginBackGround = Canvas(self.root,width=500,height=250)
         self.loginBackGround.place(x=150,y=275)
-
-        self.userName = "f69ddcc92c44eb5a6320e241183ef551d9287d7fa6e4b2c77459145d8dd0bb37"
-        self.passWord = "b575f55adf6ed25767832bdf6fe6cbc4af4889938bf48ba99698ec683f9047de"
 
         image = Image.open("sources/ica picture.PNG")
         image = image.resize((700,200), Image.ANTIALIAS)
@@ -1534,20 +1698,141 @@ class loginScreen(icaSCREENS):
         name = self.userNameEntry.get()
         passWord = self.passwordEntry.get()
 
-        #Would hash and verify user with database here
-        #print(Hash.main(passWord))
-        if Hash.main(name) == self.userName and Hash.main(passWord) == self.passWord:
-            messagebox.showinfo("Login Successful!", "Welcome back " + "Admin")#needs to be User first name
+        #Would send Hash.main(name) to data base and recieve hashed pword from database
+        #check if Hash.main(passWord) == recieved hashed pword
 
+        tempUserName = "f69ddcc92c44eb5a6320e241183ef551d9287d7fa6e4b2c77459145d8dd0bb37" # Test01
+
+        tempPassWord = "b575f55adf6ed25767832bdf6fe6cbc4af4889938bf48ba99698ec683f9047de" # Test02
+
+        tempUserName1 = "67ed235e1e075a7214902e1af0cb4bb4ad3ba0fcf084411418074cf4247004cc" # User01
+
+        tempPassWord1 = "7bab9c019f082639a163c437288ed2fe6da3e08a447cf9b8487f7c3535613fda" # User02
+
+        if Hash.main(name) == tempUserName and Hash.main(passWord) == tempPassWord: #admin test account
+
+            #querry User here
+            currentUser = User([0, "Admin", "", "Admin"], 1)
+
+            messagebox.showinfo("Login Successful!", "Welcome back " + currentUser.userFirstName)#needs to be User first name
             self.removeKeyBind("<Return>")
-            #querry User
-            self.swapTO(mainMenu, ["Admin"])#needs to be user object
+
+            self.swapTO(mainMenu, currentUser)#needs to be user object
+
+        elif Hash.main(name) == tempUserName1 and Hash.main(passWord) == tempPassWord1: #user test Account
+
+            #querry User here
+            currentUser = User([0, "User", "", "User"], 1)
+
+            messagebox.showinfo("Login Successful!", "Welcome back " + currentUser.userFirstName)#needs to be User first name
+            self.removeKeyBind("<Return>")
+
+            self.swapTO(mainMenu, currentUser)#needs to be user object
+
         else:
             messagebox.showerror("Login Unsuccessful", "Username or Password is invalid")
             self.passwordEntry.delete(0,END) #remove password
 
     def enterPress(self,event):
         self.verifyUser()
+
+class Permissions():
+     def __init__(self, permissionList):
+        self.importData = permissionList[0]
+        self.exportData = permissionList[1]
+        self.viewHistoryOfSelf = permissionList[2]
+        self.viewHistoryOfEntireSystem = permissionList[3]
+        self.viewSelfAnalytics = permissionList[4]
+        self.viewSystemAnalytics = permissionList[5]
+        self.createAlerts = permissionList[6]
+        self.setPermissions = permissionList[7]
+        self.serachEntireDatabase = permissionList[8]
+        self.printFiles = permissionList[9]
+        self.outReach = permissionList[10]
+        self.approveUsers = permissionList[11]
+        self.numberOfPatientsOpen = permissionList[12]
+        self.goalNumberOfOutReaches = permissionList[13]
+        self.setSystemOptions = permissionList[14]
+
+class UserAction():
+    def __init__(self, actionType, data):
+        self.actionTime = str(datetime.datetime.now())
+        self.actionType = actionType
+        self.acionID = data[0]
+        self.data = data[1]
+
+class UserSession():
+    def __init__(self, userId, data):
+        self.userId = userId
+        if data == None:
+            self.sessionID = self.createUniqueSessionID()
+            self.UserLogin = str(datetime.datetime.now())
+            self.UserActionList = []
+            self.Userlogout = None
+        else:
+            self.sessionID = data[0]
+            self.UserLogin = data[1]
+            self.UserActionList = data[2]
+            self.Userlogout = data[3]
+
+    def createUniqueSessionID(self):
+        #To DO
+        return 12345
+
+    def addAction(self, action):
+        self.UserActionList.append(action)
+
+    def endSession(self):
+        self.Userlogout = str(datetime.datetime.now())
+
+
+class UserHistory():
+    def __init__(self, history):
+        self.UserSessions = history
+
+    def getSession(self, sessionID):
+        for session in self.UserSessions:
+            if session.sessionID == sessionID:
+                return session
+        return None
+
+    def addSession(self, session):
+        self.UserSessions.append(session)
+
+#History Classes End
+
+class User():
+    def __init__(self, data, isNewSession):
+        self.userId = data[0]
+        self.userFirstName = data[1]
+        self.userLastName = data[2]
+        self.userType = data[3]
+        if isNewSession == 1:
+            self.currentUserSession = UserSession(self.userId, None)
+        #Querry User Permissions Here
+        if self.userType == "Admin":
+            self.permissions = Permissions([1,1,1,1,1,1,1,1,1,1,1,1,10,100,1])
+        else:
+            self.permissions = Permissions([0,0,1,0,1,0,0,0,1,1,0,0,5,50,0])
+
+    def addAction(self, action):
+        self.currentUserSession.addAction(action)
+
+    def getHistoy(self):
+
+        #querry history
+        return UserHistory(None)
+
+    def endSession(self):
+        self.currentUserSession.endSession()
+
+        #send self.currentUserSession to database
+
+        return 1
+
+    def getHistory(self):
+        self.history = UserHistory(userId)
+        return
 
 def main(): # Main loop of ICA
     window = Tk()
@@ -1558,6 +1843,8 @@ def main(): # Main loop of ICA
 
 
     currentSCREEN = mainMenu(window, ["Jason Van Bladel"])
+    currentUser = User([0, "Jason", "Van Bladel", "Admin"], 1)
+    currentSCREEN = mainMenu(window, currentUser)
 
     #currentSCREEN = med_INFO_SCREEN(window,Patient(["John","Smith","20","2/3/2013","32","30"]))
 

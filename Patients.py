@@ -13,8 +13,29 @@ class Patient():
     def getSummary(self):
         return [self.fName, self.lName, 'D' ,"12/6/1987", 'M', "33", "African American", "Mr."]
 
-    def getHistory(zelf):
+    def getHistory(self):
         return [[["Flu", "45", "Covered"], ["Hepatitis B", "12", "Covered"], ["Pollo", "325", "Uncovered"], ["Chickpox", "15", "Uncovered"], ["MMR", "749", "Partial"], ["Rotavirus","45", "Covered"], ["Yellow Fever", "365", "Partial"]], "3/23/14"]
 
     def getContact(self):
         return [["(925)980-4048", "Mobile"], "austin@gmail.com", "English", "Phone"]
+
+    def getFullSummary(self):
+        return None
+    
+    def getFullHistory(self):
+        return None
+
+    def getFullContact(self):
+        return None
+
+    def getFullInsurance(self):
+        return None
+
+    def getGarentor(self):
+        return None
+
+    def getLastService(self):
+        return None
+
+    def getFullImmunizationHistory(self):
+        return None
