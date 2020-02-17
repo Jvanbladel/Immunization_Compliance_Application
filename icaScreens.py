@@ -7,7 +7,7 @@ from tkinter import ttk
 from Patients import *
 from Security import Hash
 
-versionNumber = "(Version 1.7.4)"
+versionNumber = "(Version 1.7.5)"
 
 class icaSCREENS():
     '''
@@ -54,7 +54,8 @@ class icaSCREENS():
 
 class mainMenu(icaSCREENS):
 
-    def __init__(self,window, data):
+    def __init__(self,window, user):
+        self.user = user
         super().__init__(window)
         #setUpWindow
         global versionNumber
@@ -74,7 +75,7 @@ class mainMenu(icaSCREENS):
         barFRAME.place(x=0,y=0,height=30,width=800)
 
         #Add Name/date to top bar
-        self.userName = data[0]
+        self.userName = self.user.userFirstName + " " + self.user.userLastName
         now = datetime.datetime.now()
         current_time = now.strftime("%I:%M %p")
         userInfo = self.userName + " " + str(current_time)
@@ -1322,6 +1323,83 @@ class med_INFO_SCREEN(icaSCREENS):
     def closeWindow(self,event):
         self.root.destroy()
 
+#History of action classes        
+
+class UserAction():
+    def __init__(self, actionType, data):
+        self.actionTime = str(datetime.datetime.now())
+        self.actionType = actionType
+        self.acionID = data[0]
+        self.data = data[1]
+
+class UserSession():
+    def __init__(self, userId, data):
+        self.userId = userId
+        if data == None:
+            self.sessionID = self.createUniqueSessionID()
+            self.UserLogin = str(datetime.datetime.now())
+            self.UserActionList = []
+            self.Userlogout = None
+        else:
+            self.sessionID = data[0]
+            self.UserLogin = data[1]
+            self.UserActionList = data[2]
+            self.Userlogout = data[3]
+            
+    def createUniqueSessionID(self):
+        #To DO
+        return 12345
+            
+    def addAction(self, action):
+        self.UserActionList.append(action)
+
+    def endSession(self):
+        self.Userlogout = str(datetime.datetime.now())
+        
+
+class UserHistory():
+    def __init__(self, history):
+        self.UserSessions = history
+
+    def getSession(self, sessionID):
+        for session in self.UserSessions:
+            if session.sessionID == sessionID:
+                return session
+        return None
+
+    def addSession(self, session):
+        self.UserSessions.append(session)
+
+#History Classes End
+    
+class User():
+    def __init__(self, data, isNewSession):
+        self.userId = data[0]
+        self.userFirstName = data[1]
+        self.userLastName = data[2]
+        self.userType = data[3]
+        if isNewSession == 1:
+            self.currentUserSession = UserSession(self.userId, None)
+        
+    def addAction(self, action):
+        self.currentUserSession.addAction(action)
+
+    def getHistoy(self):
+
+        #querry history
+        return UserHistory(None)
+
+    def endSession(self):
+        self.currentUserSession.endSession()
+
+        #send self.currentUserSession to database
+
+        return 1
+
+    def getHistory(self):
+        self.history = UserHistory(userId)
+        return 
+
 class loginScreen(icaSCREENS):
 
     def __init__(self, window, data):
@@ -1338,9 +1416,6 @@ class loginScreen(icaSCREENS):
 
         self.loginBackGround = Canvas(self.root,width=500,height=250)
         self.loginBackGround.place(x=150,y=275)
-
-        self.userName = "f69ddcc92c44eb5a6320e241183ef551d9287d7fa6e4b2c77459145d8dd0bb37"
-        self.passWord = "b575f55adf6ed25767832bdf6fe6cbc4af4889938bf48ba99698ec683f9047de"
 
         image = Image.open("sources/ica picture.PNG")
         image = image.resize((700,200), Image.ANTIALIAS)
@@ -1377,14 +1452,37 @@ class loginScreen(icaSCREENS):
         name = self.userNameEntry.get()
         passWord = self.passwordEntry.get()
 
-        #Would hash and verify user with database here
-        #print(Hash.main(passWord))
-        if Hash.main(name) == self.userName and Hash.main(passWord) == self.passWord:
-            messagebox.showinfo("Login Successful!", "Welcome back " + "Admin")#needs to be User first name
+        #Would send Hash.main(name) to data base and recieve hashed pword from database
+        #check if Hash.main(passWord) == recieved hashed pword
+        
+        tempUserName = "f69ddcc92c44eb5a6320e241183ef551d9287d7fa6e4b2c77459145d8dd0bb37" # Admin01
 
+        tempPassWord = "b575f55adf6ed25767832bdf6fe6cbc4af4889938bf48ba99698ec683f9047de" # Admin02
+
+        tempUserName1 = "67ed235e1e075a7214902e1af0cb4bb4ad3ba0fcf084411418074cf4247004cc" # User01
+
+        tempPassWord1 = "7bab9c019f082639a163c437288ed2fe6da3e08a447cf9b8487f7c3535613fda" # User02
+        
+        if Hash.main(name) == tempUserName and Hash.main(passWord) == tempPassWord: #admin test account
+
+            #querry User here
+            currentUser = User([0, "Admin", "", "Admin"], 1)
+            
+            messagebox.showinfo("Login Successful!", "Welcome back " + currentUser.userFirstName)#needs to be User first name
             self.removeKeyBind("<Return>")
-            #querry User
-            self.swapTO(mainMenu, ["Admin"])#needs to be user object
+
+            self.swapTO(mainMenu, currentUser)#needs to be user object
+            
+        elif Hash.main(name) == tempUserName1 and Hash.main(passWord) == tempPassWord1: #user test Account
+
+            #querry User here
+            currentUser = User([0, "User", "", "User"], 1)
+            
+            messagebox.showinfo("Login Successful!", "Welcome back " + currentUser.userFirstName)#needs to be User first name
+            self.removeKeyBind("<Return>")
+
+            self.swapTO(mainMenu, currentUser)#needs to be user object
+            
         else:
             messagebox.showerror("Login Unsuccessful", "Username or Password is invalid")
             self.passwordEntry.delete(0,END) #remove password
