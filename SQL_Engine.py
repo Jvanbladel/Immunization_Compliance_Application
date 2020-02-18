@@ -18,14 +18,14 @@ def select(column, table):
     # print results
 
     # send sql query
-    """sql = '''
-    SELECT *
-    FROM table_1
-    '''
-    cursor.execute(sql)
+    #"""sql = '''
+    #SELECT *
+    #FROM table_1
+    #'''
+    #cursor.execute(sql)
 
-    for row in cursor:
-        print(row)"""
+    #for row in cursor:
+    #    print(row)"""
 
     conn.close()
     return data

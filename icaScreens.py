@@ -7,7 +7,7 @@ from tkinter import ttk
 from Patients import *
 from Security import Hash
 
-versionNumber = "(Version 1.7.8a)"
+versionNumber = "(Version 1.7.9)"
 
 class icaSCREENS():
     '''
@@ -95,6 +95,8 @@ class mainMenu(icaSCREENS):
         self.mainMenuSCREEN  = 0
         self.consoleSCREEN = 0
         self.permissionsSCREEN = 0
+        self.aboutUsSCREEN = 0
+        self.guideSCREEN = 0
         self.showMainMenu()
 
 
@@ -191,6 +193,12 @@ class mainMenu(icaSCREENS):
 
 
             self.permissionsSCREEN = 0
+            
+        if self.guideSCREEN == 1:
+            self.guideSCREEN = 0
+
+        if self.aboutUsSCREEN == 1:
+            self.aboutUsSCREEN = 0
 
     def showConsole(self):
         self.clearAllScreens()
@@ -224,7 +232,7 @@ class mainMenu(icaSCREENS):
         self.consoleSCREEN = 1
 
     def Permissionmyfunction(self,event):
-        self.Consolecanvas.configure(scrollregion=self.Permissioncanvas.bbox("all"),width=400,height=500)
+        self.Permissioncanvas.configure(scrollregion=self.Permissioncanvas.bbox("all"),width=400,height=475)
 
     def Consolemyfunction(self,event):
         self.commandInputENTRY.delete(0, END)
@@ -969,8 +977,8 @@ class mainMenu(icaSCREENS):
     def showPermissionsSCREEN(self):
         self.clearAllScreens()
 
-        self.Permissionmyframe=Frame(self.root,relief=GROOVE,width=20,height=470,bd=1)
-        self.Permissionmyframe.place(x=0,y=100,height=500,width=400)
+        self.Permissionmyframe=Frame(self.root,relief=GROOVE,width=20,height=475,bd=1)
+        self.Permissionmyframe.place(x=0,y=125,height=475,width=400)
 
         self.Permissioncanvas=Canvas(self.Permissionmyframe)
         self.Permissionframe=Frame(self.Permissioncanvas)
@@ -982,12 +990,44 @@ class mainMenu(icaSCREENS):
         self.Permissioncanvas.create_window((0,0),window=self.Permissionframe,anchor='nw')
         self.Permissionframe.bind("<Configure>", self.Permissionmyfunction)
 
+        self.permissionButtonList = []
+        self.permssionList = []
+
+        self.addPermissions(self.Permissionframe, self.getPermissions())
+
         self.permissionsSCREEN = 1
 
     #To do Querry
     def getPermissions(self):
         return [["Admin","User with unlimited permissions", Permissions([1,1,1,1,1,1,1,1,1,1,1,1,10,100,1,1])], ["User","Basic user of the program.", Permissions([0,0,1,0,1,0,0,0,1,1,1,0,5,50,0,0])]]
 
+    def addPermissions(self, frame, permissionList):
+        self.currentEditingPermission = None
+        for i in range(len(permissionList)):
+            pstr = '{0:<15} {1:<35}'.format(permissionList[i][0], permissionList[i][1])
+            b = Button(frame, text = pstr,anchor=W, justify=LEFT, width = 55, font = ('Consolas', 10))
+            b.grid(row=i)
+            self.permissionButtonList.append(b)
+            self.permssionList.append(permissionList[i])
+            b.configure(command=lambda i=i: self.showPermissionEditor(self.permissionButtonList[i], self.permssionList[i]))
+            if self.permssionList[i] == self.currentEditingPermission:
+                self.currentButton = b
+                b.configure(background = "lime green")
+
+    def showPermissionEditor(self, button, permission):
+        if permission == self.currentEditingPermission:
+            for b in self.permissionButtonList:
+                b.configure(background = self.root.cget('bg'))
+            self.currentEditingPermission = None
+        else:
+            for b in self.permissionButtonList:
+                b.configure(background = self.root.cget('bg'))
+                
+            for b in self.permissionButtonList:
+                if b == button:
+                    b.configure(background = "lime green")
+            self.currentEditingPermission = permission
+            
     def closeALLTabs(self):
         if self.file == 1:
             self.togFileTab()
@@ -2049,7 +2089,7 @@ def main(): # Main loop of ICA
     window.resizable(0, 0)
     window.title(versionNumber)
 
-    currentSCREEN = loginScreen(window, None)
+    #currentSCREEN = loginScreen(window, None)
 
     currentUser = User([0, "Jason", "Van Bladel", "Admin"], 1)
     currentSCREEN = mainMenu(window, currentUser)
