@@ -7,7 +7,7 @@ from tkinter import ttk
 from Patients import *
 from Security import Hash
 
-versionNumber = "(Version 1.7.7c)"
+versionNumber = "(Version 1.7.8)"
 
 class icaSCREENS():
     '''
@@ -91,8 +91,10 @@ class mainMenu(icaSCREENS):
         #Add tabs to top bar
         self.setUpTabs()
 
-        self.mainMenu = 0
-        self.toggleMainMenu()
+        #set up all screens
+        self.mainMenuSCREEN  = 0
+        self.consoleSCREEN = 0
+        self.showMainMenu()
         
 
         #Notifications based on user in future
@@ -103,34 +105,41 @@ class mainMenu(icaSCREENS):
         self.logout = 0
         self.clock()
 
-    def toggleMainMenu(self):
-        if self.mainMenu == 0:
-            #set Up Search Frame
-            self.setUpSearchFrame()
+        
 
-            #setUp FilterFrame
-            self.filter = 0
+    def showMainMenu(self):
+        self.clearAllScreens()
+        
+        #set Up Search Frame
+        self.setUpSearchFrame()
 
-            #set Up Queue Frame
-            self.setUpQueue()
-            self.largeQueue = 0
-            self.queue = self.createQueue()
-            self.togExpandQueue()
+        #setUp FilterFrame
+        self.filter = 0
+
+        #set Up Queue Frame
+        self.setUpQueue()
+        self.largeQueue = 0
+        self.queue = self.createQueue()
+        self.togExpandQueue()
             
-            #SetUpSummary Frame
-            self.infoDisplayFRAME = LabelFrame(self.root)
-            self.infoDisplayFRAME.place(x=575,y=100,height=500,width=225)
-            self.summary = 0
-            self.contact = 0
-            self.phistory = 0
+        #SetUpSummary Frame
+        self.infoDisplayFRAME = LabelFrame(self.root)
+        self.infoDisplayFRAME.place(x=575,y=100,height=500,width=225)
+        self.summary = 0
+        self.contact = 0
+        self.phistory = 0
 
-            #setupOutReach
-            self.reportingFRAME = LabelFrame(self.root)
-            self.reportingFRAME.place(x=575,y=400,height=200,width=225)
-            self.outreach = 0
+        #setupOutReach
+        self.reportingFRAME = LabelFrame(self.root)
+        self.reportingFRAME.place(x=575,y=400,height=200,width=225)
+        self.outreach = 0
 
-            self.mainMenu = 1
-        else:
+        self.mainMenuSCREEN  = 1
+            
+
+    def clearAllScreens(self):
+        self.closeALLTabs()
+        if self.mainMenuSCREEN == 1:
             self.clearPatient()
             self.infoDisplayFRAME.destroy()
             self.reportingFRAME.destroy()
@@ -157,8 +166,65 @@ class mainMenu(icaSCREENS):
                 self.submittOutReach.destroy()
                 self.outreach = 0
             
-            self.mainMenu = 0
+            self.mainMenuSCREEN  = 0
+            
+        if self.consoleSCREEN == 1:
+            self.Consolecanvas.destroy()
+            self.Consoleframe.destroy()
+            self.ConsolemyscrollbarY.destroy()
+            self.ConsolemyscrollbarX.destroy()
+            self.excuteConsoleBUTTON.destroy()
+            self.commandInputENTRY.destroy()
 
+            for commandLabel in self.consoleCommandList:
+                commandLabel.destroy()
+            
+            self.consoleSCREEN = 0
+
+    def showConsole(self):
+        self.clearAllScreens()
+
+        self.Consolemyframe=Frame(self.root,relief=GROOVE,width=20,height=470,bd=1)
+        self.Consolemyframe.place(x=0,y=100,height=470,width=800)
+
+        self.Consolecanvas=Canvas(self.Consolemyframe)
+        self.Consoleframe=Frame(self.Consolecanvas)
+        self.ConsolemyscrollbarY=Scrollbar(self.Consolemyframe,orient="vertical",command=self.Consolecanvas.yview)
+        self.Consolecanvas.configure(yscrollcommand=self.ConsolemyscrollbarY.set)
+        self.ConsolemyscrollbarY.pack(side="right",fill="y")
+
+        self.ConsolemyscrollbarX=Scrollbar(self.Consolemyframe,orient="horizontal",command=self.Consolecanvas.xview)
+        self.Consolecanvas.configure(xscrollcommand=self.ConsolemyscrollbarX.set)
+        self.ConsolemyscrollbarX.pack(side="bottom",fill="x")
+
+        
+        self.Consolecanvas.pack(side="left")
+        self.Consolecanvas.create_window((0,0),window=self.Consoleframe,anchor='nw')
+        self.Consoleframe.bind("<Configure>", self.Consolemyfunction)
+
+        self.commandInputENTRY = Entry(self.root, font = ('Consolas', 10))
+        self.commandInputENTRY.place(x=0,y=570,width=750, height = 30)
+        self.commandInputENTRY.insert(0, ">> ")
+    
+        self.excuteConsoleBUTTON = Button(self.root, text = "Execute", command=lambda: self.executeConsoleCommand())
+        self.excuteConsoleBUTTON.place(x=750,y=570, height = 30, width = 50)
+
+        self.consoleCommandList = []
+        self.consoleSCREEN = 1
+
+    def Consolemyfunction(self,event):
+        self.commandInputENTRY.delete(0, END)
+        self.commandInputENTRY.insert(0, ">> ")
+        self.Consolecanvas.configure(scrollregion=self.Consolecanvas.bbox("all"),width=800,height=570)
+
+    def executeConsoleCommand(self):
+        self.addToConsole( self.commandInputENTRY.get())
+
+    def addToConsole(self, commandStr): 
+        toAddToConsole = Label(self.Consoleframe, text = commandStr,anchor=W, justify=LEFT, font = ('Consolas', 10))
+        toAddToConsole.pack(side=TOP, fill=BOTH, expand=TRUE)
+        self.consoleCommandList.append(toAddToConsole)
+    
     def exitICA(self): #prompt user if they want to close program
 
         userChoice = messagebox.askyesno("Exiting ICA","Are you sure you want to exit ICA?")
@@ -680,7 +746,7 @@ class mainMenu(icaSCREENS):
             #self.fileFRAME = LabelFrame(self.root)
             #self.fileFRAME.place(x=0,y=30,height=120,width=100)
             currentY = 30
-            self.mainMenuBUTTON = Button(self.root, text = "Home", justify = LEFT,anchor=W, command=lambda: self.toggleMainMenu())
+            self.mainMenuBUTTON = Button(self.root, text = "Home", justify = LEFT,anchor=W, command=lambda: self.showMainMenu())
             self.mainMenuBUTTON.place(x=0,y=currentY,height=30,width=100)
             currentY = currentY + 30
             
@@ -868,7 +934,7 @@ class mainMenu(icaSCREENS):
                 currentY = currentY + 30
                 
             if self.user.permissions.consoleCommands == 1:
-                self.systemConsole = Button(self.root, text = "Console", justify = LEFT, anchor=W)
+                self.systemConsole = Button(self.root, text = "Console", justify = LEFT, anchor=W, command=lambda: self.showConsole())
                 self.systemConsole.place(x=self.adminTABX,y=currentY,height=30,width=125)
                 currentY = currentY + 30
           
@@ -1124,6 +1190,7 @@ class mainMenu(icaSCREENS):
 
     def pmyfunction(self,event):
             self.pcanvas.configure(scrollregion=self.pcanvas.bbox("all"),width=222.5,height=170)
+
 
     def pVaccine(self, vList):
         self.pVaccineList = []
@@ -1912,10 +1979,10 @@ def main(): # Main loop of ICA
     window.resizable(0, 0)
     window.title(versionNumber)
 
-    currentSCREEN = loginScreen(window, None)
+    #currentSCREEN = loginScreen(window, None)
 
-    #currentUser = User([0, "Jason", "Van Bladel", "Admin"], 1)
-    #currentSCREEN = mainMenu(window, currentUser)
+    currentUser = User([0, "Jason", "Van Bladel", "Admin"], 1)
+    currentSCREEN = mainMenu(window, currentUser)
 
     #currentSCREEN = med_INFO_SCREEN(window,Patient(["John","Smith","20","2/3/2013","32","30"]))
 
