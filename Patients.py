@@ -20,3 +20,26 @@ class Patient():
 
     def getContact(self):
         return [["(925)980-4048", "Mobile"], "austin@gmail.com", "English", "Phone"]
+
+        # adding a comment so I can push this file.
+
+    def getFullSummary(self):
+        return None
+
+    def getFullHistory(self):
+        return None
+
+    def getFullContact(self):
+        return None
+
+    def getFullInsurance(self):
+        return None
+
+    def getGarentor(self):
+        return None
+
+    def getLastService(self):
+        return None
+
+    def getFullImmunizationHistory(self):
+        return None
