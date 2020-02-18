@@ -7,7 +7,7 @@ from tkinter import ttk
 from Patients import *
 from Security import Hash
 
-versionNumber = "(Version 1.7.7b)"
+versionNumber = "(Version 1.7.7c)"
 
 class icaSCREENS():
     '''
@@ -106,7 +106,7 @@ class mainMenu(icaSCREENS):
         infoDisplayFRAME.place(x=575,y=100,height=500,width=225)
         self.summary = 0
         self.contact = 0
-        self.history = 0
+        self.phistory = 0
 
         #setupOutReach
         self.reportingFRAME = LabelFrame(self.root)
@@ -136,6 +136,8 @@ class mainMenu(icaSCREENS):
             self.root.destroy()
 
     def setUpNotifications(self, notifications):
+        self.notificationList = []
+        
         imageSource = "sources/notifications/notification_1.PNG"
         notificationImage = Image.open(imageSource)
         notificationImage = notificationImage.resize((18,18), Image.ANTIALIAS)
@@ -155,16 +157,22 @@ class mainMenu(icaSCREENS):
                 notificationLABEL.place(x=2.5,y= 32.5 + (n * 22.5))
                 notificationLABEL1 = Label(self.root, text = notifications[n][1])
                 notificationLABEL1.place(x=25,y= 32.5 + (n * 22.5))
+                self.notificationList.append(notificationLABEL)
+                self.notificationList.append(notificationLABEL1)
             if notifications[n][0] == 2:
                 notificationLABEL = Label(self.root,image=self.notificationIMAGE2)
                 notificationLABEL.place(x=2.5,y= 32.5 + (n * 22.5))
                 notificationLABEL1 = Label(self.root, text = notifications[n][1])
                 notificationLABEL1.place(x=25,y= 32.5 + (n * 22.5))
+                self.notificationList.append(notificationLABEL)
+                self.notificationList.append(notificationLABEL1)
             if notifications[n][0] == 3:
                 notificationLABEL = Label(self.root,image=self.notificationIMAGE3)
                 notificationLABEL.place(x=2.5,y= 32.5 + (n * 22.5))
                 notificationLABEL1 = Label(self.root, text = notifications[n][1])
                 notificationLABEL1.place(x=25,y= 32.5 + (n * 22.5))
+                self.notificationList.append(notificationLABEL)
+                self.notificationList.append(notificationLABEL1)
 
     def toggleOutReach(self, patient):
         if self.outreach == 0:
@@ -252,7 +260,7 @@ class mainMenu(icaSCREENS):
             historyButton.place(x=currentX,y=0,height=30,width=50)
             currentX = currentX + 50
 
-        if self.user.permissions.approveUsers == 1 or self.user.permissions.setPermissions == 1 or self.user.permissions.createAlerts == 1 or self.user.permissions.createAlerts == 1:
+        if self.user.permissions.approveUsers == 1 or self.user.permissions.setPermissions == 1 or self.user.permissions.createAlerts == 1 or self.user.permissions.createAlerts == 1 or self.user.permissions.consoleCommands == 1:
             self.adminTABX = currentX
             adminBUTTON = Button(self.root,text="Admin",command=lambda: self.togAdminTab())
             adminBUTTON.place(x=currentX,y=0,height=30,width=50)
@@ -290,9 +298,11 @@ class mainMenu(icaSCREENS):
         self.admin = 0
         self.analytics = 0
         self.history = 0
+        
 
         #SubTabs
         self.exportTAB = 0
+        self.notificationsTABState = 0
 
         #Tab Pages
         self.accountMangerPage = 0
@@ -693,9 +703,28 @@ class mainMenu(icaSCREENS):
     def togOptionsTab(self):
         if self.option == 0:
             self.closeALLTabs()
+
+            if self.notificationsTABState == 0:
+                self.toggleNotifications = Button(self.root, text = "Hide Notifications", justify = LEFT,anchor=W, command=lambda: self.togNotifications())
+                self.toggleNotifications.place(x=50,y=30,height=30,width=110)
+            else:
+                self.toggleNotifications = Button(self.root, text = "Show Notifications", justify = LEFT,anchor=W, command=lambda: self.togNotifications())
+                self.toggleNotifications.place(x=50,y=30,height=30,width=110)
             self.option = 1
         else:
             self.option = 0
+            self.toggleNotifications.destroy()
+
+    def togNotifications(self):
+        self.closeALLTabs()
+        if self.notificationsTABState == 0:
+            for n in self.notificationList:
+                n.destroy()
+            self.notificationList = []
+            self.notificationsTABState = 1
+        else:
+            self.setUpNotifications([[3,"Very Important Message!"],[2,"Important Message."],[1,"Notification Message"]])
+            self.notificationsTABState = 0
             
     def togReportTab(self):
         if self.report == 0:
@@ -800,6 +829,11 @@ class mainMenu(icaSCREENS):
                 self.systemOptions = Button(self.root, text = "System Manager", justify = LEFT, anchor=W)
                 self.systemOptions.place(x=self.adminTABX,y=currentY,height=30,width=125)
                 currentY = currentY + 30
+                
+            if self.user.permissions.consoleCommands == 1:
+                self.systemConsole = Button(self.root, text = "Console", justify = LEFT, anchor=W)
+                self.systemConsole.place(x=self.adminTABX,y=currentY,height=30,width=125)
+                currentY = currentY + 30
           
             self.admin = 1
         else:
@@ -811,7 +845,8 @@ class mainMenu(icaSCREENS):
                 self.systemOptions.destroy()
             if self.user.permissions.setPermissions == 1:
                 self.permissions.destroy()
-            
+            if self.user.permissions.consoleCommands == 1:
+                self.systemConsole.destroy()
             self.admin = 0
 
     def closeALLTabs(self):
@@ -988,7 +1023,7 @@ class mainMenu(icaSCREENS):
 
     def showHistory(self, patient):
         self.clearPatient()
-        self.history = 1
+        self.phistory = 1
 
         self.infoBUTTON = Button(self.root, text = "Summary", command=lambda: self.showSummary(patient))
         self.infoBUTTON.place(x = 575, y = 100, width = 75, height = 37.5)
@@ -1120,7 +1155,7 @@ class mainMenu(icaSCREENS):
             self.pSex.destroy()
             self.pPrefix.destroy()
             self.summary = 0
-        if self.history == 1:
+        if self.phistory == 1:
             self.outreachBUTTON.destroy()
             self.expandBUTTON.destroy()
             self.infoBUTTON.destroy()
@@ -1138,7 +1173,7 @@ class mainMenu(icaSCREENS):
             self.pheaderLabel.destroy()
             for b in self.pVaccineList:
                 b.destroy()
-            self.history = 0
+            self.phistory = 0
         if self.contact == 1:
             self.outreachBUTTON.destroy()
             self.expandBUTTON.destroy()
@@ -1753,6 +1788,7 @@ class Permissions():
         self.numberOfPatientsOpen = permissionList[12]
         self.goalNumberOfOutReaches = permissionList[13]
         self.setSystemOptions = permissionList[14]
+        self.consoleCommands = permissionList[15]
 
 class UserAction():
     def __init__(self, actionType, data):
@@ -1811,9 +1847,9 @@ class User():
             self.currentUserSession = UserSession(self.userId, None)
         #Querry User Permissions Here
         if self.userType == "Admin":
-            self.permissions = Permissions([1,1,1,1,1,1,1,1,1,1,1,1,10,100,1])
+            self.permissions = Permissions([1,1,1,1,1,1,1,1,1,1,1,1,10,100,1,1])
         else:
-            self.permissions = Permissions([0,0,1,0,1,0,0,0,1,1,0,0,5,50,0])
+            self.permissions = Permissions([0,0,1,0,1,0,0,0,1,1,0,0,5,50,0,0])
 
     def addAction(self, action):
         self.currentUserSession.addAction(action)
