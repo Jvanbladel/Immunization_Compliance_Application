@@ -10,6 +10,8 @@ class Patient():
         self.daysOverDue = data[5]
         self.demoGraphic = DemoGraphics()
 
+    # adding a comment so I can push this file.
+
     def getSummary(self):
         return [self.fName, self.lName, 'D' ,"12/6/1987", 'M', "33", "African American", "Mr."]
 

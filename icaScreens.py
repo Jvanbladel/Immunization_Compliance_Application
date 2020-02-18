@@ -1694,6 +1694,40 @@ class loginScreen(icaSCREENS):
         self.userNameLabel = Label(self.root,text=versionNumber[1:-1],font=('Consolas', 16))
         self.userNameLabel.place(x=5,y=575)
 
+
+        self.accountBUTTON = Button(self.root,text="Add Account",width=18,font=('Consolas', 16),bg="hot pink",command=self.createAccount)
+        self.accountBUTTON.place(x=350,y=450)
+
+    def createAccount(self): # Promts user for account creation
+
+        newWindow = Toplevel()
+        newWindow.geometry("600x600")
+        newWindow.title("Account Creation")
+
+
+        background = Canvas(newWindow,bg='light blue',width=600,height=600)
+        background.pack()
+
+        forground = Canvas(background,width=400,height=400)
+        forground.place(x=100,y=50)
+
+        entryLabels = ["Firstname: ","Lastname: ","Email: ","Username: ","Password: ","Confirm Pass: "]
+        creationEntries = []
+
+        yLabel = 25
+
+
+        for label in entryLabels: # will fill the account creation screen with labels
+
+            newLabel = Label(forground,text=label,font=('Consolas', 14),relief="groove",width=15)
+            newLabel.place(x=25,y=yLabel)
+
+            #newEntry = Entry(forground)
+
+            yLabel += 50 # increment
+
+
+
     def verifyUser(self):
         name = self.userNameEntry.get()
         passWord = self.passwordEntry.get()
@@ -1839,12 +1873,12 @@ def main(): # Main loop of ICA
     window.resizable(0, 0)
     window.title(versionNumber)
 
-    #currentSCREEN = loginScreen(window, None)
+    currentSCREEN = loginScreen(window, None)
 
 
-    currentSCREEN = mainMenu(window, ["Jason Van Bladel"])
-    currentUser = User([0, "Jason", "Van Bladel", "Admin"], 1)
-    currentSCREEN = mainMenu(window, currentUser)
+    #currentSCREEN = mainMenu(window, ["Jason Van Bladel"])
+    #currentUser = User([0, "Jason", "Van Bladel", "Admin"], 1)
+    #currentSCREEN = mainMenu(window, currentUser)
 
     #currentSCREEN = med_INFO_SCREEN(window,Patient(["John","Smith","20","2/3/2013","32","30"]))
 
