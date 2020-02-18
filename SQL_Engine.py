@@ -1,5 +1,5 @@
 import pyodbc
-
+import pandas as pd
 
 def select(column, table):
     # build connection with the database
@@ -8,14 +8,13 @@ def select(column, table):
                             Server=pacific-ica.cvb4dklzq2km.us-west-1.rds.amazonaws.com, 1433;\
                             Database=db_pacific_ica;uid=admin;pwd=Animal05')
 
-    cursor = conn.cursor()
+    # cursor = conn.cursor()
     print("connected")
 
-    string = "SELECT "+column+" FROM " + table
-    cursor.execute(string)
+    sql = "SELECT "+column+" FROM " + table
+    data = pd.read_sql(sql, conn)
     # conn.commit()-- save any changes to the database
-    # for row in cursor:
-    #    print(row)
+
     # print results
 
     # send sql query
@@ -29,7 +28,7 @@ def select(column, table):
         print(row)"""
 
     conn.close()
-    return cursor
+    return data
 
 
-select("PatientID", "Patient_Table")
+select("PatientID", "Patient")
