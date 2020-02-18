@@ -977,17 +977,16 @@ class mainMenu(icaSCREENS):
         self.PermissionmyscrollbarY=Scrollbar(self.Permissionmyframe,orient="vertical",command=self.Permissioncanvas.yview)
         self.Permissioncanvas.configure(yscrollcommand=self.PermissionmyscrollbarY.set)
         self.PermissionmyscrollbarY.pack(side="right",fill="y")
-
-        #self.ConsolemyscrollbarX=Scrollbar(self.Consolemyframe,orient="horizontal",command=self.Consolecanvas.xview)
-        #self.Consolecanvas.configure(xscrollcommand=self.ConsolemyscrollbarX.set)
-        #self.ConsolemyscrollbarX.pack(side="bottom",fill="x")
-
         
         self.Permissioncanvas.pack(side="left")
         self.Permissioncanvas.create_window((0,0),window=self.Permissionframe,anchor='nw')
         self.Permissionframe.bind("<Configure>", self.Permissionmyfunction)
         
         self.permissionsSCREEN = 1
+
+    #To do Querry
+    def getPermissions(self):
+        return [["Admin","User with unlimited permissions", Permissions([1,1,1,1,1,1,1,1,1,1,1,1,10,100,1,1])], ["User","Basic user of the program.", Permissions([0,0,1,0,1,0,0,0,1,1,1,0,5,50,0,0])]]
         
 
     def closeALLTabs(self):

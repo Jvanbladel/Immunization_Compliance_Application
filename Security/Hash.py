@@ -6,3 +6,5 @@ def main(textToHash):
     finalOutput = hash.hexdigest()
     #print(finalOutput)
     return finalOutput
+
+#main("Animal06")

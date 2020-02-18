@@ -31,4 +31,4 @@ def select(column, table):
     return data
 
 
-select("PatientID", "Patient")
+print(select("PatientID", "Patient"))
