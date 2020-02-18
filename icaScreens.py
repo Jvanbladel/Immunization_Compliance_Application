@@ -96,7 +96,7 @@ class mainMenu(icaSCREENS):
         self.consoleSCREEN = 0
         self.permissionsSCREEN = 0
         self.showMainMenu()
-        
+
 
         #Notifications based on user in future
         self.setUpNotifications([[3,"Very Important Message!"],[2,"Important Message."],[1,"Notification Message"]])
@@ -106,11 +106,11 @@ class mainMenu(icaSCREENS):
         self.logout = 0
         self.clock()
 
-        
+
 
     def showMainMenu(self):
         self.clearAllScreens()
-        
+
         #set Up Search Frame
         self.setUpSearchFrame()
 
@@ -122,7 +122,7 @@ class mainMenu(icaSCREENS):
         self.largeQueue = 0
         self.queue = self.createQueue()
         self.togExpandQueue()
-            
+
         #SetUpSummary Frame
         self.infoDisplayFRAME = LabelFrame(self.root)
         self.infoDisplayFRAME.place(x=575,y=100,height=500,width=225)
@@ -136,7 +136,7 @@ class mainMenu(icaSCREENS):
         self.outreach = 0
 
         self.mainMenuSCREEN  = 1
-            
+
 
     def clearAllScreens(self):
         self.closeALLTabs()
@@ -148,7 +148,7 @@ class mainMenu(icaSCREENS):
             self.toggleSearchBox()
             if self.filter == 1:
                 self.togFilter()
-            
+
             if not self.myframe == None:
                 self.myframe.destroy()
                 self.canvas.destroy()
@@ -156,7 +156,7 @@ class mainMenu(icaSCREENS):
                 self.frame.destroy()
                 self.scrollHeadFRAME.destroy()
                 self.headLABEL.destroy()
-                
+
             if self.outreach == 1:
                 self.reportText.destroy()
                 self.outreachText.destroy()
@@ -166,9 +166,9 @@ class mainMenu(icaSCREENS):
                 self.NotesScrollBar.destroy()
                 self.submittOutReach.destroy()
                 self.outreach = 0
-            
+
             self.mainMenuSCREEN  = 0
-            
+
         if self.consoleSCREEN == 1:
             self.Consolecanvas.destroy()
             self.Consoleframe.destroy()
@@ -180,16 +180,16 @@ class mainMenu(icaSCREENS):
 
             for commandLabel in self.consoleCommandList:
                 commandLabel.destroy()
-            
+
             self.consoleSCREEN = 0
-            
+
         if self.permissionsSCREEN == 1:
             self.Permissionmyframe.destroy()
             self.Permissioncanvas.destroy()
             self.Permissionframe.destroy()
             self.PermissionmyscrollbarY.destroy()
-                       
-            
+
+
             self.permissionsSCREEN = 0
 
     def showConsole(self):
@@ -208,7 +208,7 @@ class mainMenu(icaSCREENS):
         self.Consolecanvas.configure(xscrollcommand=self.ConsolemyscrollbarX.set)
         self.ConsolemyscrollbarX.pack(side="bottom",fill="x")
 
-        
+
         self.Consolecanvas.pack(side="left")
         self.Consolecanvas.create_window((0,0),window=self.Consoleframe,anchor='nw')
         self.Consoleframe.bind("<Configure>", self.Consolemyfunction)
@@ -216,7 +216,7 @@ class mainMenu(icaSCREENS):
         self.commandInputENTRY = Entry(self.root, font = ('Consolas', 10))
         self.commandInputENTRY.place(x=0,y=570,width=750, height = 30)
         self.commandInputENTRY.insert(0, ">> ")
-    
+
         self.excuteConsoleBUTTON = Button(self.root, text = "Execute", command=lambda: self.executeConsoleCommand())
         self.excuteConsoleBUTTON.place(x=750,y=570, height = 30, width = 50)
 
@@ -234,11 +234,11 @@ class mainMenu(icaSCREENS):
     def executeConsoleCommand(self):
         self.addToConsole( self.commandInputENTRY.get())
 
-    def addToConsole(self, commandStr): 
+    def addToConsole(self, commandStr):
         toAddToConsole = Label(self.Consoleframe, text = commandStr,anchor=W, justify=LEFT, font = ('Consolas', 10))
         toAddToConsole.pack(side=TOP, fill=BOTH, expand=TRUE)
         self.consoleCommandList.append(toAddToConsole)
-    
+
     def exitICA(self): #prompt user if they want to close program
 
         userChoice = messagebox.askyesno("Exiting ICA","Are you sure you want to exit ICA?")
@@ -249,7 +249,7 @@ class mainMenu(icaSCREENS):
 
     def setUpNotifications(self, notifications):
         self.notificationList = []
-        
+
         imageSource = "sources/notifications/notification_1.PNG"
         notificationImage = Image.open(imageSource)
         notificationImage = notificationImage.resize((18,18), Image.ANTIALIAS)
@@ -410,7 +410,7 @@ class mainMenu(icaSCREENS):
         self.admin = 0
         self.analytics = 0
         self.history = 0
-        
+
 
         #SubTabs
         self.exportTAB = 0
@@ -763,7 +763,7 @@ class mainMenu(icaSCREENS):
             self.mainMenuBUTTON = Button(self.root, text = "Home", justify = LEFT,anchor=W, command=lambda: self.showMainMenu())
             self.mainMenuBUTTON.place(x=0,y=currentY,height=30,width=100)
             currentY = currentY + 30
-            
+
             if self.user.permissions.importData == 1:
                 self.importData = Button(self.root, text = "Import", justify = LEFT,anchor=W)
                 self.importData.place(x=0,y=currentY,height=30,width=100)
@@ -842,7 +842,7 @@ class mainMenu(icaSCREENS):
         else:
             self.setUpNotifications([[3,"Very Important Message!"],[2,"Important Message."],[1,"Notification Message"]])
             self.notificationsTABState = 0
-            
+
     def togReportTab(self):
         if self.report == 0:
             self.closeALLTabs()
@@ -946,12 +946,12 @@ class mainMenu(icaSCREENS):
                 self.systemOptions = Button(self.root, text = "System Manager", justify = LEFT, anchor=W)
                 self.systemOptions.place(x=self.adminTABX,y=currentY,height=30,width=125)
                 currentY = currentY + 30
-                
+
             if self.user.permissions.consoleCommands == 1:
                 self.systemConsole = Button(self.root, text = "Console", justify = LEFT, anchor=W, command=lambda: self.showConsole())
                 self.systemConsole.place(x=self.adminTABX,y=currentY,height=30,width=125)
                 currentY = currentY + 30
-          
+
             self.admin = 1
         else:
             if self.user.permissions.createAlerts == 1:
@@ -977,17 +977,16 @@ class mainMenu(icaSCREENS):
         self.PermissionmyscrollbarY=Scrollbar(self.Permissionmyframe,orient="vertical",command=self.Permissioncanvas.yview)
         self.Permissioncanvas.configure(yscrollcommand=self.PermissionmyscrollbarY.set)
         self.PermissionmyscrollbarY.pack(side="right",fill="y")
-        
+
         self.Permissioncanvas.pack(side="left")
         self.Permissioncanvas.create_window((0,0),window=self.Permissionframe,anchor='nw')
         self.Permissionframe.bind("<Configure>", self.Permissionmyfunction)
-        
+
         self.permissionsSCREEN = 1
 
     #To do Querry
     def getPermissions(self):
         return [["Admin","User with unlimited permissions", Permissions([1,1,1,1,1,1,1,1,1,1,1,1,10,100,1,1])], ["User","Basic user of the program.", Permissions([0,0,1,0,1,0,0,0,1,1,1,0,5,50,0,0])]]
-        
 
     def closeALLTabs(self):
         if self.file == 1:
@@ -1870,6 +1869,40 @@ class loginScreen(icaSCREENS):
         self.userNameLabel = Label(self.root,text=versionNumber[1:-1],font=('Consolas', 16))
         self.userNameLabel.place(x=5,y=575)
 
+
+        self.accountBUTTON = Button(self.root,text="Add Account",width=18,font=('Consolas', 16),bg="hot pink",command=self.createAccount)
+        self.accountBUTTON.place(x=350,y=450)
+
+    def createAccount(self): # Promts user for account creation
+
+        newWindow = Toplevel()
+        newWindow.geometry("600x600")
+        newWindow.title("Account Creation")
+
+
+        background = Canvas(newWindow,bg='light blue',width=600,height=600)
+        background.pack()
+
+        forground = Canvas(background,width=400,height=400)
+        forground.place(x=100,y=50)
+
+        entryLabels = ["Firstname: ","Lastname: ","Email: ","Username: ","Password: ","Confirm Pass: "]
+        creationEntries = []
+
+        yLabel = 25
+
+
+        for label in entryLabels: # will fill the account creation screen with labels
+
+            newLabel = Label(forground,text=label,font=('Consolas', 14),relief="groove",width=15)
+            newLabel.place(x=25,y=yLabel)
+
+            #newEntry = Entry(forground)
+
+            yLabel += 50 # increment
+
+
+
     def verifyUser(self):
         name = self.userNameEntry.get()
         passWord = self.passwordEntry.get()
@@ -2016,10 +2049,14 @@ def main(): # Main loop of ICA
     window.resizable(0, 0)
     window.title(versionNumber)
 
-    #currentSCREEN = loginScreen(window, None)
+    currentSCREEN = loginScreen(window, None)
 
     currentUser = User([0, "Jason", "Van Bladel", "Admin"], 1)
     currentSCREEN = mainMenu(window, currentUser)
+
+    #currentSCREEN = mainMenu(window, ["Jason Van Bladel"])
+    #currentUser = User([0, "Jason", "Van Bladel", "Admin"], 1)
+    #currentSCREEN = mainMenu(window, currentUser)
 
     #currentSCREEN = med_INFO_SCREEN(window,Patient(["John","Smith","20","2/3/2013","32","30"]))
 
