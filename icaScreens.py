@@ -75,6 +75,8 @@ class mainMenu(icaSCREENS):
         self.currentPopOut = 0
 
         #Set Up  Top Bar
+        self.notificationFRAME = LabelFrame(self.root)
+        self.notificationFRAME.place(x=0,y=0,height=100,width=800)
         barFRAME = LabelFrame(self.root)
         barFRAME.place(x=0,y=0,height=30,width=800)
 
@@ -88,44 +90,74 @@ class mainMenu(icaSCREENS):
 
         #Add tabs to top bar
         self.setUpTabs()
+
+        self.mainMenu = 0
+        self.toggleMainMenu()
         
-        #set Up Search Frame
-        self.setUpSearchFrame()
-
-        #setUp FilterFrame
-        self.filter = 0
-
-        #set Up Queue Frame
-        self.setUpQueue()
-        self.largeQueue = 0
-        self.queue = self.createQueue()
-        self.togExpandQueue()
-        
-        #SetUpSummary Frame
-        infoDisplayFRAME = LabelFrame(self.root)
-        infoDisplayFRAME.place(x=575,y=100,height=500,width=225)
-        self.summary = 0
-        self.contact = 0
-        self.phistory = 0
-
-        #setupOutReach
-        self.reportingFRAME = LabelFrame(self.root)
-        self.reportingFRAME.place(x=575,y=400,height=200,width=225)
-        self.outreach = 0
 
         #Notifications based on user in future
         self.setUpNotifications([[3,"Very Important Message!"],[2,"Important Message."],[1,"Notification Message"]])
 
-        #imageSource = "sources/notifications/notification_" + str(1) + ".PNG"
-        #notificationImage = Image.open(imageSource)
-        #notificationImage = notificationImage.resize((18,18), Image.ANTIALIAS)
-        #self.notificationIMAGE = ImageTk.PhotoImage(notificationImage)
-        #self.notificationLABEL = Label(self.root,image=self.notificationIMAGE)
-        #self.notificationLABEL.place(x=2.5,y= 32.5)
 
         #update current time
         self.logout = 0
         self.clock()
+
+    def toggleMainMenu(self):
+        if self.mainMenu == 0:
+            #set Up Search Frame
+            self.setUpSearchFrame()
+
+            #setUp FilterFrame
+            self.filter = 0
+
+            #set Up Queue Frame
+            self.setUpQueue()
+            self.largeQueue = 0
+            self.queue = self.createQueue()
+            self.togExpandQueue()
+            
+            #SetUpSummary Frame
+            self.infoDisplayFRAME = LabelFrame(self.root)
+            self.infoDisplayFRAME.place(x=575,y=100,height=500,width=225)
+            self.summary = 0
+            self.contact = 0
+            self.phistory = 0
+
+            #setupOutReach
+            self.reportingFRAME = LabelFrame(self.root)
+            self.reportingFRAME.place(x=575,y=400,height=200,width=225)
+            self.outreach = 0
+
+            self.mainMenu = 1
+        else:
+            self.clearPatient()
+            self.infoDisplayFRAME.destroy()
+            self.reportingFRAME.destroy()
+
+            self.toggleSearchBox()
+            if self.filter == 1:
+                self.togFilter()
+            
+            if not self.myframe == None:
+                self.myframe.destroy()
+                self.canvas.destroy()
+                self.myscrollbar.destroy()
+                self.frame.destroy()
+                self.scrollHeadFRAME.destroy()
+                self.headLABEL.destroy()
+                
+            if self.outreach == 1:
+                self.reportText.destroy()
+                self.outreachText.destroy()
+                self.outreachText2.destroy()
+                self.callOptions.destroy()
+                self.NotesTextArea.destroy()
+                self.NotesScrollBar.destroy()
+                self.submittOutReach.destroy()
+                self.outreach = 0
+            
+            self.mainMenu = 0
 
     def exitICA(self): #prompt user if they want to close program
 
@@ -154,23 +186,23 @@ class mainMenu(icaSCREENS):
         for n in range(len(notifications)):
             if notifications[n][0] == 1:
                 notificationLABEL = Label(self.root,image=self.notificationIMAGE1)
-                notificationLABEL.place(x=2.5,y= 32.5 + (n * 22.5))
+                notificationLABEL.place(x=2.5,y= 32.5 + (n * 20))
                 notificationLABEL1 = Label(self.root, text = notifications[n][1])
-                notificationLABEL1.place(x=25,y= 32.5 + (n * 22.5))
+                notificationLABEL1.place(x=25,y= 32.5 + (n * 20))
                 self.notificationList.append(notificationLABEL)
                 self.notificationList.append(notificationLABEL1)
             if notifications[n][0] == 2:
                 notificationLABEL = Label(self.root,image=self.notificationIMAGE2)
-                notificationLABEL.place(x=2.5,y= 32.5 + (n * 22.5))
+                notificationLABEL.place(x=2.5,y= 32.5 + (n * 20))
                 notificationLABEL1 = Label(self.root, text = notifications[n][1])
-                notificationLABEL1.place(x=25,y= 32.5 + (n * 22.5))
+                notificationLABEL1.place(x=25,y= 32.5 + (n * 20))
                 self.notificationList.append(notificationLABEL)
                 self.notificationList.append(notificationLABEL1)
             if notifications[n][0] == 3:
                 notificationLABEL = Label(self.root,image=self.notificationIMAGE3)
-                notificationLABEL.place(x=2.5,y= 32.5 + (n * 22.5))
+                notificationLABEL.place(x=2.5,y= 32.5 + (n * 20))
                 notificationLABEL1 = Label(self.root, text = notifications[n][1])
-                notificationLABEL1.place(x=25,y= 32.5 + (n * 22.5))
+                notificationLABEL1.place(x=25,y= 32.5 + (n * 20))
                 self.notificationList.append(notificationLABEL)
                 self.notificationList.append(notificationLABEL1)
 
@@ -648,6 +680,10 @@ class mainMenu(icaSCREENS):
             #self.fileFRAME = LabelFrame(self.root)
             #self.fileFRAME.place(x=0,y=30,height=120,width=100)
             currentY = 30
+            self.mainMenuBUTTON = Button(self.root, text = "Home", justify = LEFT,anchor=W, command=lambda: self.toggleMainMenu())
+            self.mainMenuBUTTON.place(x=0,y=currentY,height=30,width=100)
+            currentY = currentY + 30
+            
             if self.user.permissions.importData == 1:
                 self.importData = Button(self.root, text = "Import", justify = LEFT,anchor=W)
                 self.importData.place(x=0,y=currentY,height=30,width=100)
@@ -670,6 +706,7 @@ class mainMenu(icaSCREENS):
             self.file = 1
         else:
             #self.fileFRAME.destroy()
+            self.mainMenuBUTTON.destroy()
             self.logout.destroy()
             if self.user.permissions.exportData == 1:
                 if self.exportTAB == 1:
@@ -1875,10 +1912,10 @@ def main(): # Main loop of ICA
     window.resizable(0, 0)
     window.title(versionNumber)
 
-    #currentSCREEN = loginScreen(window, None)
+    currentSCREEN = loginScreen(window, None)
 
-    currentUser = User([0, "Jason", "Van Bladel", "Admin"], 1)
-    currentSCREEN = mainMenu(window, currentUser)
+    #currentUser = User([0, "Jason", "Van Bladel", "Admin"], 1)
+    #currentSCREEN = mainMenu(window, currentUser)
 
     #currentSCREEN = med_INFO_SCREEN(window,Patient(["John","Smith","20","2/3/2013","32","30"]))
 
