@@ -94,6 +94,7 @@ class mainMenu(icaSCREENS):
         #set up all screens
         self.mainMenuSCREEN  = 0
         self.consoleSCREEN = 0
+        self.permissionsSCREEN = 0
         self.showMainMenu()
         
 
@@ -175,11 +176,21 @@ class mainMenu(icaSCREENS):
             self.ConsolemyscrollbarX.destroy()
             self.excuteConsoleBUTTON.destroy()
             self.commandInputENTRY.destroy()
+            self.Consolemyframe.destroy()
 
             for commandLabel in self.consoleCommandList:
                 commandLabel.destroy()
             
             self.consoleSCREEN = 0
+            
+        if self.permissionsSCREEN == 1:
+            self.Permissionmyframe.destroy()
+            self.Permissioncanvas.destroy()
+            self.Permissionframe.destroy()
+            self.PermissionmyscrollbarY.destroy()
+                       
+            
+            self.permissionsSCREEN = 0
 
     def showConsole(self):
         self.clearAllScreens()
@@ -211,6 +222,9 @@ class mainMenu(icaSCREENS):
 
         self.consoleCommandList = []
         self.consoleSCREEN = 1
+
+    def Permissionmyfunction(self,event):
+        self.Consolecanvas.configure(scrollregion=self.Permissioncanvas.bbox("all"),width=400,height=500)
 
     def Consolemyfunction(self,event):
         self.commandInputENTRY.delete(0, END)
@@ -924,7 +938,7 @@ class mainMenu(icaSCREENS):
                 currentY = currentY + 30
 
             if self.user.permissions.setPermissions == 1:
-                self.permissions = Button(self.root, text = "Permission Manager", justify = LEFT,anchor=W)
+                self.permissions = Button(self.root, text = "Permission Manager", justify = LEFT,anchor=W, command=lambda: self.showPermissionsSCREEN())
                 self.permissions.place(x=self.adminTABX,y=currentY,height=30,width=125)
                 currentY = currentY + 30
 
@@ -951,6 +965,30 @@ class mainMenu(icaSCREENS):
             if self.user.permissions.consoleCommands == 1:
                 self.systemConsole.destroy()
             self.admin = 0
+
+    def showPermissionsSCREEN(self):
+        self.clearAllScreens()
+
+        self.Permissionmyframe=Frame(self.root,relief=GROOVE,width=20,height=470,bd=1)
+        self.Permissionmyframe.place(x=0,y=100,height=500,width=400)
+
+        self.Permissioncanvas=Canvas(self.Permissionmyframe)
+        self.Permissionframe=Frame(self.Permissioncanvas)
+        self.PermissionmyscrollbarY=Scrollbar(self.Permissionmyframe,orient="vertical",command=self.Permissioncanvas.yview)
+        self.Permissioncanvas.configure(yscrollcommand=self.PermissionmyscrollbarY.set)
+        self.PermissionmyscrollbarY.pack(side="right",fill="y")
+
+        #self.ConsolemyscrollbarX=Scrollbar(self.Consolemyframe,orient="horizontal",command=self.Consolecanvas.xview)
+        #self.Consolecanvas.configure(xscrollcommand=self.ConsolemyscrollbarX.set)
+        #self.ConsolemyscrollbarX.pack(side="bottom",fill="x")
+
+        
+        self.Permissioncanvas.pack(side="left")
+        self.Permissioncanvas.create_window((0,0),window=self.Permissionframe,anchor='nw')
+        self.Permissionframe.bind("<Configure>", self.Permissionmyfunction)
+        
+        self.permissionsSCREEN = 1
+        
 
     def closeALLTabs(self):
         if self.file == 1:
@@ -997,7 +1035,7 @@ class mainMenu(icaSCREENS):
                 b.configure(command=lambda i=i: self.showPatient(patientList[i].MRN, self.bList[i]))
                 if patientList[i].MRN == self.currentPatient:
                      self.currentButton = b
-                     b.configure(background = "green")
+                     b.configure(background = "lime green")
             else:
                 pstr = '{0:<15} {1:<13} {2:<13} {3:<10}'.format(patientList[i].fName, patientList[i].lName, patientList[i].dueDate, patientList[i].daysOverDue)
             
@@ -1008,7 +1046,7 @@ class mainMenu(icaSCREENS):
                 self.bList.append(b)
                 if patientList[i].MRN == self.currentPatient:
                      self.currentButton = b
-                     b.configure(background = "green")
+                     b.configure(background = "lime green")
 
     def resetWorkQueue(self, mrn):
         for p in self.queue:
@@ -1039,7 +1077,7 @@ class mainMenu(icaSCREENS):
             for button in self.bList:
                 #print(b == button)
                 if b == button:
-                    b.configure(background = "green")
+                    b.configure(background = "lime green")
                     self.currentButton = button
                     break
             self.currentPatient = MRN
@@ -1953,7 +1991,7 @@ class User():
         if self.userType == "Admin":
             self.permissions = Permissions([1,1,1,1,1,1,1,1,1,1,1,1,10,100,1,1])
         else:
-            self.permissions = Permissions([0,0,1,0,1,0,0,0,1,1,0,0,5,50,0,0])
+            self.permissions = Permissions([0,0,1,0,1,0,0,0,1,1,1,0,5,50,0,0])
 
     def addAction(self, action):
         self.currentUserSession.addAction(action)
