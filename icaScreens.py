@@ -7,7 +7,7 @@ from tkinter import ttk
 from Patients import *
 from Security import Hash
 
-versionNumber = "(Version 1.7.5a)"
+versionNumber = "(Version 1.7.8)"
 
 class icaSCREENS():
     '''
@@ -18,7 +18,6 @@ class icaSCREENS():
     def __init__(self,window): #all screens must contain the root window
         self.root = window
         self.root.protocol("WM_DELETE_WINDOW", self.exitICA)
-
 
         # insert as "<KEYTYPE>",functionCall.
         self.keyBinds = {}
@@ -37,10 +36,15 @@ class icaSCREENS():
         self.root.bind(key,functionCall)
         self.keyBinds[key] = functionCall
 
-    def removeKeyBind(self,key):
+    def removeKeyBind(self,key): # will remove the bind and free the key for another bind
 
         self.root.unbind(key)
         del self.keyBinds[key]
+
+    def rebindKey(self,key,functionCall): # will rebind the key to another feature
+
+        self.root.unbind(key)
+        self.bindKey(key,functionCall)
 
     def exitICA(self): #prompt user if they want to close program
 
@@ -71,6 +75,8 @@ class mainMenu(icaSCREENS):
         self.currentPopOut = 0
 
         #Set Up  Top Bar
+        self.notificationFRAME = LabelFrame(self.root)
+        self.notificationFRAME.place(x=0,y=0,height=100,width=800)
         barFRAME = LabelFrame(self.root)
         barFRAME.place(x=0,y=0,height=30,width=800)
 
@@ -84,6 +90,25 @@ class mainMenu(icaSCREENS):
 
         #Add tabs to top bar
         self.setUpTabs()
+
+        #set up all screens
+        self.mainMenuSCREEN  = 0
+        self.consoleSCREEN = 0
+        self.showMainMenu()
+        
+
+        #Notifications based on user in future
+        self.setUpNotifications([[3,"Very Important Message!"],[2,"Important Message."],[1,"Notification Message"]])
+
+
+        #update current time
+        self.logout = 0
+        self.clock()
+
+        
+
+    def showMainMenu(self):
+        self.clearAllScreens()
         
         #set Up Search Frame
         self.setUpSearchFrame()
@@ -96,33 +121,110 @@ class mainMenu(icaSCREENS):
         self.largeQueue = 0
         self.queue = self.createQueue()
         self.togExpandQueue()
-        
+            
         #SetUpSummary Frame
-        infoDisplayFRAME = LabelFrame(self.root)
-        infoDisplayFRAME.place(x=575,y=100,height=500,width=225)
+        self.infoDisplayFRAME = LabelFrame(self.root)
+        self.infoDisplayFRAME.place(x=575,y=100,height=500,width=225)
         self.summary = 0
         self.contact = 0
-        self.history = 0
+        self.phistory = 0
 
         #setupOutReach
         self.reportingFRAME = LabelFrame(self.root)
         self.reportingFRAME.place(x=575,y=400,height=200,width=225)
         self.outreach = 0
 
-        #Notifications
-        self.setUpNotifications([[3,"Very Important Message!"],[2,"Important Message."],[1,"Notification Message"]])
+        self.mainMenuSCREEN  = 1
+            
 
-        #imageSource = "sources/notifications/notification_" + str(1) + ".PNG"
-        #notificationImage = Image.open(imageSource)
-        #notificationImage = notificationImage.resize((18,18), Image.ANTIALIAS)
-        #self.notificationIMAGE = ImageTk.PhotoImage(notificationImage)
-        #self.notificationLABEL = Label(self.root,image=self.notificationIMAGE)
-        #self.notificationLABEL.place(x=2.5,y= 32.5)
+    def clearAllScreens(self):
+        self.closeALLTabs()
+        if self.mainMenuSCREEN == 1:
+            self.clearPatient()
+            self.infoDisplayFRAME.destroy()
+            self.reportingFRAME.destroy()
 
-        #update current time
-        self.logout = 0
-        self.clock()
+            self.toggleSearchBox()
+            if self.filter == 1:
+                self.togFilter()
+            
+            if not self.myframe == None:
+                self.myframe.destroy()
+                self.canvas.destroy()
+                self.myscrollbar.destroy()
+                self.frame.destroy()
+                self.scrollHeadFRAME.destroy()
+                self.headLABEL.destroy()
+                
+            if self.outreach == 1:
+                self.reportText.destroy()
+                self.outreachText.destroy()
+                self.outreachText2.destroy()
+                self.callOptions.destroy()
+                self.NotesTextArea.destroy()
+                self.NotesScrollBar.destroy()
+                self.submittOutReach.destroy()
+                self.outreach = 0
+            
+            self.mainMenuSCREEN  = 0
+            
+        if self.consoleSCREEN == 1:
+            self.Consolecanvas.destroy()
+            self.Consoleframe.destroy()
+            self.ConsolemyscrollbarY.destroy()
+            self.ConsolemyscrollbarX.destroy()
+            self.excuteConsoleBUTTON.destroy()
+            self.commandInputENTRY.destroy()
+
+            for commandLabel in self.consoleCommandList:
+                commandLabel.destroy()
+            
+            self.consoleSCREEN = 0
+
+    def showConsole(self):
+        self.clearAllScreens()
+
+        self.Consolemyframe=Frame(self.root,relief=GROOVE,width=20,height=470,bd=1)
+        self.Consolemyframe.place(x=0,y=100,height=470,width=800)
+
+        self.Consolecanvas=Canvas(self.Consolemyframe)
+        self.Consoleframe=Frame(self.Consolecanvas)
+        self.ConsolemyscrollbarY=Scrollbar(self.Consolemyframe,orient="vertical",command=self.Consolecanvas.yview)
+        self.Consolecanvas.configure(yscrollcommand=self.ConsolemyscrollbarY.set)
+        self.ConsolemyscrollbarY.pack(side="right",fill="y")
+
+        self.ConsolemyscrollbarX=Scrollbar(self.Consolemyframe,orient="horizontal",command=self.Consolecanvas.xview)
+        self.Consolecanvas.configure(xscrollcommand=self.ConsolemyscrollbarX.set)
+        self.ConsolemyscrollbarX.pack(side="bottom",fill="x")
+
         
+        self.Consolecanvas.pack(side="left")
+        self.Consolecanvas.create_window((0,0),window=self.Consoleframe,anchor='nw')
+        self.Consoleframe.bind("<Configure>", self.Consolemyfunction)
+
+        self.commandInputENTRY = Entry(self.root, font = ('Consolas', 10))
+        self.commandInputENTRY.place(x=0,y=570,width=750, height = 30)
+        self.commandInputENTRY.insert(0, ">> ")
+    
+        self.excuteConsoleBUTTON = Button(self.root, text = "Execute", command=lambda: self.executeConsoleCommand())
+        self.excuteConsoleBUTTON.place(x=750,y=570, height = 30, width = 50)
+
+        self.consoleCommandList = []
+        self.consoleSCREEN = 1
+
+    def Consolemyfunction(self,event):
+        self.commandInputENTRY.delete(0, END)
+        self.commandInputENTRY.insert(0, ">> ")
+        self.Consolecanvas.configure(scrollregion=self.Consolecanvas.bbox("all"),width=800,height=570)
+
+    def executeConsoleCommand(self):
+        self.addToConsole( self.commandInputENTRY.get())
+
+    def addToConsole(self, commandStr): 
+        toAddToConsole = Label(self.Consoleframe, text = commandStr,anchor=W, justify=LEFT, font = ('Consolas', 10))
+        toAddToConsole.pack(side=TOP, fill=BOTH, expand=TRUE)
+        self.consoleCommandList.append(toAddToConsole)
+    
     def exitICA(self): #prompt user if they want to close program
 
         userChoice = messagebox.askyesno("Exiting ICA","Are you sure you want to exit ICA?")
@@ -132,36 +234,43 @@ class mainMenu(icaSCREENS):
             self.root.destroy()
 
     def setUpNotifications(self, notifications):
-        if not self.user.userType == "Admin":
-            imageSource = "sources/notifications/notification_1.PNG"
-            notificationImage = Image.open(imageSource)
-            notificationImage = notificationImage.resize((18,18), Image.ANTIALIAS)
-            self.notificationIMAGE1 = ImageTk.PhotoImage(notificationImage)
-            imageSource = "sources/notifications/notification_2.PNG"
-            notificationImage = Image.open(imageSource)
-            notificationImage = notificationImage.resize((18,18), Image.ANTIALIAS)
-            self.notificationIMAGE2 = ImageTk.PhotoImage(notificationImage)
-            imageSource = "sources/notifications/notification_3.PNG"
-            notificationImage = Image.open(imageSource)
-            notificationImage = notificationImage.resize((18,18), Image.ANTIALIAS)
-            self.notificationIMAGE3 = ImageTk.PhotoImage(notificationImage)
-            
-            for n in range(len(notifications)):
-                if notifications[n][0] == 1:
-                    notificationLABEL = Label(self.root,image=self.notificationIMAGE1)
-                    notificationLABEL.place(x=2.5,y= 32.5 + (n * 22.5))
-                    notificationLABEL1 = Label(self.root, text = notifications[n][1])
-                    notificationLABEL1.place(x=25,y= 32.5 + (n * 22.5))
-                if notifications[n][0] == 2:
-                    notificationLABEL = Label(self.root,image=self.notificationIMAGE2)
-                    notificationLABEL.place(x=2.5,y= 32.5 + (n * 22.5))
-                    notificationLABEL1 = Label(self.root, text = notifications[n][1])
-                    notificationLABEL1.place(x=25,y= 32.5 + (n * 22.5))
-                if notifications[n][0] == 3:
-                    notificationLABEL = Label(self.root,image=self.notificationIMAGE3)
-                    notificationLABEL.place(x=2.5,y= 32.5 + (n * 22.5))
-                    notificationLABEL1 = Label(self.root, text = notifications[n][1])
-                    notificationLABEL1.place(x=25,y= 32.5 + (n * 22.5))
+        self.notificationList = []
+        
+        imageSource = "sources/notifications/notification_1.PNG"
+        notificationImage = Image.open(imageSource)
+        notificationImage = notificationImage.resize((18,18), Image.ANTIALIAS)
+        self.notificationIMAGE1 = ImageTk.PhotoImage(notificationImage)
+        imageSource = "sources/notifications/notification_2.PNG"
+        notificationImage = Image.open(imageSource)
+        notificationImage = notificationImage.resize((18,18), Image.ANTIALIAS)
+        self.notificationIMAGE2 = ImageTk.PhotoImage(notificationImage)
+        imageSource = "sources/notifications/notification_3.PNG"
+        notificationImage = Image.open(imageSource)
+        notificationImage = notificationImage.resize((18,18), Image.ANTIALIAS)
+        self.notificationIMAGE3 = ImageTk.PhotoImage(notificationImage)
+
+        for n in range(len(notifications)):
+            if notifications[n][0] == 1:
+                notificationLABEL = Label(self.root,image=self.notificationIMAGE1)
+                notificationLABEL.place(x=2.5,y= 32.5 + (n * 20))
+                notificationLABEL1 = Label(self.root, text = notifications[n][1])
+                notificationLABEL1.place(x=25,y= 32.5 + (n * 20))
+                self.notificationList.append(notificationLABEL)
+                self.notificationList.append(notificationLABEL1)
+            if notifications[n][0] == 2:
+                notificationLABEL = Label(self.root,image=self.notificationIMAGE2)
+                notificationLABEL.place(x=2.5,y= 32.5 + (n * 20))
+                notificationLABEL1 = Label(self.root, text = notifications[n][1])
+                notificationLABEL1.place(x=25,y= 32.5 + (n * 20))
+                self.notificationList.append(notificationLABEL)
+                self.notificationList.append(notificationLABEL1)
+            if notifications[n][0] == 3:
+                notificationLABEL = Label(self.root,image=self.notificationIMAGE3)
+                notificationLABEL.place(x=2.5,y= 32.5 + (n * 20))
+                notificationLABEL1 = Label(self.root, text = notifications[n][1])
+                notificationLABEL1.place(x=25,y= 32.5 + (n * 20))
+                self.notificationList.append(notificationLABEL)
+                self.notificationList.append(notificationLABEL1)
 
     def toggleOutReach(self, patient):
         if self.outreach == 0:
@@ -205,7 +314,22 @@ class mainMenu(icaSCREENS):
 
 
     def submitOutReachAttempt(self, patient):
+        if self.user.permissions.outReach == 0:
+            return
         print("Out Reach", patient.fName)
+
+        #clear patient from queue
+
+
+        b = self.currentButton
+
+        self.showPatient(patient.MRN, b)
+
+        self.bList.remove(b)
+        b.destroy()
+
+        self.resetWorkQueue(patient.MRN)
+
 
     def setUpTabs(self):
         fileBUTTON = Button(self.root,text="File",command=lambda: self.togFileTab())
@@ -219,13 +343,28 @@ class mainMenu(icaSCREENS):
 
         helpBUTTON = Button(self.root,text="Help",command=lambda: self.togHelpTab())
         helpBUTTON.place(x=150,y=0,height=30,width=50)
-        
-        if self.user.userType == "Admin":
-            analyticBUTTON = Button(self.root,text="Analytics",command=lambda: self.togAnalyticsTab())
-            analyticBUTTON.place(x=200,y=0,height=30,width=60)
 
+        currentX = 200
+
+        if self.user.permissions.viewSelfAnalytics == 1 or self.user.permissions.viewSystemAnalytics == 1:
+            self.analyticTABX = currentX
+            analyticBUTTON = Button(self.root,text="Analytics",command=lambda: self.togAnalyticsTab())
+            analyticBUTTON.place(x=currentX,y=0,height=30,width=60)
+            currentX = currentX + 60
+
+        if self.user.permissions.viewHistoryOfSelf == 1 or self.user.permissions.viewHistoryOfEntireSystem == 1:
+            self.historyTABX = currentX
+            historyButton = Button(self.root,text="History",command=lambda: self.togHistoryTab())
+            historyButton.place(x=currentX,y=0,height=30,width=50)
+            currentX = currentX + 50
+
+        if self.user.permissions.approveUsers == 1 or self.user.permissions.setPermissions == 1 or self.user.permissions.createAlerts == 1 or self.user.permissions.createAlerts == 1 or self.user.permissions.consoleCommands == 1:
+            self.adminTABX = currentX
             adminBUTTON = Button(self.root,text="Admin",command=lambda: self.togAdminTab())
-            adminBUTTON.place(x=260,y=0,height=30,width=50)
+            adminBUTTON.place(x=currentX,y=0,height=30,width=50)
+            currentX = currentX + 50
+
+
 
         #Set Up for TABS
         self.fileFRAME = None
@@ -236,7 +375,7 @@ class mainMenu(icaSCREENS):
         self.analyticsFRAME = None
         self.logout = None
         self.permissions = None
-        self.userHistory = None
+        self.systemOptions = None
         self.accountManager = None
         self.aboutUs = None
         self.guide = None
@@ -256,10 +395,16 @@ class mainMenu(icaSCREENS):
         self.help = 0
         self.admin = 0
         self.analytics = 0
+        self.history = 0
+        
 
         #SubTabs
         self.exportTAB = 0
-        
+        self.notificationsTABState = 0
+
+        #Tab Pages
+        self.accountMangerPage = 0
+
 
     def toggleSearchBox(self):
         if self.searchBox == 0:
@@ -598,36 +743,49 @@ class mainMenu(icaSCREENS):
     def togFileTab(self):
         if self.file == 0:
             self.closeALLTabs()
-            self.fileFRAME = LabelFrame(self.root)
-            self.fileFRAME.place(x=0,y=30,height=120,width=100)
-
-            self.importData = Button(self.root, text = "Import", justify = LEFT,anchor=W)
-            self.importData.place(x=0,y=30,height=30,width=100)
+            #self.fileFRAME = LabelFrame(self.root)
+            #self.fileFRAME.place(x=0,y=30,height=120,width=100)
+            currentY = 30
+            self.mainMenuBUTTON = Button(self.root, text = "Home", justify = LEFT,anchor=W, command=lambda: self.showMainMenu())
+            self.mainMenuBUTTON.place(x=0,y=currentY,height=30,width=100)
+            currentY = currentY + 30
             
-            self.export = Button(self.root, text = "Export", justify = LEFT,anchor=W, command=lambda: self.togExportTab())
-            self.export.place(x=0,y=60,height=30,width=100)
+            if self.user.permissions.importData == 1:
+                self.importData = Button(self.root, text = "Import", justify = LEFT,anchor=W)
+                self.importData.place(x=0,y=currentY,height=30,width=100)
+                currentY = currentY + 30
 
-            self.print = Button(self.root, text = "Print", justify = LEFT,anchor=W)
-            self.print.place(x=0,y=90,height=30,width=100)
+            if self.user.permissions.exportData == 1:
+                self.export = Button(self.root, text = "Export", justify = LEFT,anchor=W, command=lambda: self.togExportTab())
+                self.export.place(x=0,y=currentY,height=30,width=100)
+                currentY = currentY + 30
+
+
+            if self.user.permissions.printFiles == 1:
+                self.print = Button(self.root, text = "Print", justify = LEFT,anchor=W)
+                self.print.place(x=0,y=currentY,height=30,width=100)
+                currentY = currentY + 30
             
             self.logout = Button(self.root, text = "Log out", justify = LEFT,anchor=W, command=lambda: self.logoutofApp())
-            self.logout.place(x=0,y=120,height=30,width=100)
+            self.logout.place(x=0,y=currentY,height=30,width=100)
             
             self.file = 1
         else:
-            if self.exportTAB == 1:
-                self.togExportTab()
-            self.fileFRAME.destroy()
+            #self.fileFRAME.destroy()
+            self.mainMenuBUTTON.destroy()
             self.logout.destroy()
-            self.export.destroy()
-            self.print.destroy()
-            self.importData.destroy()
+            if self.user.permissions.exportData == 1:
+                if self.exportTAB == 1:
+                    self.togExportTab()
+                self.export.destroy()
+            if self.user.permissions.printFiles == 1:
+                self.print.destroy()
+            if self.user.permissions.importData == 1:
+                self.importData.destroy()
             self.file = 0
 
     def togExportTab(self):
         if self.exportTAB == 0:
-            self.exportFRAME = LabelFrame(self.root)
-            self.exportFRAME.place(x=100,y=30,height=90,width=50)
 
             self.pdf = Button(self.root, text = ".PDF", justify = LEFT,anchor=W)
             self.pdf.place(x=100,y=30,height=30,width=50)
@@ -640,7 +798,6 @@ class mainMenu(icaSCREENS):
             
             self.exportTAB = 1
         else:
-            self.exportFRAME.destroy()
             self.pdf.destroy()
             self.txt.destroy()
             self.cvs.destroy()
@@ -649,21 +806,34 @@ class mainMenu(icaSCREENS):
     def togOptionsTab(self):
         if self.option == 0:
             self.closeALLTabs()
-            self.optionFRAME = LabelFrame(self.root)
-            self.optionFRAME.place(x=50,y=30,height=200,width=100)
+
+            if self.notificationsTABState == 0:
+                self.toggleNotifications = Button(self.root, text = "Hide Notifications", justify = LEFT,anchor=W, command=lambda: self.togNotifications())
+                self.toggleNotifications.place(x=50,y=30,height=30,width=110)
+            else:
+                self.toggleNotifications = Button(self.root, text = "Show Notifications", justify = LEFT,anchor=W, command=lambda: self.togNotifications())
+                self.toggleNotifications.place(x=50,y=30,height=30,width=110)
             self.option = 1
         else:
-            self.optionFRAME.destroy()
             self.option = 0
+            self.toggleNotifications.destroy()
+
+    def togNotifications(self):
+        self.closeALLTabs()
+        if self.notificationsTABState == 0:
+            for n in self.notificationList:
+                n.destroy()
+            self.notificationList = []
+            self.notificationsTABState = 1
+        else:
+            self.setUpNotifications([[3,"Very Important Message!"],[2,"Important Message."],[1,"Notification Message"]])
+            self.notificationsTABState = 0
             
     def togReportTab(self):
         if self.report == 0:
             self.closeALLTabs()
-            self.reportFRAME = LabelFrame(self.root)
-            self.reportFRAME.place(x=100,y=30,height=200,width=100)
             self.report = 1
         else:
-            self.reportFRAME.destroy()
             self.report = 0
 
     def togHelpTab(self):
@@ -689,36 +859,97 @@ class mainMenu(icaSCREENS):
     def togAnalyticsTab(self):
         if self.analytics == 0:
             self.closeALLTabs()
-            self.analyticsFRAME = LabelFrame(self.root)
-            self.analyticsFRAME.place(x=200,y=30,height=200,width=100)
+            #self.analyticsFRAME = LabelFrame(self.root)
+            #self.analyticsFRAME.place(x=200,y=30,height=200,width=100)
+
+            currentY = 30
+
+            if self.user.permissions.viewSelfAnalytics == 1:
+                self.myAnalytics = Button(self.root, text = "My Analytics", justify = LEFT,anchor=W)
+                self.myAnalytics.place(x=self.analyticTABX,y=currentY,height=30,width=110)
+                currentY = currentY + 30
+
+            if self.user.permissions.viewSystemAnalytics == 1:
+                self.systemAnalytics = Button(self.root, text = "System Analytics", justify = LEFT,anchor=W)
+                self.systemAnalytics.place(x=self.analyticTABX,y=currentY,height=30,width=110)
+                currentY = currentY + 30
             
             self.analytics = 1
         else:
-            self.analyticsFRAME.destroy()
+            #self.analyticsFRAME.destroy()
+            if self.user.permissions.viewSelfAnalytics == 1:
+                self.myAnalytics.destroy()
+            if self.user.permissions.viewSystemAnalytics == 1:
+                self.systemAnalytics.destroy()
             self.analytics = 0
+
+    def togHistoryTab(self):
+        if self.history == 0:
+            self.closeALLTabs()
+
+            currentY = 30
+
+            if self.user.permissions.viewHistoryOfSelf == 1:
+                self.myHistory = Button(self.root, text = "My History", justify = LEFT,anchor=W)
+                self.myHistory.place(x=self.historyTABX,y=currentY,height=30,width=100)
+                currentY = currentY + 30
+
+            if self.user.permissions.viewHistoryOfEntireSystem == 1:
+                self.systemHistory = Button(self.root, text = "System History", justify = LEFT,anchor=W)
+                self.systemHistory.place(x=self.historyTABX,y=currentY,height=30,width=100)
+                currentY = currentY + 30
+
+            self.history = 1
+        else:
+            if self.user.permissions.viewHistoryOfSelf == 1:
+                self.myHistory.destroy()
+            if self.user.permissions.viewHistoryOfEntireSystem == 1:
+                self.systemHistory.destroy()
+            self.history = 0
 
     def togAdminTab(self):
         if self.admin == 0:
             self.closeALLTabs()
-            self.adminFRAME = LabelFrame(self.root)
-            self.adminFRAME.place(x=260,y=30,height=90,width=110)
 
-            self.accountManager = Button(self.root, text = "Account Manager", justify = LEFT,anchor=W)
-            self.accountManager.place(x=260,y=30,height=30,width=110)
+            currentY = 30
 
-            self.userHistory = Button(self.root, text = "User History", justify = LEFT, anchor=W)
-            self.userHistory.place(x=260,y=60,height=30,width=110)
+            if self.user.permissions.createAlerts == 1:
+                self.createAlerts = Button(self.root, text = "Alert Manger", justify = LEFT,anchor=W)
+                self.createAlerts.place(x=self.adminTABX,y=currentY,height=30,width=125)
+                currentY = currentY + 30
 
-            self.permissions = Button(self.root, text = "Permissions", justify = LEFT,anchor=W)
-            self.permissions.place(x=260,y=90,height=30,width=110)
+            if self.user.permissions.approveUsers == 1:
+                self.accountManager = Button(self.root, text = "Account Manager", justify = LEFT,anchor=W)
+                self.accountManager.place(x=self.adminTABX,y=currentY,height=30,width=125)
+                currentY = currentY + 30
+
+            if self.user.permissions.setPermissions == 1:
+                self.permissions = Button(self.root, text = "Permission Manager", justify = LEFT,anchor=W)
+                self.permissions.place(x=self.adminTABX,y=currentY,height=30,width=125)
+                currentY = currentY + 30
+
+            if self.user.permissions.setSystemOptions == 1:
+                self.systemOptions = Button(self.root, text = "System Manager", justify = LEFT, anchor=W)
+                self.systemOptions.place(x=self.adminTABX,y=currentY,height=30,width=125)
+                currentY = currentY + 30
+                
+            if self.user.permissions.consoleCommands == 1:
+                self.systemConsole = Button(self.root, text = "Console", justify = LEFT, anchor=W, command=lambda: self.showConsole())
+                self.systemConsole.place(x=self.adminTABX,y=currentY,height=30,width=125)
+                currentY = currentY + 30
           
             self.admin = 1
         else:
-            self.adminFRAME.destroy()
-            self.accountManager.destroy()
-            self.userHistory.destroy()
-            self.permissions.destroy()
-            
+            if self.user.permissions.createAlerts == 1:
+                self.createAlerts.destroy()
+            if self.user.permissions.approveUsers == 1:
+                self.accountManager.destroy()
+            if self.user.permissions.setSystemOptions == 1:
+                self.systemOptions.destroy()
+            if self.user.permissions.setPermissions == 1:
+                self.permissions.destroy()
+            if self.user.permissions.consoleCommands == 1:
+                self.systemConsole.destroy()
             self.admin = 0
 
     def closeALLTabs(self):
@@ -740,6 +971,9 @@ class mainMenu(icaSCREENS):
         if self.analytics == 1:
             self.togAnalyticsTab()
 
+        if self.history ==1:
+            self.togHistoryTab()
+
     def createQueue(self):
         f = open("UITestData.txt", "r")
         pList = []
@@ -752,7 +986,7 @@ class mainMenu(icaSCREENS):
     def addToQueue(self, frame, patientList):
         self.bList = []
         for i in range(len(patientList)):
-            if self.largeQueue == 0:
+            if self.largeQueue == 1:
                 pstr = '{0:<10} {1:<13} {2:<13} {3:<10}'.format(patientList[i].fName, patientList[i].lName, patientList[i].dueDate, patientList[i].daysOverDue)
             
                 #FONT has to be monospaced or it wont work
@@ -762,6 +996,7 @@ class mainMenu(icaSCREENS):
                 self.bList.append(b)
                 b.configure(command=lambda i=i: self.showPatient(patientList[i].MRN, self.bList[i]))
                 if patientList[i].MRN == self.currentPatient:
+                     self.currentButton = b
                      b.configure(background = "green")
             else:
                 pstr = '{0:<15} {1:<13} {2:<13} {3:<10}'.format(patientList[i].fName, patientList[i].lName, patientList[i].dueDate, patientList[i].daysOverDue)
@@ -772,8 +1007,18 @@ class mainMenu(icaSCREENS):
                 b.grid(row=i)
                 self.bList.append(b)
                 if patientList[i].MRN == self.currentPatient:
+                     self.currentButton = b
                      b.configure(background = "green")
-            
+
+    def resetWorkQueue(self, mrn):
+        for p in self.queue:
+            if p.MRN == mrn:
+                self.queue.remove(p)
+                break
+        for b in self.bList:
+            b.destroy()
+
+        self.addToQueue(self.frame, self.queue)
 
     def showPatient(self, MRN, b):
         #hash map would be better
@@ -782,6 +1027,7 @@ class mainMenu(icaSCREENS):
                 button.configure(background = self.root.cget('bg'))
             self.clearPatient()
             self.currentPatient = None
+            self.currentButton = None
         else:
             for patient in self.queue:
                 if patient.MRN == MRN:
@@ -794,8 +1040,10 @@ class mainMenu(icaSCREENS):
                 #print(b == button)
                 if b == button:
                     b.configure(background = "green")
+                    self.currentButton = button
                     break
             self.currentPatient = MRN
+
 
         if self.outreach == 1:
             self.reportText.destroy()
@@ -813,12 +1061,12 @@ class mainMenu(icaSCREENS):
 
     def xPand(self,patient):
 
-        if self.currentPopOut >= 5:
+        if self.currentPopOut >= self.user.permissions.numberOfPatientsOpen:
             messagebox.showerror("error window", "Too many windows already open!")
             return
 
         newWindow = Toplevel()
-        newWindow.title("This the patient info")
+        newWindow.title("Patient Details MRN: " + patient.MRN)
         patientInfo = med_INFO_SCREEN(newWindow,patient)
         self.currentPopOut += 1
 
@@ -878,7 +1126,7 @@ class mainMenu(icaSCREENS):
 
     def showHistory(self, patient):
         self.clearPatient()
-        self.history = 1
+        self.phistory = 1
 
         self.infoBUTTON = Button(self.root, text = "Summary", command=lambda: self.showSummary(patient))
         self.infoBUTTON.place(x = 575, y = 100, width = 75, height = 37.5)
@@ -893,10 +1141,6 @@ class mainMenu(icaSCREENS):
 
         self.pHistoryList = []
 
-        
-
-
-       
         self.pmyframe=Frame(self.root,relief=GROOVE,width=50,height=100,bd=1)
         self.pmyframe.place(x=575,y=165,height=170,width=222.5)
         self.pcanvas=Canvas(self.pmyframe)
@@ -946,6 +1190,7 @@ class mainMenu(icaSCREENS):
 
     def pmyfunction(self,event):
             self.pcanvas.configure(scrollregion=self.pcanvas.bbox("all"),width=222.5,height=170)
+
 
     def pVaccine(self, vList):
         self.pVaccineList = []
@@ -1014,7 +1259,7 @@ class mainMenu(icaSCREENS):
             self.pSex.destroy()
             self.pPrefix.destroy()
             self.summary = 0
-        if self.history == 1:
+        if self.phistory == 1:
             self.outreachBUTTON.destroy()
             self.expandBUTTON.destroy()
             self.infoBUTTON.destroy()
@@ -1032,7 +1277,7 @@ class mainMenu(icaSCREENS):
             self.pheaderLabel.destroy()
             for b in self.pVaccineList:
                 b.destroy()
-            self.history = 0
+            self.phistory = 0
         if self.contact == 1:
             self.outreachBUTTON.destroy()
             self.expandBUTTON.destroy()
@@ -1059,11 +1304,13 @@ class mainMenu(icaSCREENS):
         print("Logging out")
         self.user.endSession()
         self.logout = 1
+        self.root.after_cancel(self.clockUpdater)
+        self.clockUpdater = None
         self.swapTO(loginScreen, None)
         print("Successful Log out!")
 
     def togExpandQueue(self):
-
+        self.closeALLTabs()
         if not self.myframe == None:
             self.myframe.destroy()
             self.canvas.destroy()
@@ -1094,9 +1341,10 @@ class mainMenu(icaSCREENS):
             self.headLABEL = Label(self.root, anchor= W, justify = LEFT, text = self.headerLabels, font = ("Consolas", 10))
             self.headLABEL.place(x=227.5, y=102.5,height=20, width = 345)
 
+            self.largeQueue = 1
             self.addToQueue(self.frame, self.queue)
             
-            self.largeQueue = 1
+
             
         else:
             self.toggleSearchBox()
@@ -1124,36 +1372,10 @@ class mainMenu(icaSCREENS):
             self.minimizeButton = Button(self.root, command=lambda: self.togExpandQueue())
             self.minimizeButton.place(x= 560, y=102.5, width = 10, height = 10)
 
-            self.addToQueue(self.frame, self.queue)
-            
             self.largeQueue = 0
+            self.addToQueue(self.frame, self.queue)
 
-    def getHistory(zelf):
-        return [[["Flu", "45", "Covered"], ["Hepatitis B", "12", "Covered"], ["Pollo", "325", "Uncovered"], ["Chickpox", "15", "Uncovered"], ["MMR", "749", "Partial"], ["Rotavirus","45", "Covered"], ["Yellow Fever", "365", "Partial"]], "3/23/14"]
 
-    def getContact(self):
-        return [["(925)980-4048", "Mobile"], "austin@gmail.com", "English", "Phone"]
-
-    def getFullSummary(self):
-        return None
-    
-    def getFullHistory(self):
-        return None
-
-    def getFullContact(self):
-        return None
-
-    def getFullInsurance(self):
-        return None
-
-    def getGarentor(self):
-        return None
-
-    def getLastService(self):
-        return None
-
-    def getFullImmunizationHistory(self):
-        return None
 
     def logOut(self,event):
         userChoice = messagebox.askyesno("Logging out", "Are you sure you want\nto log out?")
@@ -1231,15 +1453,26 @@ class med_INFO_SCREEN(icaSCREENS):
         self.outCome = None
         self.apptDate = None
 
+
+
+        #ExtensionWindow
+        self.extensionFrame = LabelFrame(self.root,width=200,height=500)
+        self.extensionFrame.place(x=600,y=100)
+
+
+
+
+
+
         self.showDemos()
-
-
-        self.showContact()
+        self.showService()
+        self.showOutReach()
 
     def showDemos(self): # uses self.demosPage for display
 
-        patientFrame = LabelFrame(self.demosPage,text="<Patient>")
+        patientFrame = LabelFrame(self.demosPage,text="<Patient>",width=500,height=65)
         patientFrame.place(x=0,y=25)
+        patientFrame.grid_propagate(False)
 
         self.label_and_Text(patientFrame,"Lastname",0,0,self.thisPatient.lName)
 
@@ -1255,8 +1488,10 @@ class med_INFO_SCREEN(icaSCREENS):
         patientFrame.grid_rowconfigure(2,minsize=25)
 
 
-        demoFrame = LabelFrame(self.demosPage,text="<Demographics>")
+        demoFrame = LabelFrame(self.demosPage,text="<Demographics>",width=500,height=65)
         demoFrame.place(x=0,y=100)
+        demoFrame.grid_propagate(False)
+
 
         self.label_and_Text(demoFrame, "Sex", 0, 0, "Female")
         self.label_and_Text(demoFrame, "DOB", 0, 2, "2/20/2013")
@@ -1268,8 +1503,9 @@ class med_INFO_SCREEN(icaSCREENS):
         demoFrame.grid_columnconfigure(4, minsize=100)
         demoFrame.grid_rowconfigure(2, minsize=25)
 
-        addressFrame = LabelFrame(self.demosPage,text="<Address>")
+        addressFrame = LabelFrame(self.demosPage,text="<Address>",width=500,height=125)
         addressFrame.place(x=0,y=175)
+        addressFrame.grid_propagate(False)
 
         self.label_and_Text(addressFrame,"Street 1",0,0,"1234 random Street")
         self.label_and_Text(addressFrame, "Street 2", 4, 0, "1234 random Street 2")
@@ -1282,8 +1518,9 @@ class med_INFO_SCREEN(icaSCREENS):
         addressFrame.grid_columnconfigure(4, minsize=120)
         addressFrame.grid_rowconfigure(2, minsize=25)
 
-        contactFrame = LabelFrame(self.demosPage,text="<Contact>")
+        contactFrame = LabelFrame(self.demosPage,text="<Contact>",width=500,height=175)
         contactFrame.place(x=0,y=300)
+        contactFrame.grid_propagate(False)
 
         self.label_and_Text(contactFrame, "Phone", 0, 0, "123-456-789")
         self.label_and_Text(contactFrame, "Mobile", 4, 0, "987-654-321")
@@ -1294,10 +1531,14 @@ class med_INFO_SCREEN(icaSCREENS):
         contactLabel = Label(contactFrame,text= "Contact Notes")
         contactLabel.grid(row=4, column=4)
 
+        self.contactNotes = Text(contactFrame,width=30,height=3,padx=5)
+        self.contactNotes.place(x=230,y=100)
+        self.contactNotes.insert('end',"Notes about contacting this patient here")
+        self.contactNotes.configure(state=DISABLED)
 
 
         contactFrame.grid_columnconfigure(4, minsize=100)
-        contactFrame.grid_rowconfigure(2, minsize=25)
+        contactFrame.grid_rowconfigure(2, minsize=50)
 
 
     def label_and_Text(self,frame,labelText,labelRow,labelCol,boxText):
@@ -1314,17 +1555,63 @@ class med_INFO_SCREEN(icaSCREENS):
         patientLname.grid(row=labelRow+2, column=labelCol)
 
 
-    def showService(self): # uses patient Canvas for display
+    def showService(self): # uses servicePage Canvas for display
+
+        #formate Service ID, Immunization Name, Compliance, Service Date, Extra Tab?
+        formatString = '{0:<12}{1:<15}{2:<12}{3:<15}{4:<8}'.format("Service ID","Immunization",
+                                                             "Compliance","Service Date","Extra")
+
+        formatLabel = Label(self.servicePage, text=formatString, font=('Consolas', 11)
+                            , relief="raised",pady=10)
+        formatLabel.pack()
+
+
+    def loadServiceHistory(self):
+
         pass
 
-    def showContact(self): # uses patient Canvas for display
 
-        #place email/contact info this Frame
-        contactFrame = Frame(self.contactPage,width=100,height=100)
-        contactFrame.place(x=0,y=0)
 
-        contactEmail = Label(contactFrame,text="Patient Email: ")
-        contactEmail.place(x=25,y=25)
+    def showOutReach(self): # uses patient Canvas for display
+
+        contactFrame = LabelFrame(self.contactPage, text="<Contact>",width=500,height=120)
+        contactFrame.place(x=0, y=25)
+        contactFrame.grid_propagate(False)
+
+        self.label_and_Text(contactFrame, "Phone", 0, 0, "123-456-789")
+        self.label_and_Text(contactFrame, "Mobile", 4, 0, "987-654-321")
+        self.label_and_Text(contactFrame, "Work Phone", 0, 2, "123-456-789")
+        self.label_and_Text(contactFrame, "Email", 0, 4, "r_Andom@u.pacific.edu")
+        self.label_and_Text(contactFrame, "Preferred Contact", 4, 2, "Mobile")
+        self.label_and_Text(contactFrame, "Pref. Language", 4, 4, "English")
+
+
+        #contact notes and outreach notes
+        notesLabel = Label(self.contactPage,text="Contact Notes")
+        notesLabel.place(x=75,y=150)
+
+        contactNotes = Text(self.contactPage,width=30,height=4,padx=5)
+        contactNotes.place(x=0,y=175)
+        contactNotes.insert('end',"Notes about contacting this patient here")
+
+        outreachNotesLabel = Label(self.contactPage, text="Outreach Notes")
+        outreachNotesLabel.place(x=350, y=150)
+
+        self.outreachNotes = Text(self.contactPage, width=27, height=4,padx=5)
+        self.outreachNotes.place(x=275, y=175)
+
+        contactNotesButton = Button(self.contactPage,text="Submit Changes")
+        contactNotesButton.place(x=50,y=250)
+
+
+        #contact Method Frame
+        contactMethodFrame = LabelFrame(self.contactPage, text="<Method of contact>",width=500,height=200)
+        contactMethodFrame.place(x=0,y=300)
+        contactMethodFrame.grid_propagate(False)
+
+        emailPatient = Button(contactMethodFrame,text="Email Patient",command=self.extensionEmail)
+        emailPatient.place(x=25,y=25)
+
 
 
     def getPatientHistory(self):
@@ -1334,9 +1621,94 @@ class med_INFO_SCREEN(icaSCREENS):
         pass
 
     def closeWindow(self,event):
+
         self.root.destroy()
 
-#History of action classes        
+
+    def extensionEmail(self): # will display extension for emailing patient
+        '''
+        Things still need to implemented:
+        minimize/saving
+        close button
+        loading in templates
+        '''
+
+        tempLabel = Label(self.extensionFrame,text="Minimize/Exit Button goes here")
+        tempLabel.place(x=0,y=0)
+
+        displayLabel = Label(self.extensionFrame,text="To:" + self.patientFULL ,font = ('Consolas', 14),relief="groove")
+        displayLabel.place(x=0,y=25)
+
+        templateLabel = Label(self.extensionFrame,text="<Email Template>")
+        templateLabel.place(x=0,y=75)
+
+        self.emailText = Text(self.extensionFrame,width=24,height=15)
+        self.emailText.place(x=0,y=100)
+
+        buttonFrame = LabelFrame(self.extensionFrame,text="<Email Options>",width=200,height=150)
+        buttonFrame.place(x=0,y=350)
+
+        template1 = Button(buttonFrame,text="Load\n Template 1",command=lambda: self.loadTemplate(1))
+        template1.place(x=20,y=10)
+
+
+        template2 = Button(buttonFrame,text="Load\n Template 2",command=lambda: self.loadTemplate(2))
+        template2.place(x=100,y=10)
+
+        sendEmail = Button(buttonFrame,text="Send Email!",command=self.sendEmail)
+        sendEmail.place(x=20,y=75)
+
+        clearEmail = Button(buttonFrame,text="Clear Email",command=self.clearEmailEntry)
+        clearEmail.place(x=100,y=75)
+
+    def loadTemplate(self,version): # will load a email template file into extension before sending
+
+        if self.emailText:
+            self.clearEmailEntry()
+
+
+        Filename = "email_template_" + str(version) +".txt"
+
+        chosenFile = open(Filename)
+
+        text = chosenFile.readlines()
+        text[0] = "Dear " + self.patientFULL + ", \n" # insert patient name into email
+
+        fullText = ""
+
+        for line in text:
+            fullText += line
+
+        self.emailText.insert('end',fullText)
+
+    def sendEmail(self):
+        userChoice = messagebox.askyesno("Sending Email", "Send Email to " + self.patientFULL + "?")
+
+        length = len(self.emailText.get("1.0",END))
+
+        if userChoice and length != 1: # checks if user wants to send email and if email actually has text
+            #send email functionality here:
+
+            messagebox.showinfo("Sent!", "Email sent to " + self.patientFULL + "!")
+
+            self.clearEmailEntry() # clear the email screen
+            return
+
+        if length == 1:
+            messagebox.showinfo("Empty email","Please include the message you would like to send to " + self.patientFULL)
+            return
+
+
+    def clearEmailEntry(self): # clears the email text box
+        self.emailText.delete("1.0", END)
+
+    def clearExtension(self): # will clear the extension Frame
+
+        for widget in self.extensionFrame.winfo_children():
+            widget.destroy()
+
+
+#History of action classes
 
 class UserAction():
     def __init__(self, actionType, data):
@@ -1358,17 +1730,17 @@ class UserSession():
             self.UserLogin = data[1]
             self.UserActionList = data[2]
             self.Userlogout = data[3]
-            
+
     def createUniqueSessionID(self):
         #To DO
         return 12345
-            
+
     def addAction(self, action):
         self.UserActionList.append(action)
 
     def endSession(self):
         self.Userlogout = str(datetime.datetime.now())
-        
+
 
 class UserHistory():
     def __init__(self, history):
@@ -1384,7 +1756,7 @@ class UserHistory():
         self.UserSessions.append(session)
 
 #History Classes End
-    
+
 class User():
     def __init__(self, data, isNewSession):
         self.userId = data[0]
@@ -1393,7 +1765,7 @@ class User():
         self.userType = data[3]
         if isNewSession == 1:
             self.currentUserSession = UserSession(self.userId, None)
-        
+
     def addAction(self, action):
         self.currentUserSession.addAction(action)
 
@@ -1411,7 +1783,7 @@ class User():
 
     def getHistory(self):
         self.history = UserHistory(userId)
-        return 
+        return
 
 class loginScreen(icaSCREENS):
 
@@ -1467,7 +1839,7 @@ class loginScreen(icaSCREENS):
 
         #Would send Hash.main(name) to data base and recieve hashed pword from database
         #check if Hash.main(passWord) == recieved hashed pword
-        
+
         tempUserName = "f69ddcc92c44eb5a6320e241183ef551d9287d7fa6e4b2c77459145d8dd0bb37" # Test01
 
         tempPassWord = "b575f55adf6ed25767832bdf6fe6cbc4af4889938bf48ba99698ec683f9047de" # Test02
@@ -1475,27 +1847,27 @@ class loginScreen(icaSCREENS):
         tempUserName1 = "67ed235e1e075a7214902e1af0cb4bb4ad3ba0fcf084411418074cf4247004cc" # User01
 
         tempPassWord1 = "7bab9c019f082639a163c437288ed2fe6da3e08a447cf9b8487f7c3535613fda" # User02
-        
+
         if Hash.main(name) == tempUserName and Hash.main(passWord) == tempPassWord: #admin test account
 
             #querry User here
             currentUser = User([0, "Admin", "", "Admin"], 1)
-            
+
             messagebox.showinfo("Login Successful!", "Welcome back " + currentUser.userFirstName)#needs to be User first name
             self.removeKeyBind("<Return>")
 
             self.swapTO(mainMenu, currentUser)#needs to be user object
-            
+
         elif Hash.main(name) == tempUserName1 and Hash.main(passWord) == tempPassWord1: #user test Account
 
             #querry User here
             currentUser = User([0, "User", "", "User"], 1)
-            
+
             messagebox.showinfo("Login Successful!", "Welcome back " + currentUser.userFirstName)#needs to be User first name
             self.removeKeyBind("<Return>")
 
             self.swapTO(mainMenu, currentUser)#needs to be user object
-            
+
         else:
             messagebox.showerror("Login Unsuccessful", "Username or Password is invalid")
             self.passwordEntry.delete(0,END) #remove password
@@ -1503,14 +1875,114 @@ class loginScreen(icaSCREENS):
     def enterPress(self,event):
         self.verifyUser()
 
+class Permissions():
+     def __init__(self, permissionList):
+        self.importData = permissionList[0]
+        self.exportData = permissionList[1]
+        self.viewHistoryOfSelf = permissionList[2]
+        self.viewHistoryOfEntireSystem = permissionList[3]
+        self.viewSelfAnalytics = permissionList[4]
+        self.viewSystemAnalytics = permissionList[5]
+        self.createAlerts = permissionList[6]
+        self.setPermissions = permissionList[7]
+        self.serachEntireDatabase = permissionList[8]
+        self.printFiles = permissionList[9]
+        self.outReach = permissionList[10]
+        self.approveUsers = permissionList[11]
+        self.numberOfPatientsOpen = permissionList[12]
+        self.goalNumberOfOutReaches = permissionList[13]
+        self.setSystemOptions = permissionList[14]
+        self.consoleCommands = permissionList[15]
+
+class UserAction():
+    def __init__(self, actionType, data):
+        self.actionTime = str(datetime.datetime.now())
+        self.actionType = actionType
+        self.acionID = data[0]
+        self.data = data[1]
+
+class UserSession():
+    def __init__(self, userId, data):
+        self.userId = userId
+        if data == None:
+            self.sessionID = self.createUniqueSessionID()
+            self.UserLogin = str(datetime.datetime.now())
+            self.UserActionList = []
+            self.Userlogout = None
+        else:
+            self.sessionID = data[0]
+            self.UserLogin = data[1]
+            self.UserActionList = data[2]
+            self.Userlogout = data[3]
+
+    def createUniqueSessionID(self):
+        #To DO
+        return 12345
+
+    def addAction(self, action):
+        self.UserActionList.append(action)
+
+    def endSession(self):
+        self.Userlogout = str(datetime.datetime.now())
+
+
+class UserHistory():
+    def __init__(self, history):
+        self.UserSessions = history
+
+    def getSession(self, sessionID):
+        for session in self.UserSessions:
+            if session.sessionID == sessionID:
+                return session
+        return None
+
+    def addSession(self, session):
+        self.UserSessions.append(session)
+
+#History Classes End
+
+class User():
+    def __init__(self, data, isNewSession):
+        self.userId = data[0]
+        self.userFirstName = data[1]
+        self.userLastName = data[2]
+        self.userType = data[3]
+        if isNewSession == 1:
+            self.currentUserSession = UserSession(self.userId, None)
+        #Querry User Permissions Here
+        if self.userType == "Admin":
+            self.permissions = Permissions([1,1,1,1,1,1,1,1,1,1,1,1,10,100,1,1])
+        else:
+            self.permissions = Permissions([0,0,1,0,1,0,0,0,1,1,0,0,5,50,0,0])
+
+    def addAction(self, action):
+        self.currentUserSession.addAction(action)
+
+    def getHistoy(self):
+
+        #querry history
+        return UserHistory(None)
+
+    def endSession(self):
+        self.currentUserSession.endSession()
+
+        #send self.currentUserSession to database
+
+        return 1
+
+    def getHistory(self):
+        self.history = UserHistory(userId)
+        return
+
 def main(): # Main loop of ICA
     window = Tk()
     window.resizable(0, 0)
     window.title(versionNumber)
 
-    currentSCREEN = loginScreen(window, None)
+    #currentSCREEN = loginScreen(window, None)
 
-    #currentSCREEN = mainMenu(window, ["Jason Van Bladel"])
+    currentUser = User([0, "Jason", "Van Bladel", "Admin"], 1)
+    currentSCREEN = mainMenu(window, currentUser)
 
     #currentSCREEN = med_INFO_SCREEN(window,Patient(["John","Smith","20","2/3/2013","32","30"]))
 
