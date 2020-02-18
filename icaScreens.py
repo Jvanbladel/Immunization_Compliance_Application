@@ -7,7 +7,7 @@ from tkinter import ttk
 from Patients import *
 from Security import Hash
 
-versionNumber = "(Version 1.7.8)"
+versionNumber = "(Version 1.7.8a)"
 
 class icaSCREENS():
     '''
