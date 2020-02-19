@@ -56,4 +56,4 @@ def main(patients):
     s.quit()
     
 if __name__ == '__main__':
-    main((["Jason", "Daniel"], ["j_vanbladel@u.pacific.edu", "d_adler@u.pacific.edu"], [1,2]))
+    #main((["Jason", "Daniel"], ["j_vanbladel@u.pacific.edu", "d_adler@u.pacific.edu"], [1,2]))

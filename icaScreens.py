@@ -6,8 +6,10 @@ import datetime
 from tkinter import ttk
 from Patients import *
 from Security import Hash
+import pyodbc
+import pandas as pd
 
-versionNumber = "(Version 1.7.8)"
+versionNumber = "(Version 1.7.10)"
 
 class icaSCREENS():
     '''
@@ -21,6 +23,7 @@ class icaSCREENS():
 
         # insert as "<KEYTYPE>",functionCall.
         self.keyBinds = {}
+        self.SQL = SQLConnection()
 
     def clearSCREEN(self):
         #will clear the screen of everything
@@ -51,10 +54,46 @@ class icaSCREENS():
         userChoice = messagebox.askyesno("Exiting ICA","Are you sure you want to exit ICA?")
 
         if userChoice:
+            self.SQL.closeConnection()
             self.root.destroy()
 
     def escapePress(self,event):
         self.exitICA()
+
+class SQLConnection():
+    def __init__(self):
+        self.conn = pyodbc.connect('Driver={SQL Server};\
+                            Server=pacific-ica.cvb4dklzq2km.us-west-1.rds.amazonaws.com, 1433;\
+                            Database=db_pacific_ica;uid=admin;pwd=Animal05')
+        print("Database Connection Established")
+
+    def closeConnection(self):
+        self.conn.close()
+
+    def loginUser(self, userName, password):
+        sql = """
+            SELECT
+                Users.Password,
+                Users.PersonnelId,
+                Users.ActiveInd,
+                Users.Role,
+                Users.Email
+            FROM
+                Users
+            WHERE
+                Users.UserName = ?"""
+        
+        
+        #print(sql)
+        data = pd.read_sql(sql, self.conn, params={userName})
+        if data.empty:
+            return
+        data = data.values.tolist()
+        #print(data.head())
+        if data[0][0] == password:
+            return User([data[0][1],"First Name", "Last Name", data[0][2], data[0][3], data[0][4]], 1)
+        else:
+            return None
 
 class mainMenu(icaSCREENS):
 
@@ -94,8 +133,11 @@ class mainMenu(icaSCREENS):
         #set up all screens
         self.mainMenuSCREEN  = 0
         self.consoleSCREEN = 0
+        self.permissionsSCREEN = 0
+        self.aboutUsSCREEN = 0
+        self.guideSCREEN = 0
         self.showMainMenu()
-        
+
 
         #Notifications based on user in future
         self.setUpNotifications([[3,"Very Important Message!"],[2,"Important Message."],[1,"Notification Message"]])
@@ -105,11 +147,11 @@ class mainMenu(icaSCREENS):
         self.logout = 0
         self.clock()
 
-        
+
 
     def showMainMenu(self):
         self.clearAllScreens()
-        
+
         #set Up Search Frame
         self.setUpSearchFrame()
 
@@ -121,7 +163,7 @@ class mainMenu(icaSCREENS):
         self.largeQueue = 0
         self.queue = self.createQueue()
         self.togExpandQueue()
-            
+
         #SetUpSummary Frame
         self.infoDisplayFRAME = LabelFrame(self.root)
         self.infoDisplayFRAME.place(x=575,y=100,height=500,width=225)
@@ -135,7 +177,7 @@ class mainMenu(icaSCREENS):
         self.outreach = 0
 
         self.mainMenuSCREEN  = 1
-            
+
 
     def clearAllScreens(self):
         self.closeALLTabs()
@@ -147,7 +189,7 @@ class mainMenu(icaSCREENS):
             self.toggleSearchBox()
             if self.filter == 1:
                 self.togFilter()
-            
+
             if not self.myframe == None:
                 self.myframe.destroy()
                 self.canvas.destroy()
@@ -155,7 +197,7 @@ class mainMenu(icaSCREENS):
                 self.frame.destroy()
                 self.scrollHeadFRAME.destroy()
                 self.headLABEL.destroy()
-                
+
             if self.outreach == 1:
                 self.reportText.destroy()
                 self.outreachText.destroy()
@@ -165,9 +207,9 @@ class mainMenu(icaSCREENS):
                 self.NotesScrollBar.destroy()
                 self.submittOutReach.destroy()
                 self.outreach = 0
-            
+
             self.mainMenuSCREEN  = 0
-            
+
         if self.consoleSCREEN == 1:
             self.Consolecanvas.destroy()
             self.Consoleframe.destroy()
@@ -175,11 +217,54 @@ class mainMenu(icaSCREENS):
             self.ConsolemyscrollbarX.destroy()
             self.excuteConsoleBUTTON.destroy()
             self.commandInputENTRY.destroy()
+            self.Consolemyframe.destroy()
 
             for commandLabel in self.consoleCommandList:
                 commandLabel.destroy()
-            
+
             self.consoleSCREEN = 0
+
+        if self.permissionsSCREEN == 1:
+            self.Permissionmyframe.destroy()
+            self.Permissioncanvas.destroy()
+            self.Permissionframe.destroy()
+            self.PermissionmyscrollbarY.destroy()
+            self.permissionLabelFRAME.destroy()
+            self.permissionEditFrame.destroy()
+            self.permissionEditMainLabel.destroy()
+
+            self.permissionEditNameField.destroy()
+            self.permissionEditNameFieldLabel.destroy()
+            self.permissionEditDescriptionFieldLabel.destroy()
+            self.permissionEditDescriptionField.destroy()
+            self.permissionImportData.destroy()
+            self.permissionExportData.destroy()
+            self.permissionPersonalHistoryData.destroy()
+            self.permissionSystemHistoryData.destroy()
+            self.permissionPersonalAnalyticsData.destroy()
+            self.permissionSystemAnalyticsData.destroy()
+            self.permissionCreateAlertsData.destroy()
+            self.permissionSetPermissionsData.destroy()
+            self.permissionSearchDatabaseData.destroy()
+            self.permissionPrintData.destroy()
+            self.permissionOutreachData.destroy()
+            self.permissionApproveUsers.destroy()
+            self.permissionSystemSettings.destroy()
+            self.permissionConsoleCommands.destroy()
+            self.permissionsPatientsOpenText.destroy()
+            self.permissionsPatientsOpen.destroy()
+            self.permissionsGoalNumberOfOutreachesText.destroy()
+            self.permissionsGoalNumberOfOutreaches.destroy()
+            self.changePermissionBUTTON.destroy()
+
+
+            self.permissionsSCREEN = 0
+            
+        if self.guideSCREEN == 1:
+            self.guideSCREEN = 0
+
+        if self.aboutUsSCREEN == 1:
+            self.aboutUsSCREEN = 0
 
     def showConsole(self):
         self.clearAllScreens()
@@ -197,7 +282,7 @@ class mainMenu(icaSCREENS):
         self.Consolecanvas.configure(xscrollcommand=self.ConsolemyscrollbarX.set)
         self.ConsolemyscrollbarX.pack(side="bottom",fill="x")
 
-        
+
         self.Consolecanvas.pack(side="left")
         self.Consolecanvas.create_window((0,0),window=self.Consoleframe,anchor='nw')
         self.Consoleframe.bind("<Configure>", self.Consolemyfunction)
@@ -205,12 +290,15 @@ class mainMenu(icaSCREENS):
         self.commandInputENTRY = Entry(self.root, font = ('Consolas', 10))
         self.commandInputENTRY.place(x=0,y=570,width=750, height = 30)
         self.commandInputENTRY.insert(0, ">> ")
-    
+
         self.excuteConsoleBUTTON = Button(self.root, text = "Execute", command=lambda: self.executeConsoleCommand())
         self.excuteConsoleBUTTON.place(x=750,y=570, height = 30, width = 50)
 
         self.consoleCommandList = []
         self.consoleSCREEN = 1
+
+    def Permissionmyfunction(self,event):
+        self.Permissioncanvas.configure(scrollregion=self.Permissioncanvas.bbox("all"),width=400,height=475)
 
     def Consolemyfunction(self,event):
         self.commandInputENTRY.delete(0, END)
@@ -220,11 +308,11 @@ class mainMenu(icaSCREENS):
     def executeConsoleCommand(self):
         self.addToConsole( self.commandInputENTRY.get())
 
-    def addToConsole(self, commandStr): 
+    def addToConsole(self, commandStr):
         toAddToConsole = Label(self.Consoleframe, text = commandStr,anchor=W, justify=LEFT, font = ('Consolas', 10))
         toAddToConsole.pack(side=TOP, fill=BOTH, expand=TRUE)
         self.consoleCommandList.append(toAddToConsole)
-    
+
     def exitICA(self): #prompt user if they want to close program
 
         userChoice = messagebox.askyesno("Exiting ICA","Are you sure you want to exit ICA?")
@@ -235,7 +323,7 @@ class mainMenu(icaSCREENS):
 
     def setUpNotifications(self, notifications):
         self.notificationList = []
-        
+
         imageSource = "sources/notifications/notification_1.PNG"
         notificationImage = Image.open(imageSource)
         notificationImage = notificationImage.resize((18,18), Image.ANTIALIAS)
@@ -396,7 +484,7 @@ class mainMenu(icaSCREENS):
         self.admin = 0
         self.analytics = 0
         self.history = 0
-        
+
 
         #SubTabs
         self.exportTAB = 0
@@ -749,7 +837,7 @@ class mainMenu(icaSCREENS):
             self.mainMenuBUTTON = Button(self.root, text = "Home", justify = LEFT,anchor=W, command=lambda: self.showMainMenu())
             self.mainMenuBUTTON.place(x=0,y=currentY,height=30,width=100)
             currentY = currentY + 30
-            
+
             if self.user.permissions.importData == 1:
                 self.importData = Button(self.root, text = "Import", justify = LEFT,anchor=W)
                 self.importData.place(x=0,y=currentY,height=30,width=100)
@@ -828,7 +916,7 @@ class mainMenu(icaSCREENS):
         else:
             self.setUpNotifications([[3,"Very Important Message!"],[2,"Important Message."],[1,"Notification Message"]])
             self.notificationsTABState = 0
-            
+
     def togReportTab(self):
         if self.report == 0:
             self.closeALLTabs()
@@ -924,7 +1012,7 @@ class mainMenu(icaSCREENS):
                 currentY = currentY + 30
 
             if self.user.permissions.setPermissions == 1:
-                self.permissions = Button(self.root, text = "Permission Manager", justify = LEFT,anchor=W)
+                self.permissions = Button(self.root, text = "Permission Manager", justify = LEFT,anchor=W, command=lambda: self.showPermissionsSCREEN())
                 self.permissions.place(x=self.adminTABX,y=currentY,height=30,width=125)
                 currentY = currentY + 30
 
@@ -932,12 +1020,12 @@ class mainMenu(icaSCREENS):
                 self.systemOptions = Button(self.root, text = "System Manager", justify = LEFT, anchor=W)
                 self.systemOptions.place(x=self.adminTABX,y=currentY,height=30,width=125)
                 currentY = currentY + 30
-                
+
             if self.user.permissions.consoleCommands == 1:
                 self.systemConsole = Button(self.root, text = "Console", justify = LEFT, anchor=W, command=lambda: self.showConsole())
                 self.systemConsole.place(x=self.adminTABX,y=currentY,height=30,width=125)
                 currentY = currentY + 30
-          
+
             self.admin = 1
         else:
             if self.user.permissions.createAlerts == 1:
@@ -952,6 +1040,155 @@ class mainMenu(icaSCREENS):
                 self.systemConsole.destroy()
             self.admin = 0
 
+    def showPermissionsSCREEN(self):
+        self.clearAllScreens()
+
+        self.permissionLabelFRAME = Label(self.root, text = '{0:<15} {1:<35}'.format("Role", "Description"), font = ('Consolas', 10),justify=LEFT, anchor=W)
+        self.permissionLabelFRAME.place(x=0, y=102.5, height = 20, width = 400)
+            
+        self.Permissionmyframe=Frame(self.root,relief=GROOVE,width=20,height=475,bd=1)
+        self.Permissionmyframe.place(x=0,y=125,height=475,width=400)
+
+        self.Permissioncanvas=Canvas(self.Permissionmyframe)
+        self.Permissionframe=Frame(self.Permissioncanvas)
+        self.PermissionmyscrollbarY=Scrollbar(self.Permissionmyframe,orient="vertical",command=self.Permissioncanvas.yview)
+        self.Permissioncanvas.configure(yscrollcommand=self.PermissionmyscrollbarY.set)
+        self.PermissionmyscrollbarY.pack(side="right",fill="y")
+
+        self.Permissioncanvas.pack(side="left")
+        self.Permissioncanvas.create_window((0,0),window=self.Permissionframe,anchor='nw')
+        self.Permissionframe.bind("<Configure>", self.Permissionmyfunction)
+
+        self.permissionEditFrame = LabelFrame(self.root)
+        self.permissionEditFrame.place(x=400, y = 100, height = 500, width = 400)
+
+        self.permissionEditMainLabel = Label(self.root, text = "Create New Role", font = (25))
+        self.permissionEditMainLabel.place(x=402.5, y=110, width = 395)
+
+        self.permissionEditNameField = Entry(self.root)
+        self.permissionEditNameField.place(x=450, y=150)
+
+        self.permissionEditNameFieldLabel = Label(self.root, text = "Role: ")
+        self.permissionEditNameFieldLabel.place(x=410, y=150)
+
+        self.permissionEditDescriptionFieldLabel = Label(self.root, text = "Description:")
+        self.permissionEditDescriptionFieldLabel.place(x=410, y=190)
+
+        self.permissionEditDescriptionField = Entry(self.root)
+        self.permissionEditDescriptionField.place(x=485, y=190, width = 250)
+        
+
+        self.permissionvar1 = IntVar()
+        self.permissionImportData = Checkbutton(self.root, text="Import Data", variable=self.permissionvar1)
+        self.permissionImportData.place(x=410,y=215)
+
+        self.permissionvar2 = IntVar()
+        self.permissionExportData = Checkbutton(self.root, text="Export Data", variable=self.permissionvar2)
+        self.permissionExportData.place(x=410,y=240)
+
+        self.permissionvar3 = IntVar()
+        self.permissionPersonalHistoryData = Checkbutton(self.root, text="Personal History", variable=self.permissionvar3)
+        self.permissionPersonalHistoryData.place(x=410,y=265)
+
+        self.permissionvar4 = IntVar()
+        self.permissionSystemHistoryData = Checkbutton(self.root, text="Entire System History", variable=self.permissionvar4)
+        self.permissionSystemHistoryData.place(x=410,y=290)
+
+        self.permissionvar5 = IntVar()
+        self.permissionPersonalAnalyticsData = Checkbutton(self.root, text="Personal Analytics", variable=self.permissionvar5)
+        self.permissionPersonalAnalyticsData.place(x=410,y=315)
+
+        self.permissionvar6 = IntVar()
+        self.permissionSystemAnalyticsData = Checkbutton(self.root, text="Entire System Analytics", variable=self.permissionvar6)
+        self.permissionSystemAnalyticsData.place(x=410,y=340)
+
+        self.permissionvar7 = IntVar()
+        self.permissionCreateAlertsData = Checkbutton(self.root, text="Create Alerts", variable=self.permissionvar7)
+        self.permissionCreateAlertsData.place(x=410,y=365)
+
+        self.permissionvar8 = IntVar()
+        self.permissionSetPermissionsData = Checkbutton(self.root, text="Set Permissions", variable=self.permissionvar8)
+        self.permissionSetPermissionsData.place(x=410,y=390)
+
+        self.permissionvar9 = IntVar()
+        self.permissionSearchDatabaseData = Checkbutton(self.root, text="Search in Patient Database", variable=self.permissionvar9)
+        self.permissionSearchDatabaseData.place(x=410,y=415)
+
+        self.permissionvar10 = IntVar()
+        self.permissionPrintData = Checkbutton(self.root, text="Print Files", variable=self.permissionvar10)
+        self.permissionPrintData.place(x=410,y=440)
+
+        self.permissionvar11 = IntVar()
+        self.permissionOutreachData = Checkbutton(self.root, text="Out Reach to Patients", variable=self.permissionvar11)
+        self.permissionOutreachData.place(x=410,y=465)
+
+        self.permissionvar12 = IntVar()
+        self.permissionApproveUsers = Checkbutton(self.root, text="Approve Users", variable=self.permissionvar12)
+        self.permissionApproveUsers.place(x=410,y=490)
+
+        self.permissionvar13 = IntVar()
+        self.permissionSystemSettings = Checkbutton(self.root, text="Editing of System Settings", variable=self.permissionvar13)
+        self.permissionSystemSettings.place(x=410,y=515)
+
+        self.permissionvar14 = IntVar()
+        self.permissionConsoleCommands = Checkbutton(self.root, text="Console Commands", variable=self.permissionvar14)
+        self.permissionConsoleCommands.place(x=410,y=540)
+
+
+        self.permissionsPatientsOpenText = Label(self.root, text = "Max Open Patients: ")
+        self.permissionsPatientsOpenText.place(x=600,y=215)
+        
+        self.permissionsPatientsOpen = Entry(self.root)
+        self.permissionsPatientsOpen.place(x=715,y=215, width = 30)
+
+        self.permissionsGoalNumberOfOutreachesText = Label(self.root, text = "Goal Outreaches: ")
+        self.permissionsGoalNumberOfOutreachesText.place(x=600,y=240)
+        
+        self.permissionsGoalNumberOfOutreaches = Entry(self.root)
+        self.permissionsGoalNumberOfOutreaches.place(x=715,y=240, width = 30)
+        
+        self.changePermissionBUTTON = Button(self.root, text = "Create New\nUser", bg="blue",fg="white")
+        self.changePermissionBUTTON.place(x=715, y=545, width = 70, height = 40)
+
+        
+        self.permissionButtonList = []
+        self.permssionList = []
+
+        self.addPermissions(self.Permissionframe, self.getPermissions())
+
+        self.permissionsSCREEN = 1
+
+    #To do Querry
+    def getPermissions(self):
+        return [["Admin","User with unlimited permissions", Permissions([1,1,1,1,1,1,1,1,1,1,1,1,10,100,1,1])], ["User","Basic user of the program.", Permissions([0,0,1,0,1,0,0,0,1,1,1,0,5,50,0,0])]]
+
+    def addPermissions(self, frame, permissionList):
+        self.currentEditingPermission = None
+        for i in range(len(permissionList)):
+            pstr = '{0:<15} {1:<35}'.format(permissionList[i][0], permissionList[i][1])
+            b = Button(frame, text = pstr,anchor=W, justify=LEFT, width = 55, font = ('Consolas', 10))
+            b.grid(row=i)
+            self.permissionButtonList.append(b)
+            self.permssionList.append(permissionList[i])
+            b.configure(command=lambda i=i: self.showPermissionEditor(self.permissionButtonList[i], self.permssionList[i]))
+            if self.permssionList[i] == self.currentEditingPermission:
+                self.currentButton = b
+                b.configure(background = "lime green")
+
+    def showPermissionEditor(self, button, permission):
+        if permission == self.currentEditingPermission:
+            for b in self.permissionButtonList:
+                b.configure(background = self.root.cget('bg'))
+            self.currentEditingPermission = None
+        else:
+            for b in self.permissionButtonList:
+                b.configure(background = self.root.cget('bg'))
+                
+            for b in self.permissionButtonList:
+                if b == button:
+                    b.configure(background = "lime green")
+            self.currentEditingPermission = permission
+            
     def closeALLTabs(self):
         if self.file == 1:
             self.togFileTab()
@@ -997,7 +1234,7 @@ class mainMenu(icaSCREENS):
                 b.configure(command=lambda i=i: self.showPatient(patientList[i].MRN, self.bList[i]))
                 if patientList[i].MRN == self.currentPatient:
                      self.currentButton = b
-                     b.configure(background = "green")
+                     b.configure(background = "lime green")
             else:
                 pstr = '{0:<15} {1:<13} {2:<13} {3:<10}'.format(patientList[i].fName, patientList[i].lName, patientList[i].dueDate, patientList[i].daysOverDue)
             
@@ -1008,7 +1245,7 @@ class mainMenu(icaSCREENS):
                 self.bList.append(b)
                 if patientList[i].MRN == self.currentPatient:
                      self.currentButton = b
-                     b.configure(background = "green")
+                     b.configure(background = "lime green")
 
     def resetWorkQueue(self, mrn):
         for p in self.queue:
@@ -1039,7 +1276,7 @@ class mainMenu(icaSCREENS):
             for button in self.bList:
                 #print(b == button)
                 if b == button:
-                    b.configure(background = "green")
+                    b.configure(background = "lime green")
                     self.currentButton = button
                     break
             self.currentPatient = MRN
@@ -1762,7 +1999,9 @@ class User():
         self.userId = data[0]
         self.userFirstName = data[1]
         self.userLastName = data[2]
-        self.userType = data[3]
+        self.activeInt = data[3]
+        self.userType = data[4]
+        self.userEmail = data[5]
         if isNewSession == 1:
             self.currentUserSession = UserSession(self.userId, None)
 
@@ -1833,6 +2072,40 @@ class loginScreen(icaSCREENS):
         self.userNameLabel = Label(self.root,text=versionNumber[1:-1],font=('Consolas', 16))
         self.userNameLabel.place(x=5,y=575)
 
+
+        self.accountBUTTON = Button(self.root,text="Add Account",width=18,font=('Consolas', 16),bg="hot pink",command=self.createAccount)
+        self.accountBUTTON.place(x=350,y=450)
+
+    def createAccount(self): # Promts user for account creation
+
+        newWindow = Toplevel()
+        newWindow.geometry("600x600")
+        newWindow.title("Account Creation")
+
+
+        background = Canvas(newWindow,bg='light blue',width=600,height=600)
+        background.pack()
+
+        forground = Canvas(background,width=400,height=400)
+        forground.place(x=100,y=50)
+
+        entryLabels = ["Firstname: ","Lastname: ","Email: ","Username: ","Password: ","Confirm Pass: "]
+        creationEntries = []
+
+        yLabel = 25
+
+
+        for label in entryLabels: # will fill the account creation screen with labels
+
+            newLabel = Label(forground,text=label,font=('Consolas', 14),relief="groove",width=15)
+            newLabel.place(x=25,y=yLabel)
+
+            #newEntry = Entry(forground)
+
+            yLabel += 50 # increment
+
+
+
     def verifyUser(self):
         name = self.userNameEntry.get()
         passWord = self.passwordEntry.get()
@@ -1840,33 +2113,21 @@ class loginScreen(icaSCREENS):
         #Would send Hash.main(name) to data base and recieve hashed pword from database
         #check if Hash.main(passWord) == recieved hashed pword
 
-        tempUserName = "f69ddcc92c44eb5a6320e241183ef551d9287d7fa6e4b2c77459145d8dd0bb37" # Test01
+        #tempUserName = "f69ddcc92c44eb5a6320e241183ef551d9287d7fa6e4b2c77459145d8dd0bb37" # Test01
 
-        tempPassWord = "b575f55adf6ed25767832bdf6fe6cbc4af4889938bf48ba99698ec683f9047de" # Test02
+        #tempPassWord = "b575f55adf6ed25767832bdf6fe6cbc4af4889938bf48ba99698ec683f9047de" # Test02
 
-        tempUserName1 = "67ed235e1e075a7214902e1af0cb4bb4ad3ba0fcf084411418074cf4247004cc" # User01
+        #tempUserName1 = "67ed235e1e075a7214902e1af0cb4bb4ad3ba0fcf084411418074cf4247004cc" # User01
 
-        tempPassWord1 = "7bab9c019f082639a163c437288ed2fe6da3e08a447cf9b8487f7c3535613fda" # User02
+        #tempPassWord1 = "7bab9c019f082639a163c437288ed2fe6da3e08a447cf9b8487f7c3535613fda" # User02
 
-        if Hash.main(name) == tempUserName and Hash.main(passWord) == tempPassWord: #admin test account
-
-            #querry User here
-            currentUser = User([0, "Admin", "", "Admin"], 1)
-
-            messagebox.showinfo("Login Successful!", "Welcome back " + currentUser.userFirstName)#needs to be User first name
+        loginUser = self.SQL.loginUser(Hash.main(name), Hash.main(passWord))
+        if not loginUser == None:
+    
+            messagebox.showinfo("Login Successful!", "Welcome back " + loginUser.userFirstName)#needs to be User first name
             self.removeKeyBind("<Return>")
 
-            self.swapTO(mainMenu, currentUser)#needs to be user object
-
-        elif Hash.main(name) == tempUserName1 and Hash.main(passWord) == tempPassWord1: #user test Account
-
-            #querry User here
-            currentUser = User([0, "User", "", "User"], 1)
-
-            messagebox.showinfo("Login Successful!", "Welcome back " + currentUser.userFirstName)#needs to be User first name
-            self.removeKeyBind("<Return>")
-
-            self.swapTO(mainMenu, currentUser)#needs to be user object
+            self.swapTO(mainMenu, loginUser)#needs to be user object
 
         else:
             messagebox.showerror("Login Unsuccessful", "Username or Password is invalid")
@@ -1953,7 +2214,7 @@ class User():
         if self.userType == "Admin":
             self.permissions = Permissions([1,1,1,1,1,1,1,1,1,1,1,1,10,100,1,1])
         else:
-            self.permissions = Permissions([0,0,1,0,1,0,0,0,1,1,0,0,5,50,0,0])
+            self.permissions = Permissions([0,0,1,0,1,0,0,0,1,1,1,0,5,50,0,0])
 
     def addAction(self, action):
         self.currentUserSession.addAction(action)
@@ -1979,10 +2240,14 @@ def main(): # Main loop of ICA
     window.resizable(0, 0)
     window.title(versionNumber)
 
-    #currentSCREEN = loginScreen(window, None)
+    currentSCREEN = loginScreen(window, None)
 
-    currentUser = User([0, "Jason", "Van Bladel", "Admin"], 1)
-    currentSCREEN = mainMenu(window, currentUser)
+    #currentUser = User([0, "Jason", "Van Bladel", "Admin"], 1)
+    #currentSCREEN = mainMenu(window, currentUser)
+
+    #currentSCREEN = mainMenu(window, ["Jason Van Bladel"])
+    #currentUser = User([0, "Jason", "Van Bladel", "Admin"], 1)
+    #currentSCREEN = mainMenu(window, currentUser)
 
     #currentSCREEN = med_INFO_SCREEN(window,Patient(["John","Smith","20","2/3/2013","32","30"]))
 
