@@ -6,6 +6,8 @@ import datetime
 from tkinter import ttk
 from Patients import *
 from Security import Hash
+import pyodbc
+import pandas as pd
 
 versionNumber = "(Version 1.7.10)"
 
@@ -21,6 +23,7 @@ class icaSCREENS():
 
         # insert as "<KEYTYPE>",functionCall.
         self.keyBinds = {}
+        self.SQL = SQLConnection()
 
     def clearSCREEN(self):
         #will clear the screen of everything
@@ -51,10 +54,46 @@ class icaSCREENS():
         userChoice = messagebox.askyesno("Exiting ICA","Are you sure you want to exit ICA?")
 
         if userChoice:
+            self.SQL.closeConnection()
             self.root.destroy()
 
     def escapePress(self,event):
         self.exitICA()
+
+class SQLConnection():
+    def __init__(self):
+        self.conn = pyodbc.connect('Driver={SQL Server};\
+                            Server=pacific-ica.cvb4dklzq2km.us-west-1.rds.amazonaws.com, 1433;\
+                            Database=db_pacific_ica;uid=admin;pwd=Animal05')
+        print("Database Connection Established")
+
+    def closeConnection(self):
+        self.conn.close()
+
+    def loginUser(self, userName, password):
+        sql = """
+            SELECT
+                Users.Password,
+                Users.PersonnelId,
+                Users.ActiveInd,
+                Users.Role,
+                Users.Email
+            FROM
+                Users
+            WHERE
+                Users.UserName = ?"""
+        
+        
+        #print(sql)
+        data = pd.read_sql(sql, self.conn, params={userName})
+        if data.empty:
+            return
+        data = data.values.tolist()
+        #print(data.head())
+        if data[0][0] == password:
+            return User([data[0][1],"First Name", "Last Name", data[0][2], data[0][3], data[0][4]], 1)
+        else:
+            return None
 
 class mainMenu(icaSCREENS):
 
@@ -1960,7 +1999,9 @@ class User():
         self.userId = data[0]
         self.userFirstName = data[1]
         self.userLastName = data[2]
-        self.userType = data[3]
+        self.activeInt = data[3]
+        self.userType = data[4]
+        self.userEmail = data[5]
         if isNewSession == 1:
             self.currentUserSession = UserSession(self.userId, None)
 
@@ -2072,33 +2113,21 @@ class loginScreen(icaSCREENS):
         #Would send Hash.main(name) to data base and recieve hashed pword from database
         #check if Hash.main(passWord) == recieved hashed pword
 
-        tempUserName = "f69ddcc92c44eb5a6320e241183ef551d9287d7fa6e4b2c77459145d8dd0bb37" # Test01
+        #tempUserName = "f69ddcc92c44eb5a6320e241183ef551d9287d7fa6e4b2c77459145d8dd0bb37" # Test01
 
-        tempPassWord = "b575f55adf6ed25767832bdf6fe6cbc4af4889938bf48ba99698ec683f9047de" # Test02
+        #tempPassWord = "b575f55adf6ed25767832bdf6fe6cbc4af4889938bf48ba99698ec683f9047de" # Test02
 
-        tempUserName1 = "67ed235e1e075a7214902e1af0cb4bb4ad3ba0fcf084411418074cf4247004cc" # User01
+        #tempUserName1 = "67ed235e1e075a7214902e1af0cb4bb4ad3ba0fcf084411418074cf4247004cc" # User01
 
-        tempPassWord1 = "7bab9c019f082639a163c437288ed2fe6da3e08a447cf9b8487f7c3535613fda" # User02
+        #tempPassWord1 = "7bab9c019f082639a163c437288ed2fe6da3e08a447cf9b8487f7c3535613fda" # User02
 
-        if Hash.main(name) == tempUserName and Hash.main(passWord) == tempPassWord: #admin test account
-
-            #querry User here
-            currentUser = User([0, "Admin", "", "Admin"], 1)
-
-            messagebox.showinfo("Login Successful!", "Welcome back " + currentUser.userFirstName)#needs to be User first name
+        loginUser = self.SQL.loginUser(Hash.main(name), Hash.main(passWord))
+        if not loginUser == None:
+    
+            messagebox.showinfo("Login Successful!", "Welcome back " + loginUser.userFirstName)#needs to be User first name
             self.removeKeyBind("<Return>")
 
-            self.swapTO(mainMenu, currentUser)#needs to be user object
-
-        elif Hash.main(name) == tempUserName1 and Hash.main(passWord) == tempPassWord1: #user test Account
-
-            #querry User here
-            currentUser = User([0, "User", "", "User"], 1)
-
-            messagebox.showinfo("Login Successful!", "Welcome back " + currentUser.userFirstName)#needs to be User first name
-            self.removeKeyBind("<Return>")
-
-            self.swapTO(mainMenu, currentUser)#needs to be user object
+            self.swapTO(mainMenu, loginUser)#needs to be user object
 
         else:
             messagebox.showerror("Login Unsuccessful", "Username or Password is invalid")
@@ -2211,10 +2240,10 @@ def main(): # Main loop of ICA
     window.resizable(0, 0)
     window.title(versionNumber)
 
-    #currentSCREEN = loginScreen(window, None)
+    currentSCREEN = loginScreen(window, None)
 
-    currentUser = User([0, "Jason", "Van Bladel", "Admin"], 1)
-    currentSCREEN = mainMenu(window, currentUser)
+    #currentUser = User([0, "Jason", "Van Bladel", "Admin"], 1)
+    #currentSCREEN = mainMenu(window, currentUser)
 
     #currentSCREEN = mainMenu(window, ["Jason Van Bladel"])
     #currentUser = User([0, "Jason", "Van Bladel", "Admin"], 1)
