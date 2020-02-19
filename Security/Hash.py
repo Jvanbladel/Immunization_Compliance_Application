@@ -7,4 +7,4 @@ def main(textToHash):
     #print(finalOutput)
     return finalOutput
 
-#main("Animal06")
+#main("AAyala")

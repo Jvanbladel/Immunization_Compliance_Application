@@ -7,7 +7,7 @@ from tkinter import ttk
 from Patients import *
 from Security import Hash
 
-versionNumber = "(Version 1.7.9)"
+versionNumber = "(Version 1.7.10)"
 
 class icaSCREENS():
     '''
@@ -192,6 +192,31 @@ class mainMenu(icaSCREENS):
             self.PermissionmyscrollbarY.destroy()
             self.permissionLabelFRAME.destroy()
             self.permissionEditFrame.destroy()
+            self.permissionEditMainLabel.destroy()
+
+            self.permissionEditNameField.destroy()
+            self.permissionEditNameFieldLabel.destroy()
+            self.permissionEditDescriptionFieldLabel.destroy()
+            self.permissionEditDescriptionField.destroy()
+            self.permissionImportData.destroy()
+            self.permissionExportData.destroy()
+            self.permissionPersonalHistoryData.destroy()
+            self.permissionSystemHistoryData.destroy()
+            self.permissionPersonalAnalyticsData.destroy()
+            self.permissionSystemAnalyticsData.destroy()
+            self.permissionCreateAlertsData.destroy()
+            self.permissionSetPermissionsData.destroy()
+            self.permissionSearchDatabaseData.destroy()
+            self.permissionPrintData.destroy()
+            self.permissionOutreachData.destroy()
+            self.permissionApproveUsers.destroy()
+            self.permissionSystemSettings.destroy()
+            self.permissionConsoleCommands.destroy()
+            self.permissionsPatientsOpenText.destroy()
+            self.permissionsPatientsOpen.destroy()
+            self.permissionsGoalNumberOfOutreachesText.destroy()
+            self.permissionsGoalNumberOfOutreaches.destroy()
+            self.changePermissionBUTTON.destroy()
 
 
             self.permissionsSCREEN = 0
@@ -998,6 +1023,95 @@ class mainMenu(icaSCREENS):
         self.permissionEditFrame = LabelFrame(self.root)
         self.permissionEditFrame.place(x=400, y = 100, height = 500, width = 400)
 
+        self.permissionEditMainLabel = Label(self.root, text = "Create New Role", font = (25))
+        self.permissionEditMainLabel.place(x=402.5, y=110, width = 395)
+
+        self.permissionEditNameField = Entry(self.root)
+        self.permissionEditNameField.place(x=450, y=150)
+
+        self.permissionEditNameFieldLabel = Label(self.root, text = "Role: ")
+        self.permissionEditNameFieldLabel.place(x=410, y=150)
+
+        self.permissionEditDescriptionFieldLabel = Label(self.root, text = "Description:")
+        self.permissionEditDescriptionFieldLabel.place(x=410, y=190)
+
+        self.permissionEditDescriptionField = Entry(self.root)
+        self.permissionEditDescriptionField.place(x=485, y=190, width = 250)
+        
+
+        self.permissionvar1 = IntVar()
+        self.permissionImportData = Checkbutton(self.root, text="Import Data", variable=self.permissionvar1)
+        self.permissionImportData.place(x=410,y=215)
+
+        self.permissionvar2 = IntVar()
+        self.permissionExportData = Checkbutton(self.root, text="Export Data", variable=self.permissionvar2)
+        self.permissionExportData.place(x=410,y=240)
+
+        self.permissionvar3 = IntVar()
+        self.permissionPersonalHistoryData = Checkbutton(self.root, text="Personal History", variable=self.permissionvar3)
+        self.permissionPersonalHistoryData.place(x=410,y=265)
+
+        self.permissionvar4 = IntVar()
+        self.permissionSystemHistoryData = Checkbutton(self.root, text="Entire System History", variable=self.permissionvar4)
+        self.permissionSystemHistoryData.place(x=410,y=290)
+
+        self.permissionvar5 = IntVar()
+        self.permissionPersonalAnalyticsData = Checkbutton(self.root, text="Personal Analytics", variable=self.permissionvar5)
+        self.permissionPersonalAnalyticsData.place(x=410,y=315)
+
+        self.permissionvar6 = IntVar()
+        self.permissionSystemAnalyticsData = Checkbutton(self.root, text="Entire System Analytics", variable=self.permissionvar6)
+        self.permissionSystemAnalyticsData.place(x=410,y=340)
+
+        self.permissionvar7 = IntVar()
+        self.permissionCreateAlertsData = Checkbutton(self.root, text="Create Alerts", variable=self.permissionvar7)
+        self.permissionCreateAlertsData.place(x=410,y=365)
+
+        self.permissionvar8 = IntVar()
+        self.permissionSetPermissionsData = Checkbutton(self.root, text="Set Permissions", variable=self.permissionvar8)
+        self.permissionSetPermissionsData.place(x=410,y=390)
+
+        self.permissionvar9 = IntVar()
+        self.permissionSearchDatabaseData = Checkbutton(self.root, text="Search in Patient Database", variable=self.permissionvar9)
+        self.permissionSearchDatabaseData.place(x=410,y=415)
+
+        self.permissionvar10 = IntVar()
+        self.permissionPrintData = Checkbutton(self.root, text="Print Files", variable=self.permissionvar10)
+        self.permissionPrintData.place(x=410,y=440)
+
+        self.permissionvar11 = IntVar()
+        self.permissionOutreachData = Checkbutton(self.root, text="Out Reach to Patients", variable=self.permissionvar11)
+        self.permissionOutreachData.place(x=410,y=465)
+
+        self.permissionvar12 = IntVar()
+        self.permissionApproveUsers = Checkbutton(self.root, text="Approve Users", variable=self.permissionvar12)
+        self.permissionApproveUsers.place(x=410,y=490)
+
+        self.permissionvar13 = IntVar()
+        self.permissionSystemSettings = Checkbutton(self.root, text="Editing of System Settings", variable=self.permissionvar13)
+        self.permissionSystemSettings.place(x=410,y=515)
+
+        self.permissionvar14 = IntVar()
+        self.permissionConsoleCommands = Checkbutton(self.root, text="Console Commands", variable=self.permissionvar14)
+        self.permissionConsoleCommands.place(x=410,y=540)
+
+
+        self.permissionsPatientsOpenText = Label(self.root, text = "Max Open Patients: ")
+        self.permissionsPatientsOpenText.place(x=600,y=215)
+        
+        self.permissionsPatientsOpen = Entry(self.root)
+        self.permissionsPatientsOpen.place(x=715,y=215, width = 30)
+
+        self.permissionsGoalNumberOfOutreachesText = Label(self.root, text = "Goal Outreaches: ")
+        self.permissionsGoalNumberOfOutreachesText.place(x=600,y=240)
+        
+        self.permissionsGoalNumberOfOutreaches = Entry(self.root)
+        self.permissionsGoalNumberOfOutreaches.place(x=715,y=240, width = 30)
+        
+        self.changePermissionBUTTON = Button(self.root, text = "Create New\nUser", bg="blue",fg="white")
+        self.changePermissionBUTTON.place(x=715, y=545, width = 70, height = 40)
+
+        
         self.permissionButtonList = []
         self.permssionList = []
 
