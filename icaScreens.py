@@ -190,6 +190,8 @@ class mainMenu(icaSCREENS):
             self.Permissioncanvas.destroy()
             self.Permissionframe.destroy()
             self.PermissionmyscrollbarY.destroy()
+            self.permissionLabelFRAME.destroy()
+            self.permissionEditFrame.destroy()
 
 
             self.permissionsSCREEN = 0
@@ -977,6 +979,9 @@ class mainMenu(icaSCREENS):
     def showPermissionsSCREEN(self):
         self.clearAllScreens()
 
+        self.permissionLabelFRAME = Label(self.root, text = '{0:<15} {1:<35}'.format("Role", "Description"), font = ('Consolas', 10),justify=LEFT, anchor=W)
+        self.permissionLabelFRAME.place(x=0, y=102.5, height = 20, width = 400)
+            
         self.Permissionmyframe=Frame(self.root,relief=GROOVE,width=20,height=475,bd=1)
         self.Permissionmyframe.place(x=0,y=125,height=475,width=400)
 
@@ -989,6 +994,9 @@ class mainMenu(icaSCREENS):
         self.Permissioncanvas.pack(side="left")
         self.Permissioncanvas.create_window((0,0),window=self.Permissionframe,anchor='nw')
         self.Permissionframe.bind("<Configure>", self.Permissionmyfunction)
+
+        self.permissionEditFrame = LabelFrame(self.root)
+        self.permissionEditFrame.place(x=400, y = 100, height = 500, width = 400)
 
         self.permissionButtonList = []
         self.permssionList = []

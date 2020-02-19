@@ -1,6 +1,27 @@
 import pyodbc
 import pandas as pd
 
+
+class SQLConnection():
+    def __init__(self):
+        self.conn = pyodbc.connect('Driver={SQL Server};\
+                            Server=pacific-ica.cvb4dklzq2km.us-west-1.rds.amazonaws.com, 1433;\
+                            Database=db_pacific_ica;uid=admin;pwd=Animal05')
+        print("Database Connection Established")
+
+    def closeConnection(self):
+        conn.close()
+
+    def loginUser(self, userName):
+        sql = """
+            SELECT
+                
+            FROM
+                
+            """
+        data = pd.read_sql(sql, conn)
+    
+
 def select(column, table):
     # build connection with the database
 
@@ -31,4 +52,10 @@ def select(column, table):
     return data
 
 
-print(select("PatientID", "Patient"))
+select("PatientID", "Patient")
+
+#def main():
+#    myConnection = SQLConnection()
+#    myConnection.loginUser()
+#   myConnection.closeConnection()
+#main()
