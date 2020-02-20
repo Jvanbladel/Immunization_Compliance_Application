@@ -2,15 +2,21 @@ from numpy import sort
 
 import Patients
 
-def quickSort(listOfPatients, fields):
+def quickSort(listOfPatients, fields, asce = False):
     """[fName
         self.lName
         self.score
         self.dueDate
         self.MRN
         self.daysOverDue]"""
+    c = [lambda x: x.fName, lambda x: x.lName, lambda x: int(x.score), lambda x: int(x.daysOverDue),
+         lambda x: int(x.MRN), lambda x: int(x.daysOverDue)]
+    if fields not in [1, 2, 3, 4, 5, 6]:
+        return -1
 
-    if fields == 1:
+    sortedPatients = sorted(listOfPatients, key=c[fields-1], reverse=asce)
+    return sortedPatients
+"""    if fields == 1:
         sortedPatients = sorted(listOfPatients, key=lambda x: x.fName)
     elif fields == 2:
         sortedPatients = sorted(listOfPatients, key=lambda x: x.lName)
@@ -25,7 +31,7 @@ def quickSort(listOfPatients, fields):
     else:
         print("invalid field number")
         return -1
-    return sortedPatients
+    return sortedPatients"""
 
 
 f = open("UITestData.txt", "r")
@@ -35,8 +41,8 @@ for line in f:
     pList.append(Patients.Patient(l))
 f.close()
 
-s = quickSort(pList, 4)
+s = quickSort(pList, 1)
 
 for i in range(len(pList)):
-    print(s[i].dueDate)
+    print(s[i].fName)
 
