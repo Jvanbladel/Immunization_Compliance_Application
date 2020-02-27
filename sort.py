@@ -2,8 +2,13 @@ from numpy import sort
 
 import Patients
 
-def sortPatients(listOfPatients, fields, asce = False):
-    """[fName
+def sortPatients(listOfPatients, fields, desc):
+    '''desc == True:
+            Z to A
+        desc == False:
+            A to Z
+    '''
+    """[self.fName
         self.lName
         self.score
         self.dueDate
@@ -14,14 +19,18 @@ def sortPatients(listOfPatients, fields, asce = False):
     if fields not in [1, 2, 3, 4, 5, 6]:
         return -1
 
-    sortedPatients = sorted(listOfPatients, key=c[fields-1], reverse=asce)
+    sortedPatients = sorted(listOfPatients, key=c[fields-1], reverse=desc)
     return sortedPatients
 
 def lastName(listOfPatients):
     character = ['abcdefghijklmnopqrstuvwxyz']
     percentage = {}
     for i in listOfPatients:
-        percentage[listOfPatients[i].lName] = percentage.get(listOfPatients[i].lName)+1
+        firstChar = i.lName[0]
+        if percentage.get(firstChar) is None:
+            percentage[firstChar] = 1/len(listOfPatients)
+        else:
+            percentage[firstChar] = percentage.get(firstChar)+(1/len(listOfPatients))
     return percentage
 
 """    if fields == 1:
@@ -41,16 +50,13 @@ def lastName(listOfPatients):
         return -1
     return sortedPatients"""
 
-
+'''
 f = open("UITestData.txt", "r")
 pList = []
 for line in f:
     l = line.split()
     pList.append(Patients.Patient(l))
 f.close()
+sorted = sortPatients(pList,1,True)'''
 
-s = sortPatients(pList, 1)
-
-for i in range(len(pList)):
-    print(s[i].fName)
 
