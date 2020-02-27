@@ -65,6 +65,7 @@ class SQLConnection():
         self.conn = pyodbc.connect('Driver={SQL Server};\
                             Server=pacific-ica.cvb4dklzq2km.us-west-1.rds.amazonaws.com, 1433;\
                             Database=db_pacific_ica;uid=admin;pwd=Animal05')
+        print(self.conn)
         print("Database Connection Established")
 
     def closeConnection(self):
@@ -77,7 +78,9 @@ class SQLConnection():
                 Users.PersonnelId,
                 Users.ActiveInd,
                 Users.Role,
-                Users.Email
+                Users.Email,
+                Users.UserFirstName,
+                Users.UserLastName
             FROM
                 Users
             WHERE
@@ -87,11 +90,13 @@ class SQLConnection():
         #print(sql)
         data = pd.read_sql(sql, self.conn, params={userName})
         if data.empty:
+            #print("Empty Data")
             return
         data = data.values.tolist()
-        #print(data.head())
+        values = list([data[0][1],data[0][5], data[0][6], data[0][2], data[0][3], data[0][4]])
+        print(values)
         if data[0][0] == password:
-            return User([data[0][1],"First Name", "Last Name", data[0][2], data[0][3], data[0][4]], 1)
+            return User(values, 1)
         else:
             return None
 
@@ -1996,6 +2001,7 @@ class UserHistory():
 
 class User():
     def __init__(self, data, isNewSession):
+        
         self.userId = data[0]
         self.userFirstName = data[1]
         self.userLastName = data[2]
@@ -2055,13 +2061,15 @@ class loginScreen(icaSCREENS):
 
         self.userNameEntry = Entry(self.root,width=25,font=(16))
         self.userNameEntry.place(x=350,y=305)
+        self.userNameEntry.insert(0,"AUser")
 
         self.passwordLabel = Label(self.root, text="Password: ", font=('Consolas', 16))
         self.passwordLabel.place(x=200, y=350)
+       
 
         self.passwordEntry = Entry(self.root, width=25, font=(16),show="*")
         self.passwordEntry.place(x=350, y=355)
-
+        self.passwordEntry.insert(0,"Test1234#")
 
         self.loginButton = Button(self.root,text="Login!",bg="light blue",fg="black",width=13,height=2,command=self.verifyUser)
         self.loginButton.place(x=350,y=400)
@@ -2122,6 +2130,7 @@ class loginScreen(icaSCREENS):
         #tempPassWord1 = "7bab9c019f082639a163c437288ed2fe6da3e08a447cf9b8487f7c3535613fda" # User02
 
         loginUser = self.SQL.loginUser(Hash.main(name), Hash.main(passWord))
+        #print(loginUser.userType)
         if not loginUser == None:
     
             messagebox.showinfo("Login Successful!", "Welcome back " + loginUser.userFirstName)#needs to be User first name
@@ -2204,10 +2213,12 @@ class UserHistory():
 
 class User():
     def __init__(self, data, isNewSession):
+        
         self.userId = data[0]
         self.userFirstName = data[1]
         self.userLastName = data[2]
-        self.userType = data[3]
+        self.activeUser = data[3]
+        self.userType = data[4]
         if isNewSession == 1:
             self.currentUserSession = UserSession(self.userId, None)
         #Querry User Permissions Here
