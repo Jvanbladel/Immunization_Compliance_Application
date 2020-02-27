@@ -1,36 +1,40 @@
 from numpy import sort
 
 import Patients
-
+attributes = 9
+sorted_by = [lambda x: x.fName, lambda x: x.lName, lambda x: int(x.score), lambda x: int(x.daysOverDue),
+            lambda x: int(x.MRN), lambda x: int(x.daysOverDue), lambda x: x.sex, lambda x: x.immunization,
+            lambda x: int(x.age)]
 def sortPatients(listOfPatients, fields, desc):
-    '''desc == True:
+    '''
+    desc == True:
             Z to A
         desc == False:
             A to Z
-    '''
-    """[self.fName
+    [self.fName
         self.lName
         self.score
         self.dueDate
         self.MRN
-        self.daysOverDue]"""
-    c = [lambda x: x.fName, lambda x: x.lName, lambda x: int(x.score), lambda x: int(x.daysOverDue),
-         lambda x: int(x.MRN), lambda x: int(x.daysOverDue)]
-    if fields not in [1, 2, 3, 4, 5, 6]:
+        self.daysOverDue]
+    '''
+
+    if fields not in list(range(attributes + 1)) and fields != 0:
         return -1
 
-    sortedPatients = sorted(listOfPatients, key=c[fields-1], reverse=desc)
+    sortedPatients = sorted(listOfPatients, key=sorted_by[fields-1], reverse=desc)
     return sortedPatients
 
 def lastName(listOfPatients):
-    character = ['abcdefghijklmnopqrstuvwxyz']
+    # character = list(map(chr, range(65, 91)))
+    num_patients = len(listOfPatients)
     percentage = {}
     for i in listOfPatients:
         firstChar = i.lName[0]
         if percentage.get(firstChar) is None:
-            percentage[firstChar] = 1/len(listOfPatients)
+            percentage[firstChar] = round(1/num_patients*100, 2)
         else:
-            percentage[firstChar] = percentage.get(firstChar)+(1/len(listOfPatients))
+            percentage[firstChar] = percentage.get(firstChar)+round((1/num_patients)*100,2)
     return percentage
 
 """    if fields == 1:
@@ -50,13 +54,14 @@ def lastName(listOfPatients):
         return -1
     return sortedPatients"""
 
-'''
+
 f = open("UITestData.txt", "r")
 pList = []
 for line in f:
     l = line.split()
     pList.append(Patients.Patient(l))
 f.close()
-sorted = sortPatients(pList,1,True)'''
+# sorted = sortPatients(pList,1,True)
+print(lastName(pList))
 
 
