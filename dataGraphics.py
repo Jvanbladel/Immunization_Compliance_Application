@@ -22,5 +22,7 @@ def performanceMeasurement(date, performance1, performance2):
     plt.plot('x', 'RANDOM2', data=df, marker='', color='olive', linewidth=2)
     plt.plot('x', 'RANDOM3', data=df, marker='', color='olive', linewidth=2, linestyle='dashed', label="toto")
     plt.legend()
+    plt.show()
 
 pieChart([len(num_male),len(genderFrame)-len(num_male)], ['male', 'female'], ['#6e93cd', '#fbb7e0'])
+performanceMeasurement(0,0,0)
