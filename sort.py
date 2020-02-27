@@ -2,7 +2,7 @@ from numpy import sort
 
 import Patients
 
-def quickSort(listOfPatients, fields, asce = False):
+def sortPatients(listOfPatients, fields, asce = False):
     """[fName
         self.lName
         self.score
@@ -16,6 +16,14 @@ def quickSort(listOfPatients, fields, asce = False):
 
     sortedPatients = sorted(listOfPatients, key=c[fields-1], reverse=asce)
     return sortedPatients
+
+def lastName(listOfPatients):
+    character = ['abcdefghijklmnopqrstuvwxyz']
+    percentage = {}
+    for i in listOfPatients:
+        percentage[listOfPatients[i].lName] = percentage.get(listOfPatients[i].lName)+1
+    return percentage
+
 """    if fields == 1:
         sortedPatients = sorted(listOfPatients, key=lambda x: x.fName)
     elif fields == 2:
@@ -41,7 +49,7 @@ for line in f:
     pList.append(Patients.Patient(l))
 f.close()
 
-s = quickSort(pList, 1)
+s = sortPatients(pList, 1)
 
 for i in range(len(pList)):
     print(s[i].fName)
