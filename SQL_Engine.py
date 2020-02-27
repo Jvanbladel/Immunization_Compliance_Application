@@ -68,10 +68,11 @@ def select(column, table):
     return data
 
 
-#select("PatientID", "Patient")
+print(select("PatientID", "Patient"))
 
 def main():
     myConnection = SQLConnection()
-    myConnection.loginUser("b32206b5f729b815087f8dbf236ddffe8fe511c267750c1d8fcd64b04454e83c","f691b6ef9c9150e03b3b8584f3ca18956fd886374defe65f480bd1c2511eba33")
+    d = myConnection.loginUser("b32206b5f729b815087f8dbf236ddffe8fe511c267750c1d8fcd64b04454e83c","f691b6ef9c9150e03b3b8584f3ca18956fd886374defe65f480bd1c2511eba33")
     myConnection.closeConnection()
+    print(d)
 main()

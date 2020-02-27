@@ -65,6 +65,7 @@ class SQLConnection():
         self.conn = pyodbc.connect('Driver={SQL Server};\
                             Server=pacific-ica.cvb4dklzq2km.us-west-1.rds.amazonaws.com, 1433;\
                             Database=db_pacific_ica;uid=admin;pwd=Animal05')
+        print(self.conn)
         print("Database Connection Established")
 
     def closeConnection(self):
@@ -77,7 +78,9 @@ class SQLConnection():
                 Users.PersonnelId,
                 Users.ActiveInd,
                 Users.Role,
-                Users.Email
+                Users.Email,
+                Users.UserFirstName,
+                Users.UserLastName
             FROM
                 Users
             WHERE
@@ -87,9 +90,11 @@ class SQLConnection():
         #print(sql)
         data = pd.read_sql(sql, self.conn, params={userName})
         if data.empty:
+            #print("Empty Data")
             return
         data = data.values.tolist()
-        values = list([data[0][1],"First Name", "Last Name", data[0][2], data[0][3], data[0][4]])
+        values = list([data[0][1],data[0][5], data[0][6], data[0][2], data[0][3], data[0][4]])
+        print(values)
         if data[0][0] == password:
             return User(values, 1)
         else:
@@ -2125,7 +2130,7 @@ class loginScreen(icaSCREENS):
         #tempPassWord1 = "7bab9c019f082639a163c437288ed2fe6da3e08a447cf9b8487f7c3535613fda" # User02
 
         loginUser = self.SQL.loginUser(Hash.main(name), Hash.main(passWord))
-        print(loginUser.userType)
+        #print(loginUser.userType)
         if not loginUser == None:
     
             messagebox.showinfo("Login Successful!", "Welcome back " + loginUser.userFirstName)#needs to be User first name
