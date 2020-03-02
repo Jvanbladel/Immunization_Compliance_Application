@@ -18,8 +18,9 @@ def performanceMeasurement(date, performance1, performance2):
                    'RANDOM3': np.random.randn(10) + range(11, 21)})
 
     # multiple line plot
-    plt.plot('x', 'RANDOM1', data=df, marker='o', markerfacecolor='blue', markersize=12, color='skyblue', linewidth=4)
-    plt.plot('x', 'RANDOM2', data=df, marker='', color='olive', linewidth=2)
+    plt.plot('x', 'RANDOM1', data=df, marker='o', markerfacecolor='blue', markersize=12, color='skyblue', linewidth=4,
+             label='male')
+    plt.plot('x', 'RANDOM2', data=df, marker='', color='olive', linewidth=2, label='female')
     plt.plot('x', 'RANDOM3', data=df, marker='', color='olive', linewidth=2, linestyle='dashed', label="toto")
     plt.legend()
     plt.show()
