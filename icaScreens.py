@@ -8,8 +8,9 @@ from Patients import *
 from Security import Hash
 import pyodbc
 import pandas as pd
+import sort
 
-versionNumber = "(Version 1.7.10)"
+versionNumber = "(Version 1.7.11a)"
 
 class icaSCREENS():
     '''
@@ -65,7 +66,7 @@ class SQLConnection():
         self.conn = pyodbc.connect('Driver={SQL Server};\
                             Server=pacific-ica.cvb4dklzq2km.us-west-1.rds.amazonaws.com, 1433;\
                             Database=db_pacific_ica;uid=admin;pwd=Animal05')
-        print(self.conn)
+        #print(self.conn)
         print("Database Connection Established")
 
     def closeConnection(self):
@@ -94,7 +95,7 @@ class SQLConnection():
             return
         data = data.values.tolist()
         values = list([data[0][1],data[0][5], data[0][6], data[0][2], data[0][3], data[0][4]])
-        print(values)
+        #print(values)
         if data[0][0] == password:
             return User(values, 1)
         else:
@@ -763,7 +764,7 @@ class mainMenu(icaSCREENS):
             self.AgeFilterCombo=Combobox(self.root, values=filterOptions)
             self.AgeFilterCombo.place(x=110, y=525, width = 100)
 
-            self.filterBUTTON = Button(self.root, text = "Filter",bg="blue",fg="white")
+            self.filterBUTTON = Button(self.root, text = "Filter",bg="blue",fg="white", command=lambda: self.filterQueue())
             self.filterBUTTON.place(x=122.5, y = 555, width = 75, height = 32.5)
 
             self.defaultFilterBUTTON = Button(self.root, text = "Default")
@@ -788,6 +789,44 @@ class mainMenu(icaSCREENS):
             self.filterLABEL.destroy()
 
             self.filter = 0
+
+
+    def determineFilter(self,filter): # determines if filter is Ascending or descending
+
+        if filter.get() == "Ascending":
+
+            return True
+
+        return False
+        
+    def filterQueue(self):
+        if self.filterVar1.get():
+            #First Name
+            if self.determineFilter(self.fNameFilterCombo):
+                newlist = sort.quickSort(self.pList, 1, False)
+                updateQueue(newlist)
+                print("Test")
+            else:
+                print("Test2")
+                #plist = sort.sortPatients(plist, 1, True)
+
+            #do something if descending
+
+            
+
+        '''elif self.filterVar2.get():
+            #Last Name
+        elif self.filterVar3.get():
+            #Days Overdue
+        elif self.filterVar4.get():
+            #Sex
+        elif self.filterVar5.get():
+            #Immunization Filter
+        elif self.filterVar6.get():
+            #Age
+        
+    
+        print()'''
 
 
     def setUpQueue(self):
@@ -1218,12 +1257,19 @@ class mainMenu(icaSCREENS):
 
     def createQueue(self):
         f = open("UITestData.txt", "r")
-        pList = []
+        self.pList = []
         for line in f:
             l = line.split()
-            pList.append(Patient(l))
+            self.pList.append(Patient(l))
         f.close()
-        return pList
+        return self.pList
+
+    def updateQueue(self,newPatientList):
+        for b in self.bList:
+            b.destroy()
+        self.addToQueue(self.frame, newPatientList)
+        self.pList = newPatientList
+        
 
     def addToQueue(self, frame, patientList):
         self.bList = []

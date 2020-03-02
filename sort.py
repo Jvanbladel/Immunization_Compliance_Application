@@ -28,7 +28,7 @@ def quickSort(listOfPatients, fields):
     return sortedPatients
 
 
-f = open("UITestData.txt", "r")
+'''f = open("UITestData.txt", "r")
 pList = []
 for line in f:
     l = line.split()
@@ -39,4 +39,4 @@ s = quickSort(pList, 4)
 
 for i in range(len(pList)):
     print(s[i].dueDate)
-
+'''
