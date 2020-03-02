@@ -790,6 +790,7 @@ class mainMenu(icaSCREENS):
             self.filter = 0
 
 
+
     def setUpQueue(self):
         self.myframe = None
         self.canvas = None
@@ -1799,13 +1800,20 @@ class med_INFO_SCREEN(icaSCREENS):
 
     def showService(self): # uses servicePage Canvas for display
 
-        #formate Service ID, Immunization Name, Compliance, Service Date, Extra Tab?
-        formatString = '{0:<12}{1:<15}{2:<12}{3:<15}{4:<8}'.format("Service ID","Immunization",
-                                                             "Compliance","Service Date","Extra")
+        formatString = '{0:<12}{1:<15}{2:<12}{3:<15}{4:<8}'.format("Service ID", "Immunization",
+                                                                   "Compliance", "Service Date", "Extra")
 
         formatLabel = Label(self.servicePage, text=formatString, font=('Consolas', 11)
                             , relief="raised",pady=10)
         formatLabel.pack()
+
+
+
+    def formatService(self,patientService): # will format the buttons to be displayed in the service history
+
+
+        # format Service ID, Immunization Name, Compliance, Service Date, Extra Tab?
+        formatString = '{0:<12}{1:<15}{2:<12}{3:<15}{4:<8}'.format()
 
 
     def loadServiceHistory(self):
@@ -1823,9 +1831,9 @@ class med_INFO_SCREEN(icaSCREENS):
         self.label_and_Text(contactFrame, "Phone", 0, 0, "123-456-789")
         self.label_and_Text(contactFrame, "Mobile", 4, 0, "987-654-321")
         self.label_and_Text(contactFrame, "Work Phone", 0, 2, "123-456-789")
-        self.label_and_Text(contactFrame, "Email", 0, 4, "r_Andom@u.pacific.edu")
+        self.label_and_Text(contactFrame, "Email", 0, 5, "r_Andom@u.pacific.edu")
         self.label_and_Text(contactFrame, "Preferred Contact", 4, 2, "Mobile")
-        self.label_and_Text(contactFrame, "Pref. Language", 4, 4, "English")
+        self.label_and_Text(contactFrame, "Pref. Language", 4, 6, "English")
 
 
         #contact notes and outreach notes
@@ -1841,9 +1849,13 @@ class med_INFO_SCREEN(icaSCREENS):
 
         self.outreachNotes = Text(self.contactPage, width=27, height=4,padx=5)
         self.outreachNotes.place(x=275, y=175)
+        self.outreachNotes.insert('end',"Patient did not want an to schedule an appointment")
 
         contactNotesButton = Button(self.contactPage,text="Submit Changes")
-        contactNotesButton.place(x=50,y=250)
+        contactNotesButton.place(x=75,y=250)
+
+        outreachNotesButton = Button(self.contactPage,text="Submit Changes")
+        outreachNotesButton.place(x=350,y=250)
 
 
         #contact Method Frame
@@ -1859,15 +1871,14 @@ class med_INFO_SCREEN(icaSCREENS):
     def getPatientHistory(self):
         pass
 
-    def getPatientDemographics(self):
+    def getPatientDemographics(self): # need to load in Patient details
         pass
 
     def closeWindow(self,event):
-
         self.root.destroy()
 
 
-    def extensionEmail(self): # will display extension for emailing patient
+    def extensionEmail(self,savedText=None): # will display extension for emailing patient
         '''
         Things still need to implemented:
         minimize/saving
@@ -1875,11 +1886,11 @@ class med_INFO_SCREEN(icaSCREENS):
         loading in templates
         '''
 
-        tempLabel = Label(self.extensionFrame,text="Minimize/Exit Button goes here")
-        tempLabel.place(x=0,y=0)
+        tempLabel = Button(self.extensionFrame,text="Close extension",command= self.clearExtension)
+        tempLabel.place(x=100,y=0)
 
         displayLabel = Label(self.extensionFrame,text="To:" + self.patientFULL ,font = ('Consolas', 14),relief="groove")
-        displayLabel.place(x=0,y=25)
+        displayLabel.place(x=0,y=30)
 
         templateLabel = Label(self.extensionFrame,text="<Email Template>")
         templateLabel.place(x=0,y=75)
@@ -2081,37 +2092,94 @@ class loginScreen(icaSCREENS):
         self.userNameLabel.place(x=5,y=575)
 
 
-        self.accountBUTTON = Button(self.root,text="Add Account",width=18,font=('Consolas', 16),bg="hot pink",command=self.createAccount)
+        # Account creation info
+        self.accountBUTTON = Button(self.root,text="Add Account",width=18,font=('Consolas', 16),bg="hot pink",command=self.createAccountScreen)
         self.accountBUTTON.place(x=350,y=450)
 
-    def createAccount(self): # Promts user for account creation
+        self.newAccountEntries = {} # will contain the entry boxes/info for account creation
 
-        newWindow = Toplevel()
-        newWindow.geometry("600x600")
-        newWindow.title("Account Creation")
+        self.newWindow = None # holds popout window
 
+    def createAccountScreen(self): # Prompts user for account creation
 
-        background = Canvas(newWindow,bg='light blue',width=600,height=600)
+        if self.newWindow is not None: # prevent multiple instances of account creation
+
+            messagebox.showinfo("Already existing window", "Account creation page is already open")
+            return
+
+        self.newWindow = Toplevel()
+        self.newWindow.geometry("600x600")
+        self.newWindow.title("Account Creation")
+
+        background = Canvas(self.newWindow,bg='light blue',width=600,height=600)
         background.pack()
 
         forground = Canvas(background,width=400,height=400)
         forground.place(x=100,y=50)
 
         entryLabels = ["Firstname: ","Lastname: ","Email: ","Username: ","Password: ","Confirm Pass: "]
-        creationEntries = []
-
         yLabel = 25
 
 
         for label in entryLabels: # will fill the account creation screen with labels
 
-            newLabel = Label(forground,text=label,font=('Consolas', 14),relief="groove",width=15)
+            newLabel = Label(forground,text=label,font=('Consolas', 14),width=15)
             newLabel.place(x=25,y=yLabel)
 
-            #newEntry = Entry(forground)
+            if label == "Password: " or label == "Confirm Pass: ": # will hide password on respective entry
+                newEntry = Entry(forground, font=('Consolas', 14),show="*",width=20)
+                newEntry.place(x=175,y=yLabel)
+            else:
+                newEntry = Entry(forground, font=('Consolas', 14), width=20)
+                newEntry.place(x=175, y=yLabel)
 
+
+            self.newAccountEntries[label] = newEntry # add to the new account holder
             yLabel += 50 # increment
 
+
+        #buttons for submitting data and canceling account creation
+        create = Button(forground,text="Create Account!",height=2,command = self.createAccount)
+        create.place(x=175,y=yLabel)
+
+
+        cancel = Button(forground,text="Cancel",width=10, height=2,command = self.newWindow.destroy)
+        cancel.place(x=300,y=yLabel)
+
+    def createAccount(self): # will obtain info from create Account screen and pass to admin queue
+
+        accountINFO = [] # list to be sent to admin queue
+
+        if self.newAccountEntries["Password: "].get() == self.newAccountEntries["Confirm Pass: "].get():
+
+            for info in self.newAccountEntries:
+
+                thisINFO = self.newAccountEntries[info].get()
+
+                if not thisINFO: # will determine if there is data in this entry
+
+                    messagebox.showwarning("Missing Field", "Missing field:\n" + info)
+                    return
+
+                accountINFO.append(thisINFO)
+
+            messagebox.showinfo("account sent", "Sent to admin for approval")
+            self.destroyPopOut()
+
+        else:
+            messagebox.showinfo("do not match", "passwords do not match")
+
+    def clearAccount(self): # clears entries for account creation on sent info
+
+        for entry in self.newAccountEntries:
+
+            self.newAccountEntries[entry].delete(0,'end')
+
+    def destroyPopOut(self): # helps manage only one window at a time
+
+        self.newWindow.destroy()
+        self.newWindow = None
+        self.newAccountEntries.clear()
 
 
     def verifyUser(self):
