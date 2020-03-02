@@ -10,7 +10,7 @@ import pyodbc
 import pandas as pd
 import sort
 
-versionNumber = "(Version 1.7.11a)"
+versionNumber = "(Version 1.8.0)"
 
 class icaSCREENS():
     '''
@@ -18,13 +18,13 @@ class icaSCREENS():
     clear the screen, and swap to other screens.
     '''
     screenSTACK = []
-    def __init__(self,window): #all screens must contain the root window
+    def __init__(self,window, SQL): #all screens must contain the root window
         self.root = window
         self.root.protocol("WM_DELETE_WINDOW", self.exitICA)
 
         # insert as "<KEYTYPE>",functionCall.
         self.keyBinds = {}
-        self.SQL = SQLConnection()
+        self.SQL = SQL
 
     def clearSCREEN(self):
         #will clear the screen of everything
@@ -33,7 +33,7 @@ class icaSCREENS():
 
     def swapTO(self,newSCREEN, data): #pass the class of the screen you want to go to along with the window
         self.clearSCREEN()
-        newSCREEN(self.root, data)
+        newSCREEN(self.root, data, self.SQL)
 
     def bindKey(self,key,functionCall): # pass a key you want to bind and the function it should call
 
@@ -73,20 +73,7 @@ class SQLConnection():
         self.conn.close()
 
     def loginUser(self, userName, password):
-        sql = """
-            SELECT
-                Users.Password,
-                Users.PersonnelId,
-                Users.ActiveInd,
-                Users.Role,
-                Users.Email,
-                Users.UserFirstName,
-                Users.UserLastName
-            FROM
-                Users
-            WHERE
-                Users.UserName = ?"""
-        
+        sql = self.loadQuerry("login_querry")
         
         #print(sql)
         data = pd.read_sql(sql, self.conn, params={userName})
@@ -100,12 +87,18 @@ class SQLConnection():
             return User(values, 1)
         else:
             return None
+    def loadQuerry(self, fileName):
+        output = ""
+        fp = open("Querries/" + fileName + ".txt", "r")
+        for line in fp:
+            output = output + line
+        return output
 
 class mainMenu(icaSCREENS):
 
-    def __init__(self,window, user):
+    def __init__(self,window, user, SQL):
         self.user = user
-        super().__init__(window)
+        super().__init__(window,SQL)
         #setUpWindow
         global versionNumber
         self.root.geometry("800x600")
@@ -803,30 +796,57 @@ class mainMenu(icaSCREENS):
         if self.filterVar1.get():
             #First Name
             if self.determineFilter(self.fNameFilterCombo):
-                newlist = sort.quickSort(self.pList, 1, False)
-                updateQueue(newlist)
-                print("Test")
+                newlist = sort.sortPatients(self.queue, 1, False)
+                self.updateQueue(newlist)
             else:
-                print("Test2")
-                #plist = sort.sortPatients(plist, 1, True)
+                newlist = sort.sortPatients(self.queue, 1, True)
+                self.updateQueue(newlist)
 
-            #do something if descending
-
-            
-
-        '''elif self.filterVar2.get():
+        elif self.filterVar2.get():
             #Last Name
+            if self.determineFilter(self.lNameFilterCombo):
+                newlist = sort.sortPatients(self.queue, 2, False)
+                self.updateQueue(newlist)
+            else:
+                newlist = sort.sortPatients(self.queue, 2, True)
+                self.updateQueue(newlist)
+                
         elif self.filterVar3.get():
             #Days Overdue
+            if self.determineFilter(self.OverdueFilterCombo):
+                newlist = sort.sortPatients(self.queue, 4, False)
+                self.updateQueue(newlist)
+            else:
+                newlist = sort.sortPatients(self.queue, 4, True)
+                self.updateQueue(newlist)
+                
         elif self.filterVar4.get():
             #Sex
+             if self.determineFilter(self.SexFilterCombo):
+                newlist = sort.sortPatients(self.queue, 6, False)
+                self.updateQueue(newlist)
+             else:
+                newlist = sort.sortPatients(self.queue, 6, True)
+                self.updateQueue(newlist)
         elif self.filterVar5.get():
             #Immunization Filter
+             if self.determineFilter(self.ImmunizationFilterCombo):
+                newlist = sort.sortPatients(self.queue, 7, False)
+                self.updateQueue(newlist)
+             else:
+                newlist = sort.sortPatients(self.queue, 7, True)
+                self.updateQueue(newlist)
         elif self.filterVar6.get():
             #Age
+            if self.determineFilter(self.AgeFilterCombo):
+                newlist = sort.sortPatients(self.queue, 8, False)
+                self.updateQueue(newlist)
+            else:
+                newlist = sort.sortPatients(self.queue, 8, True)
+                self.updateQueue(newlist)
         
     
-        print()'''
+        print()
 
 
     def setUpQueue(self):
@@ -1257,18 +1277,18 @@ class mainMenu(icaSCREENS):
 
     def createQueue(self):
         f = open("UITestData.txt", "r")
-        self.pList = []
+        pList = []
         for line in f:
             l = line.split()
-            self.pList.append(Patient(l))
+            pList.append(Patient(l))
         f.close()
-        return self.pList
+        return pList
 
     def updateQueue(self,newPatientList):
         for b in self.bList:
             b.destroy()
         self.addToQueue(self.frame, newPatientList)
-        self.pList = newPatientList
+        self.queue = newPatientList
         
 
     def addToQueue(self, frame, patientList):
@@ -1355,7 +1375,7 @@ class mainMenu(icaSCREENS):
 
         newWindow = Toplevel()
         newWindow.title("Patient Details MRN: " + patient.MRN)
-        patientInfo = med_INFO_SCREEN(newWindow,patient)
+        patientInfo = med_INFO_SCREEN(newWindow,patient, self.SQL)
         self.currentPopOut += 1
 
         #closeButton = Button(newWindow,text="Go Back",command= lambda:self.destroyPopOut(newWindow))
@@ -1676,8 +1696,8 @@ class mainMenu(icaSCREENS):
 class med_INFO_SCREEN(icaSCREENS):
 
 
-    def __init__(self, window, Patient):
-        super().__init__(window)
+    def __init__(self, window, Patient, SQL):
+        super().__init__(window, SQL)
         self.root.geometry("800x600")
         self.bindKey("<Escape>",self.closeWindow)
 
@@ -2078,8 +2098,8 @@ class User():
 
 class loginScreen(icaSCREENS):
 
-    def __init__(self, window, data):
-        super().__init__(window)
+    def __init__(self, window, data, SQL):
+        super().__init__(window, SQL)
         self.root.geometry("800x600")
         global versionNumber
         self.root.title("Immunization Compliance Application " + versionNumber)
@@ -2297,7 +2317,8 @@ def main(): # Main loop of ICA
     window.resizable(0, 0)
     window.title(versionNumber)
 
-    currentSCREEN = loginScreen(window, None)
+    SQL = SQLConnection()
+    currentSCREEN = loginScreen(window, None, SQL)
 
     #currentUser = User([0, "Jason", "Van Bladel", "Admin"], 1)
     #currentSCREEN = mainMenu(window, currentUser)
@@ -2310,4 +2331,5 @@ def main(): # Main loop of ICA
 
     window.mainloop()
 
-main()
+if __name__ == "__main__":
+    main()

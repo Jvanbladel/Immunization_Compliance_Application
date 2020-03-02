@@ -1,9 +1,9 @@
 from numpy import sort
 
 import Patients
-attributes = 9
+attributes = 8
 sorted_by = [lambda x: x.fName, lambda x: x.lName, lambda x: int(x.score), lambda x: int(x.daysOverDue),
-            lambda x: int(x.MRN), lambda x: int(x.daysOverDue), lambda x: x.sex, lambda x: x.immunization,
+            lambda x: int(x.MRN), lambda x: x.sex, lambda x: x.immunization,
             lambda x: int(x.age)]
 def sortPatients(listOfPatients, fields, desc):
     '''
