@@ -1,19 +1,34 @@
 from DemoGraphics import *
+import SQLConnection
 
 class Patient():
     def __init__(self, data):
-        self.fName = data[0]
-        self.lName = data[1]
-        self.score = data[2]
-        self.dueDate = data[3]
-        self.MRN = data[4]
-        self.daysOverDue = data[5]
-        self.demoGraphic = DemoGraphics()
+        self.patientID = data[0]
+        self.MRN = data[1]
+        self.lName = data[2]
+        self.fName = data[3]
+        self.mInitial = data[4]
+        self.dob = data[5]
+        self.sex = data[6]
+        self.patientDead = data[7]
+        self.dueDate = data[8]
+        self.daysOverDue = data[9]
+        self.race = data[10]
+        self.ethnicity = data[11]
+        self.age = str(data[12])
+        
+        self.prefix = ""
+        if self.sex == "M":
+            self.prefix = "Mr."
+        elif self.sex == "F":
+            self.prefix = "Ms."
 
     # adding a comment so I can push this file.
 
+    def getDemographics(self):
+        pass
     def getSummary(self):
-        return [self.fName, self.lName, 'D' ,"12/6/1987", 'M', "33", "African American", "Mr."]
+        return [self.fName, self.lName, self.mInitial ,self.dob, self.sex, self.age, self.race, self.prefix]
 
     def getHistory(zelf):
         return [[["Flu", "45", "Covered"], ["Hepatitis B", "12", "Covered"], ["Pollo", "325", "Uncovered"], ["Chickpox", "15", "Uncovered"], ["MMR", "749", "Partial"], ["Rotavirus","45", "Covered"], ["Yellow Fever", "365", "Partial"]], "3/23/14"]

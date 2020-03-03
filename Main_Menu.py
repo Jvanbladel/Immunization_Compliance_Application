@@ -1191,13 +1191,8 @@ class mainMenu(ICA_super.icaSCREENS):
             self.togHistoryTab()
 
     def createQueue(self):
-        f = open("UITestData.txt", "r")
-        pList = []
-        for line in f:
-            l = line.split()
-            pList.append(Patient(l))
-        f.close()
-        return pList
+        plist = self.SQL.getDefaultWorkQueue()
+        return plist
 
     def updateQueue(self,newPatientList):
         for b in self.bList:
@@ -1333,7 +1328,7 @@ class mainMenu(ICA_super.icaSCREENS):
         self.pAge = Label(self.root, text = "Age: " +  patientData[5])
         self.pAge.place(x = 650, y = 235)
         
-        self.pRace = Label(self.root, text = "Ethnicity: " +  patientData[6])
+        self.pRace = Label(self.root, text = "Race: " +  patientData[6])
         self.pRace.place(x = 590, y = 265)
 
         self.pPrefix = Label(self.root, text = "Prefix: " +  patientData[7])

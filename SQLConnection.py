@@ -1,6 +1,6 @@
 import pyodbc
 import pandas as pd
-from Patients import *
+import Patients 
 import Users
 
 
@@ -37,3 +37,27 @@ class SQLConnection():
         for line in fp:
             output = output + line
         return output
+
+    def getDefaultWorkQueue(self):
+        sql = self.loadQuerry("default_work_queue")
+        
+        #print(sql)
+        data = pd.read_sql(sql, self.conn)
+        if data.empty:
+            #print("Empty Data")
+            return
+        data = data.values.tolist()
+        plist = []
+
+        for p in data:
+            #print(p)
+            plist.append(Patients.Patient(p))
+            
+        return plist
+    
+
+def main():
+    SQL = SQLConnection()
+    SQL.getDefaultWorkQueue()
+if __name__ == "__main__":
+    main()
