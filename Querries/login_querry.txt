@@ -1,0 +1,12 @@
+SELECT
+Users.Password,
+Users.PersonnelId,
+Users.ActiveInd,
+Users.Role,
+Users.Email,
+Users.UserFirstName,
+Users.UserLastName
+FROM
+Users
+WHERE
+Users.UserName = ?

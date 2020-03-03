@@ -1,115 +1,24 @@
+import ICA_super
 from tkinter import *
 from tkinter import messagebox
 from tkinter.ttk import Combobox
 from PIL import ImageTk,Image
 import datetime
-from tkinter import ttk
 from Patients import *
-from Security import Hash
-import pyodbc
-import pandas as pd
+from Med_Info_Screen import *
+import Login_Screen
+import sort
+from Users import *
 
-versionNumber = "(Version 1.7.10)"
+class mainMenu(ICA_super.icaSCREENS):
 
-class icaSCREENS():
-    '''
-    Base class for all screens. Currently will only contain the root,
-    clear the screen, and swap to other screens.
-    '''
-    screenSTACK = []
-    def __init__(self,window): #all screens must contain the root window
-        self.root = window
-        self.root.protocol("WM_DELETE_WINDOW", self.exitICA)
-
-        # insert as "<KEYTYPE>",functionCall.
-        self.keyBinds = {}
-        self.SQL = SQLConnection()
-
-    def clearSCREEN(self):
-        #will clear the screen of everything
-        for widget in self.root.winfo_children():
-            widget.destroy()
-
-    def swapTO(self,newSCREEN, data): #pass the class of the screen you want to go to along with the window
-        self.clearSCREEN()
-        newSCREEN(self.root, data)
-
-    def bindKey(self,key,functionCall): # pass a key you want to bind and the function it should call
-
-        self.root.bind(key,functionCall)
-        self.keyBinds[key] = functionCall
-
-    def removeKeyBind(self,key): # will remove the bind and free the key for another bind
-
-        self.root.unbind(key)
-        del self.keyBinds[key]
-
-    def rebindKey(self,key,functionCall): # will rebind the key to another feature
-
-        self.root.unbind(key)
-        self.bindKey(key,functionCall)
-
-    def exitICA(self): #prompt user if they want to close program
-
-        userChoice = messagebox.askyesno("Exiting ICA","Are you sure you want to exit ICA?")
-
-        if userChoice:
-            self.SQL.closeConnection()
-            self.root.destroy()
-
-    def escapePress(self,event):
-        self.exitICA()
-
-class SQLConnection():
-    def __init__(self):
-        self.conn = pyodbc.connect('Driver={SQL Server};\
-                            Server=pacific-ica.cvb4dklzq2km.us-west-1.rds.amazonaws.com, 1433;\
-                            Database=db_pacific_ica;uid=admin;pwd=Animal05')
-        print(self.conn)
-        print("Database Connection Established")
-
-    def closeConnection(self):
-        self.conn.close()
-
-    def loginUser(self, userName, password):
-        sql = """
-            SELECT
-                Users.Password,
-                Users.PersonnelId,
-                Users.ActiveInd,
-                Users.Role,
-                Users.Email,
-                Users.UserFirstName,
-                Users.UserLastName
-            FROM
-                Users
-            WHERE
-                Users.UserName = ?"""
-        
-        
-        #print(sql)
-        data = pd.read_sql(sql, self.conn, params={userName})
-        if data.empty:
-            #print("Empty Data")
-            return
-        data = data.values.tolist()
-        values = list([data[0][1],data[0][5], data[0][6], data[0][2], data[0][3], data[0][4]])
-        print(values)
-        if data[0][0] == password:
-            return User(values, 1)
-        else:
-            return None
-
-class mainMenu(icaSCREENS):
-
-    def __init__(self,window, user):
+    def __init__(self,window, user, SQL):
         self.user = user
-        super().__init__(window)
+        super().__init__(window,SQL)
         #setUpWindow
-        global versionNumber
         self.root.geometry("800x600")
         menu = Menu(self.root)
-        self.root.title("Immunization Compliance Application " + versionNumber)
+        self.root.title("Immunization Compliance Application " + self.versionNumber)
 
         self.bindKey("<Escape>",self.logOut)
 
@@ -763,7 +672,7 @@ class mainMenu(icaSCREENS):
             self.AgeFilterCombo=Combobox(self.root, values=filterOptions)
             self.AgeFilterCombo.place(x=110, y=525, width = 100)
 
-            self.filterBUTTON = Button(self.root, text = "Filter",bg="blue",fg="white")
+            self.filterBUTTON = Button(self.root, text = "Filter",bg="blue",fg="white", command=lambda: self.filterQueue())
             self.filterBUTTON.place(x=122.5, y = 555, width = 75, height = 32.5)
 
             self.defaultFilterBUTTON = Button(self.root, text = "Default")
@@ -789,6 +698,71 @@ class mainMenu(icaSCREENS):
 
             self.filter = 0
 
+
+
+    def determineFilter(self,filter): # determines if filter is Ascending or descending
+
+        if filter.get() == "Ascending":
+
+            return True
+
+        return False
+
+    def filterQueue(self):
+        if self.filterVar1.get():
+            #First Name
+            if self.determineFilter(self.fNameFilterCombo):
+                newlist = sort.sortPatients(self.queue, 1, False)
+                self.updateQueue(newlist)
+            else:
+                newlist = sort.sortPatients(self.queue, 1, True)
+                self.updateQueue(newlist)
+
+        elif self.filterVar2.get():
+            #Last Name
+            if self.determineFilter(self.lNameFilterCombo):
+                newlist = sort.sortPatients(self.queue, 2, False)
+                self.updateQueue(newlist)
+            else:
+                newlist = sort.sortPatients(self.queue, 2, True)
+                self.updateQueue(newlist)
+
+        elif self.filterVar3.get():
+            #Days Overdue
+            if self.determineFilter(self.OverdueFilterCombo):
+                newlist = sort.sortPatients(self.queue, 4, False)
+                self.updateQueue(newlist)
+            else:
+                newlist = sort.sortPatients(self.queue, 4, True)
+                self.updateQueue(newlist)
+
+        elif self.filterVar4.get():
+            #Sex
+             if self.determineFilter(self.SexFilterCombo):
+                newlist = sort.sortPatients(self.queue, 6, False)
+                self.updateQueue(newlist)
+             else:
+                newlist = sort.sortPatients(self.queue, 6, True)
+                self.updateQueue(newlist)
+        elif self.filterVar5.get():
+            #Immunization Filter
+             if self.determineFilter(self.ImmunizationFilterCombo):
+                newlist = sort.sortPatients(self.queue, 7, False)
+                self.updateQueue(newlist)
+             else:
+                newlist = sort.sortPatients(self.queue, 7, True)
+                self.updateQueue(newlist)
+        elif self.filterVar6.get():
+            #Age
+            if self.determineFilter(self.AgeFilterCombo):
+                newlist = sort.sortPatients(self.queue, 8, False)
+                self.updateQueue(newlist)
+            else:
+                newlist = sort.sortPatients(self.queue, 8, True)
+                self.updateQueue(newlist)
+
+
+        print()
 
 
     def setUpQueue(self):
@@ -1226,6 +1200,13 @@ class mainMenu(icaSCREENS):
         f.close()
         return pList
 
+    def updateQueue(self,newPatientList):
+        for b in self.bList:
+            b.destroy()
+        self.addToQueue(self.frame, newPatientList)
+        self.queue = newPatientList
+
+
     def addToQueue(self, frame, patientList):
         self.bList = []
         for i in range(len(patientList)):
@@ -1310,7 +1291,7 @@ class mainMenu(icaSCREENS):
 
         newWindow = Toplevel()
         newWindow.title("Patient Details MRN: " + patient.MRN)
-        patientInfo = med_INFO_SCREEN(newWindow,patient)
+        patientInfo = med_INFO_SCREEN(newWindow,patient, self.SQL)
         self.currentPopOut += 1
 
         #closeButton = Button(newWindow,text="Go Back",command= lambda:self.destroyPopOut(newWindow))
@@ -1549,7 +1530,7 @@ class mainMenu(icaSCREENS):
         self.logout = 1
         self.root.after_cancel(self.clockUpdater)
         self.clockUpdater = None
-        self.swapTO(loginScreen, None)
+        self.swapTO(Login_Screen.loginScreen, None)
         print("Successful Log out!")
 
     def togExpandQueue(self):
@@ -1626,744 +1607,4 @@ class mainMenu(icaSCREENS):
         if userChoice:
             self.root.after_cancel(self.clockUpdater) # prevents exception error on logout
             self.clockUpdater = None
-            self.swapTO(loginScreen,None)
-
-class med_INFO_SCREEN(icaSCREENS):
-
-
-    def __init__(self, window, Patient):
-        super().__init__(window)
-        self.root.geometry("800x600")
-        self.bindKey("<Escape>",self.closeWindow)
-
-        self.thisPatient = Patient
-        self.currentUser = None
-        self.insurance = None
-        self.demoGraphics = None
-        self.immunizationHistory = None
-
-
-        #setup the notebook for patient screen
-        self.patientNotebook = ttk.Notebook(self.root,width=500,height=500)
-        self.demosPage = ttk.Frame(self.patientNotebook)
-
-
-        self.servicePage = ttk.Frame(self.patientNotebook)
-        self.contactPage = ttk.Frame(self.patientNotebook)
-        self.insurancePage = ttk.Frame(self.patientNotebook)
-
-        self.patientNotebook.add(self.demosPage,text="Demographics")
-        self.patientNotebook.add(self.servicePage, text="Service History")
-        self.patientNotebook.add(self.contactPage, text="Outreach Report")
-        self.patientNotebook.add(self.insurancePage,text="Insurance")
-
-        self.patientNotebook.place(x=100,y=100)
-
-        self.patientFrame = LabelFrame(self.root,width=1000,height=30,bg="Blue")
-        self.patientFrame.place(x=0,y=0)
-
-        self.patientFULL = Patient.fName + " " + Patient.lName
-
-        #format; FULL Name, Gender, Age <years> DOB, MRN
-        self.patientLabelText = '{0:<27}{1:<17}{2:<10}{3:<17}{4:<10}'.format("PATIENT:" + self.patientFULL,"GENDER: Female","AGE:50 ",
-                                                                             "DOB:3/21/2013","MRN:30")
-
-        self.patientLabel = Label(self.patientFrame, text=self.patientLabelText, font=('Consolas', 14),bg="Blue",fg="White")
-        self.patientLabel.place(x=0, y=0)
-
-
-        self.buttonFrame = LabelFrame(self.root, width=100, height=560)
-        self.buttonFrame.place(x=0, y=40)
-
-
-        menuItems = ['Garantour ', 'Last Service', 'Create\n Outreach\n form', 'Immunization\nHistory',]
-
-
-        for index in range(len(menuItems)):
-
-            menuButton = Button(self.buttonFrame,text=menuItems[index],width=12,height=3)
-            menuButton.pack()
-
-        #Contact info
-        self.nameLabel = None
-        self.language = None
-        self.address = None
-        self.email = None
-        self.phone = None
-        self.commentsBox = None
-        self.outreachDate = None
-        self.methodDropDown = None
-        self.outCome = None
-        self.apptDate = None
-
-
-
-        #ExtensionWindow
-        self.extensionFrame = LabelFrame(self.root,width=200,height=500)
-        self.extensionFrame.place(x=600,y=100)
-
-
-        self.showDemos()
-        self.showService()
-        self.showOutReach()
-
-    def showDemos(self): # uses self.demosPage for display
-
-        patientFrame = LabelFrame(self.demosPage,text="<Patient>",width=500,height=65)
-        patientFrame.place(x=0,y=25)
-        patientFrame.grid_propagate(False)
-
-        self.label_and_Text(patientFrame,"Lastname",0,0,self.thisPatient.lName)
-
-        self.label_and_Text(patientFrame,"Firstname",0,4,self.thisPatient.fName)
-
-        self.label_and_Text(patientFrame,"Middle Initial",0,8,"Init")
-
-        self.label_and_Text(patientFrame, "Prefix", 0, 12, "Ms.")
-
-        self.label_and_Text(patientFrame, "NickName", 0,16, "nick")
-
-        patientFrame.grid_columnconfigure(4, minsize=100)
-        patientFrame.grid_rowconfigure(2,minsize=25)
-
-
-        demoFrame = LabelFrame(self.demosPage,text="<Demographics>",width=500,height=65)
-        demoFrame.place(x=0,y=100)
-        demoFrame.grid_propagate(False)
-
-
-        self.label_and_Text(demoFrame, "Sex", 0, 0, "Female")
-        self.label_and_Text(demoFrame, "DOB", 0, 2, "2/20/2013")
-        self.label_and_Text(demoFrame, "Pref. Language", 0, 4, "English")
-        self.label_and_Text(demoFrame, "Race", 0, 6, "Caucasian")
-        self.label_and_Text(demoFrame, "Ethnicity", 0, 8, "White")
-        self.label_and_Text(demoFrame, "Age", 0, 10, "50")
-
-        demoFrame.grid_columnconfigure(4, minsize=100)
-        demoFrame.grid_rowconfigure(2, minsize=25)
-
-        addressFrame = LabelFrame(self.demosPage,text="<Address>",width=500,height=125)
-        addressFrame.place(x=0,y=175)
-        addressFrame.grid_propagate(False)
-
-        self.label_and_Text(addressFrame,"Street 1",0,0,"1234 random Street")
-        self.label_and_Text(addressFrame, "Street 2", 4, 0, "1234 random Street 2")
-        self.label_and_Text(addressFrame, "Zipcode", 0, 2, "00000")
-        self.label_and_Text(addressFrame, "City", 0, 3, "Pacific City")
-        self.label_and_Text(addressFrame, "State", 4, 2, "CA")
-        self.label_and_Text(addressFrame, "County", 4,3, "randomCounty")
-        self.label_and_Text(addressFrame, "Country", 0,4, "Some Country")
-
-        addressFrame.grid_columnconfigure(4, minsize=120)
-        addressFrame.grid_rowconfigure(2, minsize=25)
-
-        contactFrame = LabelFrame(self.demosPage,text="<Contact>",width=500,height=175)
-        contactFrame.place(x=0,y=300)
-        contactFrame.grid_propagate(False)
-
-        self.label_and_Text(contactFrame, "Phone", 0, 0, "123-456-789")
-        self.label_and_Text(contactFrame, "Mobile", 4, 0, "987-654-321")
-        self.label_and_Text(contactFrame, "Work Phone", 0, 2, "123-456-789")
-        self.label_and_Text(contactFrame, "Email", 0, 4, "r_Andom@u.pacific.edu")
-        self.label_and_Text(contactFrame, "Preferred Contact", 4,2 , "Mobile")
-
-        contactLabel = Label(contactFrame,text= "Contact Notes")
-        contactLabel.grid(row=4, column=4)
-
-        self.contactNotes = Text(contactFrame,width=30,height=3,padx=5)
-        self.contactNotes.place(x=230,y=100)
-        self.contactNotes.insert('end',"Notes about contacting this patient here")
-        self.contactNotes.configure(state=DISABLED)
-
-        contactFrame.grid_columnconfigure(4, minsize=100)
-        contactFrame.grid_rowconfigure(2, minsize=50)
-
-
-    def label_and_Text(self,frame,labelText,labelRow,labelCol,boxText):
-
-        lNameLabel = Label(frame, text='{0:<10}'.format(labelText))
-        lNameLabel.grid(row=labelRow, column=labelCol,padx=10)
-
-        patientLname = Text(frame, width=len(boxText), height=1,padx=5)
-        patientLname.insert('end', boxText)
-        patientLname.configure(state=DISABLED)
-        patientLname.grid(row=labelRow+2, column=labelCol)
-
-    def showService(self): # uses servicePage Canvas for display
-
-        formatString = '{0:<12}{1:<15}{2:<12}{3:<15}{4:<8}'.format("Service ID", "Immunization",
-                                                                   "Compliance", "Service Date", "Extra")
-
-        formatLabel = Label(self.servicePage, text=formatString, font=('Consolas', 11)
-                            , relief="raised",pady=10)
-        formatLabel.pack()
-
-        self.newFrame = Frame(self.servicePage, relief=GROOVE, bd=1)
-        self.newFrame.place(x=0, width=500, y=30, height=500)
-
-        self.canvas = Canvas(self.newFrame)
-        self.newnewFrame = Frame(self.canvas)
-        self.myScrollBar = Scrollbar(self.newFrame, orient="vertical", command=self.canvas.yview)
-        self.canvas.configure(yscrollcommand=self.myScrollBar.set)
-        self.myScrollBar.pack(side="right", fill="y")
-        self.canvas.pack(side="left")
-        self.canvas.create_window((0, 0), window=self.newnewFrame, anchor='nw')
-        self.newnewFrame.bind("<Configure>", self.scrollFunction)
-
-        # format Service ID, Immunization Name, Compliance, Service Date, Extra Tab?
-
-
-
-        for index in range(20):
-            patientINFO = ["E15" + str(index), "Immunization", "Yes", "1/1/2000", 2]
-            self.addToService(patientINFO,index)
-
-    def addToService(self,patientINFO,index):
-
-        patientINFO = self.formatService(patientINFO)
-
-        self.serviceHistory = [] # holds all service
-        button = Button(self.newnewFrame, text = patientINFO,anchor=W,justify=LEFT, width = 100, font=('Consolas', 11))
-        button.grid(row = index)
-        self.serviceHistory.append(button)
-
-
-    def formatService(self,patientService): # will format the buttons to be displayed in the service history
-
-        # format Service ID, Immunization Name, Compliance, Service Date, Extra Tab?
-        formatString = '{0:<12}{1:<15}{2:<12}{3:<15}{4:<8}'.format(patientService[0],patientService[1],patientService[2]
-                                                                   ,patientService[3],patientService[4])
-
-        return formatString
-
-    def scrollFunction(self,event): # this will scroll the service canvas
-
-        self.canvas.configure(scrollregion=self.canvas.bbox("all"), width=500,height=500)
-
-    def loadServiceHistory(self): # will load patient service history from the database
-                                  # I have a temp format here for now though
-
-        serviceID = 1
-        immunizations = ["Immunization 1", "Immunization 2"]
-        compliance = ["Yes", "No"]
-        ServiceDate = ["2/1/2013"]
-        Doses = [1,2]
-        patientService = [serviceID,immunizations[1], compliance[0],ServiceDate, Doses[0]]
-
-        self.formatService(patientService)
-
-    def loadService(self,patientINFO): # will diplay specific service in expansion window
-
-        if len(self.extensionFrame.winfo_children()) > 0: # checks if there is a prexisting service open
-            self.clearExtension() # clears
-
-        label = Label(self.extensionFrame,text = "Service #" + str(patientINFO[0]) ,font = ('consolas', 10)) # will display the specific service
-        label.place(x=0,y=0)
-
-
-
-
-    def showOutReach(self): # uses patient Canvas for display
-
-        contactFrame = LabelFrame(self.contactPage, text="<Contact>",width=500,height=120)
-        contactFrame.place(x=0, y=25)
-        contactFrame.grid_propagate(False)
-
-        self.label_and_Text(contactFrame, "Phone", 0, 0, "123-456-789")
-        self.label_and_Text(contactFrame, "Mobile", 4, 0, "987-654-321")
-        self.label_and_Text(contactFrame, "Work Phone", 0, 2, "123-456-789")
-        self.label_and_Text(contactFrame, "Email", 0, 4, "r_Andom@u.pacific.edu")
-        self.label_and_Text(contactFrame, "Preferred Contact", 4, 2, "Mobile")
-        self.label_and_Text(contactFrame, "Pref. Language", 4, 4, "English")
-
-
-        #contact notes and outreach notes
-        notesLabel = Label(self.contactPage,text="Contact Notes")
-        notesLabel.place(x=75,y=150)
-
-        contactNotes = Text(self.contactPage,width=30,height=4,padx=5)
-        contactNotes.place(x=0,y=175)
-        contactNotes.insert('end',"Notes about contacting this patient here")
-
-        outreachNotesLabel = Label(self.contactPage, text="Outreach Notes")
-        outreachNotesLabel.place(x=350, y=150)
-
-        self.outreachNotes = Text(self.contactPage, width=27, height=4,padx=5)
-        self.outreachNotes.place(x=275, y=175)
-        self.outreachNotes.insert('end',"Patient did not want an to schedule an appointment")
-
-        contactNotesButton = Button(self.contactPage,text="Submit Changes")
-        contactNotesButton.place(x=75,y=250)
-
-        outreachNotesButton = Button(self.contactPage,text="Submit Changes")
-        outreachNotesButton.place(x=350,y=250)
-
-
-        #contact Method Frame
-        contactMethodFrame = LabelFrame(self.contactPage, text="<Method of contact>",width=500,height=200)
-        contactMethodFrame.place(x=0,y=300)
-        contactMethodFrame.grid_propagate(False)
-
-        emailPatient = Button(contactMethodFrame,text="Email Patient",command=self.extensionEmail)
-        emailPatient.place(x=25,y=25)
-
-
-    def getPatientHistory(self):
-        pass
-
-    def getPatientDemographics(self): # need to load in Patient details
-        pass
-
-    def closeWindow(self,event):
-        self.root.destroy()
-
-    def extensionEmail(self,savedText=None): # will display extension for emailing patient
-
-        tempLabel = Button(self.extensionFrame,text="Close extension",command= self.clearExtension)
-        tempLabel.place(x=100,y=0)
-
-        displayLabel = Label(self.extensionFrame,text="To:" + self.patientFULL ,font = ('Consolas', 14),relief="groove")
-        displayLabel.place(x=0,y=30)
-
-        templateLabel = Label(self.extensionFrame,text="<Email Template>")
-        templateLabel.place(x=0,y=75)
-
-        self.emailText = Text(self.extensionFrame,width=24,height=15)
-        self.emailText.place(x=0,y=100)
-
-        buttonFrame = LabelFrame(self.extensionFrame,text="<Email Options>",width=200,height=150)
-        buttonFrame.place(x=0,y=350)
-
-        template1 = Button(buttonFrame,text="Load\n Template 1",command=lambda: self.loadTemplate(1))
-        template1.place(x=20,y=10)
-
-
-        template2 = Button(buttonFrame,text="Load\n Template 2",command=lambda: self.loadTemplate(2))
-        template2.place(x=100,y=10)
-
-        sendEmail = Button(buttonFrame,text="Send Email!",command=self.sendEmail)
-        sendEmail.place(x=20,y=75)
-
-        clearEmail = Button(buttonFrame,text="Clear Email",command=self.clearEmailEntry)
-        clearEmail.place(x=100,y=75)
-
-    def loadTemplate(self,version): # will load a email template file into extension before sending
-
-        if self.emailText:
-            self.clearEmailEntry()
-
-
-        Filename = "email_template_" + str(version) +".txt"
-
-        chosenFile = open(Filename)
-
-        text = chosenFile.readlines()
-        text[0] = "Dear " + self.patientFULL + ", \n" # insert patient name into email
-
-        fullText = ""
-
-        for line in text:
-            fullText += line
-
-        self.emailText.insert('end',fullText)
-
-    def sendEmail(self):
-        userChoice = messagebox.askyesno("Sending Email", "Send Email to " + self.patientFULL + "?")
-
-        length = len(self.emailText.get("1.0",END))
-
-        if userChoice and length != 1: # checks if user wants to send email and if email actually has text
-            #send email functionality here:
-
-            messagebox.showinfo("Sent!", "Email sent to " + self.patientFULL + "!")
-
-            self.clearEmailEntry() # clear the email screen
-            return
-
-        if length == 1:
-            messagebox.showinfo("Empty email","Please include the message you would like to send to " + self.patientFULL)
-            return
-
-
-    def clearEmailEntry(self): # clears the email text box
-        self.emailText.delete("1.0", END)
-
-    def clearExtension(self): # will clear the extension Frame
-
-        for widget in self.extensionFrame.winfo_children():
-            widget.destroy()
-
-
-#History of action classes
-
-class UserAction():
-    def __init__(self, actionType, data):
-        self.actionTime = str(datetime.datetime.now())
-        self.actionType = actionType
-        self.acionID = data[0]
-        self.data = data[1]
-
-class UserSession():
-    def __init__(self, userId, data):
-        self.userId = userId
-        if data == None:
-            self.sessionID = self.createUniqueSessionID()
-            self.UserLogin = str(datetime.datetime.now())
-            self.UserActionList = []
-            self.Userlogout = None
-        else:
-            self.sessionID = data[0]
-            self.UserLogin = data[1]
-            self.UserActionList = data[2]
-            self.Userlogout = data[3]
-
-    def createUniqueSessionID(self):
-        #To DO
-        return 12345
-
-    def addAction(self, action):
-        self.UserActionList.append(action)
-
-    def endSession(self):
-        self.Userlogout = str(datetime.datetime.now())
-
-
-class UserHistory():
-    def __init__(self, history):
-        self.UserSessions = history
-
-    def getSession(self, sessionID):
-        for session in self.UserSessions:
-            if session.sessionID == sessionID:
-                return session
-        return None
-
-    def addSession(self, session):
-        self.UserSessions.append(session)
-
-#History Classes End
-
-class User():
-    def __init__(self, data, isNewSession):
-        
-        self.userId = data[0]
-        self.userFirstName = data[1]
-        self.userLastName = data[2]
-        self.activeInt = data[3]
-        self.userType = data[4]
-        self.userEmail = data[5]
-        if isNewSession == 1:
-            self.currentUserSession = UserSession(self.userId, None)
-
-    def addAction(self, action):
-        self.currentUserSession.addAction(action)
-
-    def getHistoy(self):
-
-        #querry history
-        return UserHistory(None)
-
-    def endSession(self):
-        self.currentUserSession.endSession()
-
-        #send self.currentUserSession to database
-
-        return 1
-
-    def getHistory(self):
-        self.history = UserHistory(userId)
-        return
-
-class loginScreen(icaSCREENS):
-
-    def __init__(self, window, data):
-        super().__init__(window)
-        self.root.geometry("800x600")
-        global versionNumber
-        self.root.title("Immunization Compliance Application " + versionNumber)
-
-        self.background = Canvas(self.root,width=800,height=600)
-        self.background.place(x=0,y=0)
-
-        self.bindKey("<Return>",self.enterPress)
-        self.bindKey("<Escape>",self.escapePress)
-
-        self.loginBackGround = Canvas(self.root,width=500,height=250)
-        self.loginBackGround.place(x=150,y=275)
-
-        image = Image.open("sources/ica picture.PNG")
-        image = image.resize((700,200), Image.ANTIALIAS)
-        self.titleIMAGE = ImageTk.PhotoImage(image)
-
-        self.imageLABEL = Label(self.root,image=self.titleIMAGE)
-
-        self.imageLABEL.place(x=50,y=25)
-
-
-        self.userNameLabel = Label(self.root,text="Username: ",font=('Consolas', 16))
-        self.userNameLabel.place(x=200,y=300)
-
-        self.userNameEntry = Entry(self.root,width=25,font=(16))
-        self.userNameEntry.place(x=350,y=305)
-        self.userNameEntry.insert(0,"AUser")
-
-        self.passwordLabel = Label(self.root, text="Password: ", font=('Consolas', 16))
-        self.passwordLabel.place(x=200, y=350)
-       
-
-        self.passwordEntry = Entry(self.root, width=25, font=(16),show="*")
-        self.passwordEntry.place(x=350, y=355)
-        self.passwordEntry.insert(0,"Test1234#")
-
-        self.loginButton = Button(self.root,text="Login!",bg="light blue",fg="black",width=13,height=2,command=self.verifyUser)
-        self.loginButton.place(x=350,y=400)
-
-        self.cancelButton = Button(self.root,text="Cancel",bg="light blue",fg="black",width=13,height=2,command=self.exitICA)
-        self.cancelButton.place(x=475,y=400)
-
-        self.userNameLabel = Label(self.root,text=versionNumber[1:-1],font=('Consolas', 16))
-        self.userNameLabel.place(x=5,y=575)
-
-
-        # Account creation info
-        self.accountBUTTON = Button(self.root,text="Add Account",width=18,font=('Consolas', 16),bg="light blue",fg="black",command=self.createAccountScreen)
-        self.accountBUTTON.place(x=350,y=450)
-
-        self.newAccountEntries = {} # will contain the entry boxes/info for account creation
-
-        self.newWindow = None # holds popout window
-
-    def createAccountScreen(self): # Prompts user for account creation
-
-        if self.newWindow is not None: # prevent multiple instances of account creation
-
-            messagebox.showinfo("Already existing window", "Account creation page is already open")
-            return
-
-        self.newWindow = Toplevel()
-        self.newWindow.geometry("600x600")
-        self.newWindow.title("Account Creation")
-        self.newWindow.protocol("WM_DELETE_WINDOW", self.destroyPopOut)
-
-        background = Canvas(self.newWindow,bg='light blue',width=600,height=600)
-        background.pack()
-
-        forground = Canvas(background,width=400,height=400)
-        forground.place(x=100,y=50)
-
-        entryLabels = ["Firstname: ","Lastname: ","Email: ","Username: ","Password: ","Confirm Pass: "]
-        yLabel = 25
-
-
-        for label in entryLabels: # will fill the account creation screen with labels
-
-            newLabel = Label(forground,text=label,font=('Consolas', 14),width=15)
-            newLabel.place(x=25,y=yLabel)
-
-            if label == "Password: " or label == "Confirm Pass: ": # will hide password on respective entry
-                newEntry = Entry(forground, font=('Consolas', 14),show="*",width=20)
-                newEntry.place(x=175,y=yLabel)
-            else:
-                newEntry = Entry(forground, font=('Consolas', 14), width=20)
-                newEntry.place(x=175, y=yLabel)
-
-
-            self.newAccountEntries[label] = newEntry # add to the new account holder
-            yLabel += 50 # increment
-
-
-        #buttons for submitting data and canceling account creation
-        create = Button(forground,text="Create Account!",bg="light blue",fg="black",height=2,command = self.createAccount)
-        create.place(x=175,y=yLabel)
-
-
-        cancel = Button(forground,text="Cancel",width=10, height=2,bg="light blue",fg="black",command = self.newWindow.destroy)
-        cancel.place(x=300,y=yLabel)
-
-    def createAccount(self): # will obtain info from create Account screen and pass to admin queue
-
-        accountINFO = [] # list to be sent to admin queue
-
-        if self.newAccountEntries["Password: "].get() == self.newAccountEntries["Confirm Pass: "].get():
-
-            for info in self.newAccountEntries:
-
-                thisINFO = self.newAccountEntries[info].get()
-
-                if not thisINFO: # will determine if there is data in this entry
-
-                    messagebox.showwarning("Missing Field", "Missing field:\n" + info)
-                    return
-
-                accountINFO.append(thisINFO)
-
-            messagebox.showinfo("account sent", "Sent to admin for approval")
-            self.destroyPopOut()
-
-        else:
-            messagebox.showinfo("do not match", "passwords do not match")
-
-    def clearAccount(self): # clears entries for account creation on sent info
-
-        for entry in self.newAccountEntries:
-
-            self.newAccountEntries[entry].delete(0,'end')
-
-    def destroyPopOut(self): # helps manage only one window at a time
-
-        self.newWindow.destroy()
-        self.newWindow = None
-        self.newAccountEntries.clear()
-
-
-    def verifyUser(self):
-        name = self.userNameEntry.get()
-        passWord = self.passwordEntry.get()
-
-        #Would send Hash.main(name) to data base and recieve hashed pword from database
-        #check if Hash.main(passWord) == recieved hashed pword
-
-        #tempUserName = "f69ddcc92c44eb5a6320e241183ef551d9287d7fa6e4b2c77459145d8dd0bb37" # Test01
-
-        #tempPassWord = "b575f55adf6ed25767832bdf6fe6cbc4af4889938bf48ba99698ec683f9047de" # Test02
-
-        #tempUserName1 = "67ed235e1e075a7214902e1af0cb4bb4ad3ba0fcf084411418074cf4247004cc" # User01
-
-        #tempPassWord1 = "7bab9c019f082639a163c437288ed2fe6da3e08a447cf9b8487f7c3535613fda" # User02
-
-        loginUser = self.SQL.loginUser(Hash.main(name), Hash.main(passWord))
-        #print(loginUser.userType)
-        if not loginUser == None:
-    
-            messagebox.showinfo("Login Successful!", "Welcome back " + loginUser.userFirstName)#needs to be User first name
-            self.removeKeyBind("<Return>")
-
-            self.swapTO(mainMenu, loginUser)#needs to be user object
-
-        else:
-            messagebox.showerror("Login Unsuccessful", "Username or Password is invalid")
-            self.passwordEntry.delete(0,END) #remove password
-
-    def enterPress(self,event):
-        self.verifyUser()
-
-class Permissions():
-     def __init__(self, permissionList):
-        self.importData = permissionList[0]
-        self.exportData = permissionList[1]
-        self.viewHistoryOfSelf = permissionList[2]
-        self.viewHistoryOfEntireSystem = permissionList[3]
-        self.viewSelfAnalytics = permissionList[4]
-        self.viewSystemAnalytics = permissionList[5]
-        self.createAlerts = permissionList[6]
-        self.setPermissions = permissionList[7]
-        self.serachEntireDatabase = permissionList[8]
-        self.printFiles = permissionList[9]
-        self.outReach = permissionList[10]
-        self.approveUsers = permissionList[11]
-        self.numberOfPatientsOpen = permissionList[12]
-        self.goalNumberOfOutReaches = permissionList[13]
-        self.setSystemOptions = permissionList[14]
-        self.consoleCommands = permissionList[15]
-
-class UserAction():
-    def __init__(self, actionType, data):
-        self.actionTime = str(datetime.datetime.now())
-        self.actionType = actionType
-        self.acionID = data[0]
-        self.data = data[1]
-
-class UserSession():
-    def __init__(self, userId, data):
-        self.userId = userId
-        if data == None:
-            self.sessionID = self.createUniqueSessionID()
-            self.UserLogin = str(datetime.datetime.now())
-            self.UserActionList = []
-            self.Userlogout = None
-        else:
-            self.sessionID = data[0]
-            self.UserLogin = data[1]
-            self.UserActionList = data[2]
-            self.Userlogout = data[3]
-
-    def createUniqueSessionID(self):
-        #To DO
-        return 12345
-
-    def addAction(self, action):
-        self.UserActionList.append(action)
-
-    def endSession(self):
-        self.Userlogout = str(datetime.datetime.now())
-
-
-class UserHistory():
-    def __init__(self, history):
-        self.UserSessions = history
-
-    def getSession(self, sessionID):
-        for session in self.UserSessions:
-            if session.sessionID == sessionID:
-                return session
-        return None
-
-    def addSession(self, session):
-        self.UserSessions.append(session)
-
-#History Classes End
-
-class User():
-    def __init__(self, data, isNewSession):
-        
-        self.userId = data[0]
-        self.userFirstName = data[1]
-        self.userLastName = data[2]
-        self.activeUser = data[3]
-        self.userType = data[4]
-        if isNewSession == 1:
-            self.currentUserSession = UserSession(self.userId, None)
-        #Querry User Permissions Here
-        if self.userType == "Admin":
-            self.permissions = Permissions([1,1,1,1,1,1,1,1,1,1,1,1,10,100,1,1])
-        else:
-            self.permissions = Permissions([0,0,1,0,1,0,0,0,1,1,1,0,5,50,0,0])
-
-    def addAction(self, action):
-        self.currentUserSession.addAction(action)
-
-    def getHistoy(self):
-
-        #querry history
-        return UserHistory(None)
-
-    def endSession(self):
-        self.currentUserSession.endSession()
-
-        #send self.currentUserSession to database
-
-        return 1
-
-    def getHistory(self):
-        self.history = UserHistory(userId)
-        return
-
-def main(): # Main loop of ICA
-    window = Tk()
-    window.resizable(0, 0)
-    window.title(versionNumber)
-
-    #currentSCREEN = loginScreen(window, None)
-
-    #currentUser = User([0, "Jason", "Van Bladel", "Admin"], 1)
-    #currentSCREEN = mainMenu(window, currentUser)
-
-    #currentSCREEN = mainMenu(window, ["Jason Van Bladel"])
-    #currentUser = User([0, "Jason", "Van Bladel", "Admin"], 1)
-    #currentSCREEN = mainMenu(window, currentUser)
-
-    currentSCREEN = med_INFO_SCREEN(window,Patient(["John","Smith","20","2/3/2013","32","30"]))
-
-    window.mainloop()
-
-main()
+            self.swapTO(Login_Screen.loginScreen,None)

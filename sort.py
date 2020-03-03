@@ -1,9 +1,9 @@
 from numpy import sort
 
 import Patients
-attributes = 9
+attributes = 8
 sorted_by = [lambda x: x.fName, lambda x: x.lName, lambda x: int(x.score), lambda x: int(x.daysOverDue),
-            lambda x: int(x.MRN), lambda x: int(x.daysOverDue), lambda x: x.sex, lambda x: x.immunization,
+            lambda x: int(x.MRN), lambda x: x.sex, lambda x: x.immunization,
             lambda x: int(x.age)]
 def sortPatients(listOfPatients, fields, desc):
     '''
@@ -55,7 +55,7 @@ def lastName(listOfPatients):
     return sortedPatients"""
 
 
-f = open("UITestData.txt", "r")
+'''f = open("UITestData.txt", "r")
 pList = []
 for line in f:
     l = line.split()
@@ -64,4 +64,10 @@ f.close()
 # sorted = sortPatients(pList,1,True)
 print(lastName(pList))
 
+<<<<<<< HEAD
+s = quickSort(pList, 4)
+
+for i in range(len(pList)):
+    print(s[i].dueDate)
+'''
 
