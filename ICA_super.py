@@ -2,7 +2,7 @@ from tkinter import *
 from tkinter import messagebox
 from tkinter.ttk import Combobox
 
-versionNumber = "(Version 1.8.0)"
+versionNumber = "(Version 2.0.0)"
 
 class icaSCREENS():
     '''

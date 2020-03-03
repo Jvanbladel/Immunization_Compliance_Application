@@ -8,6 +8,7 @@ from Patients import *
 from Med_Info_Screen import *
 import Login_Screen
 import sort
+from Users import *
 
 class mainMenu(ICA_super.icaSCREENS):
 
