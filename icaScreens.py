@@ -1703,10 +1703,6 @@ class med_INFO_SCREEN(icaSCREENS):
         self.extensionFrame.place(x=600,y=100)
 
 
-
-
-
-
         self.showDemos()
         self.showService()
         self.showOutReach()
@@ -1779,15 +1775,11 @@ class med_INFO_SCREEN(icaSCREENS):
         self.contactNotes.insert('end',"Notes about contacting this patient here")
         self.contactNotes.configure(state=DISABLED)
 
-
         contactFrame.grid_columnconfigure(4, minsize=100)
         contactFrame.grid_rowconfigure(2, minsize=50)
 
 
     def label_and_Text(self,frame,labelText,labelRow,labelCol,boxText):
-        '''
-        Used to create format for demos page
-        '''
 
         lNameLabel = Label(frame, text='{0:<10}'.format(labelText))
         lNameLabel.grid(row=labelRow, column=labelCol,padx=10)
@@ -1796,7 +1788,6 @@ class med_INFO_SCREEN(icaSCREENS):
         patientLname.insert('end', boxText)
         patientLname.configure(state=DISABLED)
         patientLname.grid(row=labelRow+2, column=labelCol)
-
 
     def showService(self): # uses servicePage Canvas for display
 
@@ -1807,18 +1798,68 @@ class med_INFO_SCREEN(icaSCREENS):
                             , relief="raised",pady=10)
         formatLabel.pack()
 
+        self.newFrame = Frame(self.servicePage, relief=GROOVE, bd=1)
+        self.newFrame.place(x=0, width=500, y=30, height=500)
+
+        self.canvas = Canvas(self.newFrame)
+        self.newnewFrame = Frame(self.canvas)
+        self.myScrollBar = Scrollbar(self.newFrame, orient="vertical", command=self.canvas.yview)
+        self.canvas.configure(yscrollcommand=self.myScrollBar.set)
+        self.myScrollBar.pack(side="right", fill="y")
+        self.canvas.pack(side="left")
+        self.canvas.create_window((0, 0), window=self.newnewFrame, anchor='nw')
+        self.newnewFrame.bind("<Configure>", self.scrollFunction)
+
+        # format Service ID, Immunization Name, Compliance, Service Date, Extra Tab?
+
+
+
+        for index in range(20):
+            patientINFO = ["E15" + str(index), "Immunization", "Yes", "1/1/2000", 2]
+            self.addToService(patientINFO,index)
+
+    def addToService(self,patientINFO,index):
+
+        patientINFO = self.formatService(patientINFO)
+
+        self.serviceHistory = [] # holds all service
+        button = Button(self.newnewFrame, text = patientINFO,anchor=W,justify=LEFT, width = 100, font=('Consolas', 11))
+        button.grid(row = index)
+        self.serviceHistory.append(button)
 
 
     def formatService(self,patientService): # will format the buttons to be displayed in the service history
 
-
         # format Service ID, Immunization Name, Compliance, Service Date, Extra Tab?
-        formatString = '{0:<12}{1:<15}{2:<12}{3:<15}{4:<8}'.format()
+        formatString = '{0:<12}{1:<15}{2:<12}{3:<15}{4:<8}'.format(patientService[0],patientService[1],patientService[2]
+                                                                   ,patientService[3],patientService[4])
 
+        return formatString
 
-    def loadServiceHistory(self):
+    def scrollFunction(self,event): # this will scroll the service canvas
 
-        pass
+        self.canvas.configure(scrollregion=self.canvas.bbox("all"), width=500,height=500)
+
+    def loadServiceHistory(self): # will load patient service history from the database
+                                  # I have a temp format here for now though
+
+        serviceID = 1
+        immunizations = ["Immunization 1", "Immunization 2"]
+        compliance = ["Yes", "No"]
+        ServiceDate = ["2/1/2013"]
+        Doses = [1,2]
+        patientService = [serviceID,immunizations[1], compliance[0],ServiceDate, Doses[0]]
+
+        self.formatService(patientService)
+
+    def loadService(self,patientINFO): # will diplay specific service in expansion window
+
+        if len(self.extensionFrame.winfo_children()) > 0: # checks if there is a prexisting service open
+            self.clearExtension() # clears
+
+        label = Label(self.extensionFrame,text = "Service #" + str(patientINFO[0]) ,font = ('consolas', 10)) # will display the specific service
+        label.place(x=0,y=0)
+
 
 
 
@@ -1831,9 +1872,9 @@ class med_INFO_SCREEN(icaSCREENS):
         self.label_and_Text(contactFrame, "Phone", 0, 0, "123-456-789")
         self.label_and_Text(contactFrame, "Mobile", 4, 0, "987-654-321")
         self.label_and_Text(contactFrame, "Work Phone", 0, 2, "123-456-789")
-        self.label_and_Text(contactFrame, "Email", 0, 5, "r_Andom@u.pacific.edu")
+        self.label_and_Text(contactFrame, "Email", 0, 4, "r_Andom@u.pacific.edu")
         self.label_and_Text(contactFrame, "Preferred Contact", 4, 2, "Mobile")
-        self.label_and_Text(contactFrame, "Pref. Language", 4, 6, "English")
+        self.label_and_Text(contactFrame, "Pref. Language", 4, 4, "English")
 
 
         #contact notes and outreach notes
@@ -1867,7 +1908,6 @@ class med_INFO_SCREEN(icaSCREENS):
         emailPatient.place(x=25,y=25)
 
 
-
     def getPatientHistory(self):
         pass
 
@@ -1877,14 +1917,7 @@ class med_INFO_SCREEN(icaSCREENS):
     def closeWindow(self,event):
         self.root.destroy()
 
-
     def extensionEmail(self,savedText=None): # will display extension for emailing patient
-        '''
-        Things still need to implemented:
-        minimize/saving
-        close button
-        loading in templates
-        '''
 
         tempLabel = Button(self.extensionFrame,text="Close extension",command= self.clearExtension)
         tempLabel.place(x=100,y=0)
@@ -2093,7 +2126,7 @@ class loginScreen(icaSCREENS):
 
 
         # Account creation info
-        self.accountBUTTON = Button(self.root,text="Add Account",width=18,font=('Consolas', 16),bg="hot pink",command=self.createAccountScreen)
+        self.accountBUTTON = Button(self.root,text="Add Account",width=18,font=('Consolas', 16),bg="light blue",fg="black",command=self.createAccountScreen)
         self.accountBUTTON.place(x=350,y=450)
 
         self.newAccountEntries = {} # will contain the entry boxes/info for account creation
@@ -2110,6 +2143,7 @@ class loginScreen(icaSCREENS):
         self.newWindow = Toplevel()
         self.newWindow.geometry("600x600")
         self.newWindow.title("Account Creation")
+        self.newWindow.protocol("WM_DELETE_WINDOW", self.destroyPopOut)
 
         background = Canvas(self.newWindow,bg='light blue',width=600,height=600)
         background.pack()
@@ -2139,11 +2173,11 @@ class loginScreen(icaSCREENS):
 
 
         #buttons for submitting data and canceling account creation
-        create = Button(forground,text="Create Account!",height=2,command = self.createAccount)
+        create = Button(forground,text="Create Account!",bg="light blue",fg="black",height=2,command = self.createAccount)
         create.place(x=175,y=yLabel)
 
 
-        cancel = Button(forground,text="Cancel",width=10, height=2,command = self.newWindow.destroy)
+        cancel = Button(forground,text="Cancel",width=10, height=2,bg="light blue",fg="black",command = self.newWindow.destroy)
         cancel.place(x=300,y=yLabel)
 
     def createAccount(self): # will obtain info from create Account screen and pass to admin queue
@@ -2319,7 +2353,7 @@ def main(): # Main loop of ICA
     window.resizable(0, 0)
     window.title(versionNumber)
 
-    currentSCREEN = loginScreen(window, None)
+    #currentSCREEN = loginScreen(window, None)
 
     #currentUser = User([0, "Jason", "Van Bladel", "Admin"], 1)
     #currentSCREEN = mainMenu(window, currentUser)
@@ -2328,7 +2362,7 @@ def main(): # Main loop of ICA
     #currentUser = User([0, "Jason", "Van Bladel", "Admin"], 1)
     #currentSCREEN = mainMenu(window, currentUser)
 
-    #currentSCREEN = med_INFO_SCREEN(window,Patient(["John","Smith","20","2/3/2013","32","30"]))
+    currentSCREEN = med_INFO_SCREEN(window,Patient(["John","Smith","20","2/3/2013","32","30"]))
 
     window.mainloop()
 
