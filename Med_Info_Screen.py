@@ -171,14 +171,17 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         patientLname.configure(state=DISABLED)
         patientLname.grid(row=labelRow+2, column=labelCol)
 
-    def showService(self): # uses servicePage Canvas for display
-
+    def putFormat(self):
         formatString = '{0:<12}{1:<15}{2:<12}{3:<15}{4:<8}'.format("Service ID", "Immunization",
                                                                    "Compliance", "Service Date", "Doses")
 
-        formatLabel = Label(self.servicePage, text=formatString, font=('Consolas', 11)
-                            , relief="raised",pady=10)
-        formatLabel.pack()
+        self.formatLabel = Label(self.servicePage, text=formatString, font=('Consolas', 11)
+                            , relief="raised", pady=10)
+        self.formatLabel.pack()
+
+    def showService(self): # uses servicePage Canvas for display
+
+        self.putFormat()
 
         self.newFrame = Frame(self.servicePage, relief=GROOVE, bd=1)
         self.newFrame.place(x=0, width=500, y=30, height=450)
@@ -198,12 +201,13 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         choice = ["Yes","No"]
 
 
-        self.obtainService()
+        self.displayServiceHistory()
 
-    def obtainService(self): # will create a list of buttons that hold links to service info
+    def displayServiceHistory(self): # will create a list of buttons that hold links to service info
 
 
-        for index in range(20): # adds to the service history listings
+
+        for index in range(30): # This is where we would queue the database for information. Probably modify to only do once
             serviceID = "E15" + str(index)
             patientINFO = [serviceID, "Immunization", "Yes", "1/1/2000", 2]
             buttonINFO = self.formatService(patientINFO)
@@ -227,8 +231,9 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         self.canvas.configure(scrollregion=self.canvas.bbox("all"), width=500,height=500)
 
 
-    def hideServiceHistory(self):
+    def hideServiceHistory(self): # will hide the previous screen to allow for more info to be displayed
 
+        #self.formatLabel.config(text="") # clear the label
         for widget in self.newnewFrame.winfo_children():
             widget.destroy()
 
@@ -269,10 +274,53 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         '''
 
         self.hideServiceHistory()
-        print("Done")
 
-        testButton = Button(self.newnewFrame,text = "return", command = self.obtainService)
-        testButton.place(x=100,y=100)
+        testButton = Button(self.newnewFrame,text = "return",font =('consolas',14), command = self.displayServiceHistory)
+        testButton.place(x=0,y=0)
+
+
+        generalFont = ('consolas',11)
+
+        theFrame = self.newnewFrame
+        serviceDate = Label(theFrame,text = "Date of Service",font = generalFont)
+        serviceDate.place(x=50,y=50)
+
+
+        immunizationIDLabel = Label(theFrame,text = "ImmunizationID",font = generalFont)
+        immunizationIDLabel.place(x=300,y=50)
+
+        immunizationIDButton = Button(theFrame,text = "Expand Immunization",command = self.extensionImmunization)
+        immunizationIDButton.place(x=300,y=75)
+
+
+        completionStatusLabel = Label(theFrame,text = "Completion Status", font = generalFont)
+        completionStatusLabel.place(x = 50, y = 150)
+
+
+        allergicReactionLabel = Label(theFrame,text = "Allergic Reactions", font = generalFont)
+        allergicReactionLabel.place(x = 300, y = 150)
+
+
+        informationSourceLabel = Label(theFrame,text= "Information Source", font = generalFont)
+        informationSourceLabel.place(x=50, y = 300)
+
+
+        sourceSystemLabel = Label(theFrame,text = "Source System",font = generalFont)
+        sourceSystemLabel.place(x=300,y=300)
+
+        createDateLabel =Label(theFrame,text = "Created Date", font = generalFont)
+        createDateLabel.place(x=500,y=150)
+
+
+
+    def extensionImmunization(self): # pass detailed immunization information here and place on extension window
+
+        self.checkExtension()
+
+        immunizationID = "A150" # would pass this into this function
+        immunizationIDLabel = Label(self.extensionFrame,text = "Immunization ID: " + immunizationID)
+        immunizationIDLabel.place(x=0,y=0)
+
 
     def showOutReach(self): # uses patient Canvas for display
 
