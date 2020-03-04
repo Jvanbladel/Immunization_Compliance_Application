@@ -995,11 +995,13 @@ class mainMenu(ICA_super.icaSCREENS):
                 self.permissions.place(x=self.adminTABX,y=currentY,height=30,width=125)
                 currentY = currentY + 30
 
+            print(self.user.permissions.setSystemOptions)
             if self.user.permissions.setSystemOptions == 1:
                 self.systemOptions = Button(self.root, text = "System Manager", justify = LEFT, anchor=W)
                 self.systemOptions.place(x=self.adminTABX,y=currentY,height=30,width=125)
                 currentY = currentY + 30
 
+            print(self.user.permissions.consoleCommands)
             if self.user.permissions.consoleCommands == 1:
                 self.systemConsole = Button(self.root, text = "Console", justify = LEFT, anchor=W, command=lambda: self.showConsole())
                 self.systemConsole.place(x=self.adminTABX,y=currentY,height=30,width=125)

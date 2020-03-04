@@ -39,15 +39,23 @@ class Patient():
         # adding a comment so I can push this file.
 
     def getFullSummary(self):
+
+        #demographics object
         return None
 
     def getFullHistory(self):
+
+        #service list
         return None
 
     def getFullContact(self):
+
+        #contact object
         return None
 
     def getFullInsurance(self):
+
+        #insurence object
         return None
 
     def getGarentor(self):
