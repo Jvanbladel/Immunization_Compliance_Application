@@ -1,6 +1,6 @@
 import pyodbc
 import pandas as pd
-from Patients import *
+import Patients 
 import Users
 
 
@@ -28,7 +28,7 @@ class SQLConnection():
         values = list([data[0][1],data[0][5], data[0][6], data[0][2], data[0][3], data[0][4]])
         #print(values)
         if data[0][0] == password:
-            return Users.User(values, 1)
+            return Users.User(values, 1, self)
         else:
             return None
     def loadQuerry(self, fileName):
@@ -37,3 +37,52 @@ class SQLConnection():
         for line in fp:
             output = output + line
         return output
+
+    def getDefaultWorkQueue(self):
+        sql = self.loadQuerry("default_work_queue")
+        
+        #print(sql)
+        data = pd.read_sql(sql, self.conn)
+        if data.empty:
+            #print("Empty Data")
+            return
+        data = data.values.tolist()
+        plist = []
+
+        for p in data:
+            #print(p)
+            plist.append(Patients.Patient(p))
+            
+        return plist
+
+    def getAllPermissions(self):
+        sql = self.loadQuerry("get_all_permissions")
+
+        data = pd.read_sql(sql, self.conn)
+        if data.empty:
+            #print("Empty Data")
+            return
+        data = data.values.tolist()
+        permissionsList = []
+
+        for p in data:
+            permissionsList.append(Users.Permissions(p))
+    
+        return permissionsList
+
+    def getPermission(self, userType):
+        sql = self.loadQuerry("get_permission")
+
+        data = pd.read_sql(sql, self.conn,params={userType})
+        if data.empty:
+            #print("Empty Data")
+            return
+        data = data.values.tolist()
+        output = Users.Permissions(data[0])
+        return output
+    
+def main():
+    SQL = SQLConnection()
+    SQL.getPermission("Admin")
+if __name__ == "__main__":
+    main()

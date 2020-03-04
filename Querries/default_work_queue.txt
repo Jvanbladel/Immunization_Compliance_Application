@@ -1,0 +1,31 @@
+Select Top 100
+p.PatientId,
+p.PatientMRN,
+p.PatientLastName,
+p.PatientFirstName,
+p.PatientMiddleInitial,
+p.PatientDateOfBirth,
+p.PatientGender,
+p.DeceasedStatus,
+Convert(VARCHAR(10),DateAdd(year, 1, Max(s.DateofService)),101) As DueDate,
+DateDiff(day, Max(s.DateofService), GetDate()) - 365 As Daysoverdue,
+p.PatientRace,
+p.PatientEthnicity,
+datediff(year, max(p.PatientDateOfBirth), getdate()) As Age
+From
+Patient p Left Outer Join
+ServiceDetails s On p.PatientId = s.PatientId
+Group By
+p.PatientId,
+p.PatientMRN,
+p.PatientLastName,
+p.PatientFirstName,
+p.PatientMiddleInitial,
+p.PatientDateOfBirth,
+p.PatientGender,
+p.DeceasedStatus,
+p.PatientRace,
+p.PatientEthnicity,
+p.PreferredLanguage
+Order By
+Daysoverdue Desc
