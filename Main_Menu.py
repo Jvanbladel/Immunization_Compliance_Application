@@ -1139,12 +1139,12 @@ class mainMenu(ICA_super.icaSCREENS):
 
     #To do Querry
     def getPermissions(self):
-        return [["Admin","User with unlimited permissions", Permissions([1,1,1,1,1,1,1,1,1,1,1,1,10,100,1,1])], ["User","Basic user of the program.", Permissions([0,0,1,0,1,0,0,0,1,1,1,0,5,50,0,0])]]
+        return self.SQL.getAllPermissions()
 
     def addPermissions(self, frame, permissionList):
         self.currentEditingPermission = None
         for i in range(len(permissionList)):
-            pstr = '{0:<15} {1:<35}'.format(permissionList[i][0], permissionList[i][1])
+            pstr = '{0:<15} {1:<35}'.format(permissionList[i].name, permissionList[i].description)
             b = Button(frame, text = pstr,anchor=W, justify=LEFT, width = 55, font = ('Consolas', 10))
             b.grid(row=i)
             self.permissionButtonList.append(b)

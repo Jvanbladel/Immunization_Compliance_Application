@@ -1,23 +1,26 @@
 import datetime
+import SQLConnection
 
 class Permissions():
      def __init__(self, permissionList):
-        self.importData = permissionList[0]
-        self.exportData = permissionList[1]
-        self.viewHistoryOfSelf = permissionList[2]
-        self.viewHistoryOfEntireSystem = permissionList[3]
-        self.viewSelfAnalytics = permissionList[4]
-        self.viewSystemAnalytics = permissionList[5]
-        self.createAlerts = permissionList[6]
-        self.setPermissions = permissionList[7]
-        self.serachEntireDatabase = permissionList[8]
-        self.printFiles = permissionList[9]
-        self.outReach = permissionList[10]
-        self.approveUsers = permissionList[11]
-        self.numberOfPatientsOpen = permissionList[12]
-        self.goalNumberOfOutReaches = permissionList[13]
-        self.setSystemOptions = permissionList[14]
-        self.consoleCommands = permissionList[15]
+        self.name = permissionList[0]
+        self.description = permissionList[1]
+        self.importData = permissionList[2]
+        self.exportData = permissionList[3]
+        self.viewHistoryOfSelf = permissionList[4]
+        self.viewHistoryOfEntireSystem = permissionList[5]
+        self.viewSelfAnalytics = permissionList[6]
+        self.viewSystemAnalytics = permissionList[7]
+        self.createAlerts = permissionList[8]
+        self.setPermissions = permissionList[9]
+        self.serachEntireDatabase = permissionList[10]
+        self.printFiles = permissionList[11]
+        self.outReach = permissionList[12]
+        self.approveUsers = permissionList[13]
+        self.numberOfPatientsOpen = permissionList[14]
+        self.goalNumberOfOutReaches = permissionList[15]
+        self.setSystemOptions = permissionList[16]
+        self.consoleCommands = permissionList[17]
 
 class UserAction():
     def __init__(self, actionType, data):
@@ -67,7 +70,7 @@ class UserHistory():
 #History Classes End
 
 class User():
-    def __init__(self, data, isNewSession):
+    def __init__(self, data, isNewSession, SQL):
         
         self.userId = data[0]
         self.userFirstName = data[1]
@@ -77,10 +80,7 @@ class User():
         if isNewSession == 1:
             self.currentUserSession = UserSession(self.userId, None)
         #Querry User Permissions Here
-        if self.userType == "Admin":
-            self.permissions = Permissions([1,1,1,1,1,1,1,1,1,1,1,1,10,100,1,1])
-        else:
-            self.permissions = Permissions([0,0,1,0,1,0,0,0,1,1,1,0,5,50,0,0])
+        self.permissions = SQL.getPermission(self.userType)
 
     def addAction(self, action):
         self.currentUserSession.addAction(action)

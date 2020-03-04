@@ -1,0 +1,6 @@
+Select
+Permissions.*
+From
+Permissions
+Where
+Permissions.Role = ?
