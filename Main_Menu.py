@@ -699,6 +699,7 @@ class mainMenu(ICA_super.icaSCREENS):
             self.filter = 0
 
 
+
     def determineFilter(self,filter): # determines if filter is Ascending or descending
 
         if filter.get() == "Ascending":
@@ -706,7 +707,7 @@ class mainMenu(ICA_super.icaSCREENS):
             return True
 
         return False
-        
+
     def filterQueue(self):
         if self.filterVar1.get():
             #First Name
@@ -725,7 +726,7 @@ class mainMenu(ICA_super.icaSCREENS):
             else:
                 newlist = sort.sortPatients(self.queue, 2, True)
                 self.updateQueue(newlist)
-                
+
         elif self.filterVar3.get():
             #Days Overdue
             if self.determineFilter(self.OverdueFilterCombo):
@@ -734,7 +735,7 @@ class mainMenu(ICA_super.icaSCREENS):
             else:
                 newlist = sort.sortPatients(self.queue, 4, True)
                 self.updateQueue(newlist)
-                
+
         elif self.filterVar4.get():
             #Sex
              if self.determineFilter(self.SexFilterCombo):
@@ -759,8 +760,8 @@ class mainMenu(ICA_super.icaSCREENS):
             else:
                 newlist = sort.sortPatients(self.queue, 8, True)
                 self.updateQueue(newlist)
-        
-    
+
+
         print()
 
 
@@ -1201,7 +1202,7 @@ class mainMenu(ICA_super.icaSCREENS):
             b.destroy()
         self.addToQueue(self.frame, newPatientList)
         self.queue = newPatientList
-        
+
 
     def addToQueue(self, frame, patientList):
         self.bList = []

@@ -27,7 +27,7 @@ def main(): # Main loop of ICA
     #currentUser = User([0, "Jason", "Van Bladel", "Admin"], 1)
     #currentSCREEN = mainMenu(window, currentUser)
 
-    #currentSCREEN = med_INFO_SCREEN(window,Patient(["John","Smith","20","2/3/2013","32","30"]))
+    #currentSCREEN = Med_Info_Screen.med_INFO_SCREEN(window,Patient(["John","Smith","20","2/3/2013","32","30"]),SQL)
 
     window.mainloop()
 
