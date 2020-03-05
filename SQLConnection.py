@@ -89,7 +89,10 @@ class SQLConnection():
         if data.empty:
             # print("Empty Data")
             return
-        return data
+        plist = []
+        for rows in data:
+            plist.append(Patients.Patient(rows))
+        return plist
 
 def main():
     SQL = SQLConnection()
