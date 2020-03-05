@@ -1,0 +1,3 @@
+UPDATE Permissions
+SET Permissions.Role = ?, Permissions.Decription = ?, Permissions.ImportData = ?, Permissions.ExportData = ?, Permissions.PersonalHistory = ?, Permissions.SystemHistory = ?, Permissions.PersonalAnalytics = ?, Permissions.SystemAnalytics = ?, Permissions.CreateAlerts = ?, Permissions.SetPermissions = ?, Permissions.SearchPatientDatabase = ?, Permissions.PrintFiles = ?, Permissions.Outreach = ?, Permissions.ApproveUsers = ?, Permissions.SystemSettings = ?, Permissions.ConsoleCommands = ?, Permissions.OpenPatients = ?, Permissions.GoalOutreaches = ?
+WHERE Permissions.Role = ?;

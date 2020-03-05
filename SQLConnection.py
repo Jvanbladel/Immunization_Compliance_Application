@@ -82,6 +82,40 @@ class SQLConnection():
         output = Users.Permissions(data[0])
         return output
 
+    def deletePermission(self, role):
+        sql = self.loadQuerry("permissions/delete_permission")
+
+        self.conn.execute(sql, (role))
+        self.conn.commit()
+
+    def addPermission(self, permission):
+        sql = self.loadQuerry("permissions/add_permission")
+
+        params=(permission.name,
+                permission.description,
+                permission.importData,
+                permission.exportData,
+                permission.viewHistoryOfSelf,
+                permission.viewHistoryOfEntireSystem,
+                permission.viewSelfAnalytics,
+                permission.viewSystemAnalytics,
+                permission.createAlerts,
+                permission.setPermissions,
+                permission.serachEntireDatabase,
+                permission.printFiles,
+                permission.outReach,
+                permission.approveUsers,
+                permission.setSystemOptions,
+                permission.consoleCommands,
+                permission.numberOfPatientsOpen,
+                permission.goalNumberOfOutReaches)
+
+        self.conn.execute(sql,params)
+        self.conn.commit()
+
+
+
+
     def fuzzySearch(self, table, field, input_str):
         sql = query_generator.fuzzySearch_sql(table, field, input_str)
         # print(sql)
@@ -96,6 +130,8 @@ class SQLConnection():
 
 def main():
     SQL = SQLConnection()
-    SQL.getPermission("Admin")
+    SQL.addPermission(Users.Permissions(["Hi", "decr", 1,1,1,1,1,1,1,1,1,1,1,1,1,1, 7, 10]))
+    #SQL.deletePermission("Test")
+    SQL.closeConnection()
 if __name__ == "__main__":
     main()

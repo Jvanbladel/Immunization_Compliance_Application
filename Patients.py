@@ -15,8 +15,24 @@ class Insurence():
 
 class Contact():
     def __init__(self, data):
-        pass
+        self.preferedLanguage = data[0]
+        self.preferedContact = data[1]
 
+    def getAdress(self):
+        pass
+        
+class Adress():
+    def __init__(self, data):
+        self.street = data[0]
+        self.street2 = data[1]
+        self.city = data[2]
+        self.state = data[3]
+        self.zipcode = data[4]
+        self.county = data[5]
+        self.country = data[6]
+        self.addressType = data[7]
+        self.badAddressIndicator = data[8]
+        
 
 
 class Patient():
