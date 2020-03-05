@@ -56,7 +56,7 @@ class SQLConnection():
         return plist
 
     def getAllPermissions(self):
-        sql = self.loadQuerry("get_all_permissions")
+        sql = self.loadQuerry("permissions/get_all_permissions")
 
         data = pd.read_sql(sql, self.conn)
         if data.empty:
@@ -71,7 +71,7 @@ class SQLConnection():
         return permissionsList
 
     def getPermission(self, userType):
-        sql = self.loadQuerry("get_permission")
+        sql = self.loadQuerry("permissions/get_permission")
 
         data = pd.read_sql(sql, self.conn,params={userType})
         if data.empty:
@@ -80,9 +80,44 @@ class SQLConnection():
         data = data.values.tolist()
         output = Users.Permissions(data[0])
         return output
+
+    def deletePermission(self, role):
+        sql = self.loadQuerry("permissions/delete_permission")
+
+        self.conn.execute(sql, (role))
+        self.conn.commit()
+
+    def addPermission(self, permission):
+        sql = self.loadQuerry("permissions/add_permission")
+
+        params=(permission.name,
+                permission.description,
+                permission.importData,
+                permission.exportData,
+                permission.viewHistoryOfSelf,
+                permission.viewHistoryOfEntireSystem,
+                permission.viewSelfAnalytics,
+                permission.viewSystemAnalytics,
+                permission.createAlerts,
+                permission.setPermissions,
+                permission.serachEntireDatabase,
+                permission.printFiles,
+                permission.outReach,
+                permission.approveUsers,
+                permission.setSystemOptions,
+                permission.consoleCommands,
+                permission.numberOfPatientsOpen,
+                permission.goalNumberOfOutReaches)
+        
+        self.conn.execute(sql,params)
+        self.conn.commit()
+        
+        
     
 def main():
     SQL = SQLConnection()
-    SQL.getPermission("Admin")
+    SQL.addPermission(Users.Permissions(["Hi", "decr", 1,1,1,1,1,1,1,1,1,1,1,1,1,1, 7, 10]))
+    #SQL.deletePermission("Test")
+    SQL.closeConnection()
 if __name__ == "__main__":
     main()
