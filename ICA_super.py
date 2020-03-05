@@ -1,6 +1,9 @@
 from tkinter import *
 from tkinter import messagebox
 from tkinter.ttk import Combobox
+from datetime import datetime
+from time import sleep
+import SQLConnection
 
 versionNumber = "(Version 2.1.1)"
 
@@ -10,14 +13,18 @@ class icaSCREENS():
     clear the screen, and swap to other screens.
     '''
     screenSTACK = []
-    def __init__(self,window, SQL): #all screens must contain the root window
+    def __init__(self,window): #all screens must contain the root window
         global versionNumber
         self.versionNumber = versionNumber
         self.root = window
         self.root.protocol("WM_DELETE_WINDOW", self.exitICA)
         # insert as "<KEYTYPE>",functionCall.
         self.keyBinds = {}
-        self.SQL = SQL
+        self.SQL = None
+
+        self.clockConnectionVar = None
+
+        self.clockConnection()
         
 
     def clearSCREEN(self):
@@ -27,7 +34,7 @@ class icaSCREENS():
 
     def swapTO(self,newSCREEN, data): #pass the class of the screen you want to go to along with the window
         self.clearSCREEN()
-        newSCREEN(self.root, data, self.SQL)
+        newSCREEN(self.root, data)
 
     def bindKey(self,key,functionCall): # pass a key you want to bind and the function it should call
 
@@ -54,3 +61,10 @@ class icaSCREENS():
 
     def escapePress(self,event):
         self.exitICA()
+
+    def clockConnection(self):
+        if not self.SQL == None:
+            self.SQL.closeConnection()
+        self.SQL = SQLConnection.SQLConnection()
+        self.clockConnectionVar = self.root.after(15*60*1000, self.clockConnection)
+    

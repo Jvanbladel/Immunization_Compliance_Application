@@ -1,5 +1,23 @@
-from DemoGraphics import *
 import SQLConnection
+
+
+class Demographics():
+    def __init__(self, data):
+        pass
+
+class Garantor():
+    def __init__(self, data):
+        pass
+
+class Insurence():
+    def __init__(self, data):
+        pass
+
+class Contact():
+    def __init__(self, data):
+        pass
+
+
 
 class Patient():
     def __init__(self, data):

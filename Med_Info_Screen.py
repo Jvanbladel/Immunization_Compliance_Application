@@ -9,8 +9,8 @@ import ICA_super
 class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
 
-    def __init__(self, window, Patient,SQL):
-        super().__init__(window,SQL)
+    def __init__(self, window, Patient):
+        super().__init__(window)
         self.root.geometry("800x600")
         self.bindKey("<Escape>",self.closeWindow)
 

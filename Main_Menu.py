@@ -12,9 +12,9 @@ from Users import *
 
 class mainMenu(ICA_super.icaSCREENS):
 
-    def __init__(self,window, user, SQL):
+    def __init__(self,window, user):
         self.user = user
-        super().__init__(window,SQL)
+        super().__init__(window)
         #setUpWindow
         self.root.geometry("800x600")
         menu = Menu(self.root)
@@ -1288,7 +1288,7 @@ class mainMenu(ICA_super.icaSCREENS):
 
         newWindow = Toplevel()
         newWindow.title("Patient Details MRN: " + patient.MRN)
-        patientInfo = med_INFO_SCREEN(newWindow,patient, self.SQL)
+        patientInfo = med_INFO_SCREEN(newWindow,patient)
         self.currentPopOut += 1
 
         #closeButton = Button(newWindow,text="Go Back",command= lambda:self.destroyPopOut(newWindow))

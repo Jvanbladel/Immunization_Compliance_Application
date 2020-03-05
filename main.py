@@ -17,8 +17,7 @@ def main(): # Main loop of ICA
     window.resizable(0, 0)
     window.title()
 
-    SQL = SQLConnection.SQLConnection()
-    currentSCREEN = Login_Screen.loginScreen(window, None, SQL)
+    currentSCREEN = Login_Screen.loginScreen(window, None)
 
     #currentUser = User([0, "Jason", "Van Bladel", "Admin"], 1)
     #currentSCREEN = mainMenu(window, currentUser)

@@ -10,8 +10,8 @@ from Main_Menu import *
 
 class loginScreen(icaSCREENS):
 
-    def __init__(self, window, data,SQL):
-        super().__init__(window,SQL)
+    def __init__(self, window, data):
+        super().__init__(window)
         self.root.geometry("800x600")
         global versionNumber
         self.root.title("Immunization Compliance Application " + versionNumber)
