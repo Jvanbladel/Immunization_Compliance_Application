@@ -2,6 +2,7 @@ import pyodbc
 import pandas as pd
 import Patients 
 import Users
+import query_generator
 
 
 
@@ -80,7 +81,16 @@ class SQLConnection():
         data = data.values.tolist()
         output = Users.Permissions(data[0])
         return output
-    
+
+    def fuzzySearch(self, table, field, input_str):
+        sql = query_generator.fuzzySearch_sql(table, field, input_str)
+        # print(sql)
+        data = pd.read_sql(sql, self.conn, params={table, field, input_str})
+        if data.empty:
+            # print("Empty Data")
+            return
+        return data
+
 def main():
     SQL = SQLConnection()
     SQL.getPermission("Admin")
