@@ -21,7 +21,7 @@ class Contact():
     def getAdress(self):
         pass
         
-class Adress():
+class Address():
     def __init__(self, data):
         self.street = data[0]
         self.street2 = data[1]
@@ -59,8 +59,8 @@ class Patient():
 
     # adding a comment so I can push this file.
 
-    def getDemographics(self):
-        pass
+    def getDemographics(self, sql):
+        SQL.get
     def getSummary(self):
         return [self.fName, self.lName, self.mInitial ,self.dob, self.sex, self.age, self.race, self.prefix]
 
