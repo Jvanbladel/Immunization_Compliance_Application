@@ -1336,7 +1336,6 @@ class mainMenu(ICA_super.icaSCREENS):
         self.pPrefix.place(x = 730, y = 175)
 
 
-
         self.expandBUTTON = Button(self.root,text="Expand Patient",command=lambda:self.xPand(patient))
         self.expandBUTTON.place(x=700,y=365, width = 90, height = 30)
 
