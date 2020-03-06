@@ -11,17 +11,19 @@ import ICA_super
 import Login_Screen
 import Main_Menu
 import Med_Info_Screen
+import Users 
 
 def main(): # Main loop of ICA
     window = Tk()
     window.resizable(0, 0)
     window.title()
 
-    SQL = SQLConnection.SQLConnection()
-    currentSCREEN = Login_Screen.loginScreen(window, None, SQL)
+    currentSCREEN = Login_Screen.loginScreen(window, None)
 
-    #currentUser = User([0, "Jason", "Van Bladel", "Admin"], 1)
-    #currentSCREEN = mainMenu(window, currentUser)
+    #sql = SQLConnection.SQLConnection()
+    #currentUser = Users.User([0, "Jason", "Van Bladel", "Admin", 1], 1, sql)
+    #currentUser.setPermissions(Users.Permissions(["Hi", "decr", 1,1,1,1,1,1,1,1,1,1,1,1,1,1, 7, 10]))
+    #currentSCREEN = Main_Menu.mainMenu(window, currentUser)
 
     #currentSCREEN = mainMenu(window, ["Jason Van Bladel"])
     #currentUser = User([0, "Jason", "Van Bladel", "Admin"], 1)

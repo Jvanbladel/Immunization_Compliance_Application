@@ -10,8 +10,8 @@ from Main_Menu import *
 
 class loginScreen(icaSCREENS):
 
-    def __init__(self, window, data,SQL):
-        super().__init__(window,SQL)
+    def __init__(self, window, data):
+        super().__init__(window)
         self.root.geometry("800x600")
         global versionNumber
         self.root.title("Immunization Compliance Application " + versionNumber)
@@ -163,14 +163,16 @@ class loginScreen(icaSCREENS):
 
         loginUser = self.SQL.loginUser(Hash.main(name), Hash.main(passWord))
         # print(loginUser.userType)
-        if not loginUser == None:
+        if loginUser == -1:
+            messagebox.showerror("Login Unsuccessful", "No Internet Connection")
+            self.passwordEntry.delete(0, END)  # remove password
+        elif not loginUser == None:
 
             messagebox.showinfo("Login Successful!",
                                 "Welcome back " + loginUser.userFirstName)  # needs to be User first name
             self.removeKeyBind("<Return>")
 
             self.swapTO(mainMenu, loginUser)  # needs to be user object
-
         else:
             messagebox.showerror("Login Unsuccessful", "Username or Password is invalid")
             self.passwordEntry.delete(0, END)  # remove password

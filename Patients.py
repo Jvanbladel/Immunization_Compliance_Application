@@ -1,5 +1,39 @@
-from DemoGraphics import *
 import SQLConnection
+
+
+class Demographics():
+    def __init__(self, data):
+        pass
+
+class Garantor():
+    def __init__(self, data):
+        pass
+
+class Insurence():
+    def __init__(self, data):
+        pass
+
+class Contact():
+    def __init__(self, data):
+        self.preferedLanguage = data[0]
+        self.preferedContact = data[1]
+
+    def getAdress(self):
+        pass
+        
+class Address():
+    def __init__(self, data):
+        self.street = data[0]
+        self.street2 = data[1]
+        self.city = data[2]
+        self.state = data[3]
+        self.zipcode = data[4]
+        self.county = data[5]
+        self.country = data[6]
+        self.addressType = data[7]
+        self.badAddressIndicator = data[8]
+        
+
 
 class Patient():
     def __init__(self, data):
@@ -25,8 +59,8 @@ class Patient():
 
     # adding a comment so I can push this file.
 
-    def getDemographics(self):
-        pass
+    def getDemographics(self, sql):
+        SQL.get
     def getSummary(self):
         return [self.fName, self.lName, self.mInitial ,self.dob, self.sex, self.age, self.race, self.prefix]
 
@@ -39,15 +73,23 @@ class Patient():
         # adding a comment so I can push this file.
 
     def getFullSummary(self):
+
+        #demographics object
         return None
 
     def getFullHistory(self):
+
+        #service list
         return None
 
     def getFullContact(self):
+
+        #contact object
         return None
 
     def getFullInsurance(self):
+
+        #insurence object
         return None
 
     def getGarentor(self):

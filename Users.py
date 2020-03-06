@@ -1,6 +1,10 @@
 import datetime
 import SQLConnection
 
+class Notification():
+     def __init__(self, data):
+          pass
+
 class Permissions():
      def __init__(self, permissionList):
         self.name = permissionList[0]
@@ -17,10 +21,10 @@ class Permissions():
         self.printFiles = permissionList[11]
         self.outReach = permissionList[12]
         self.approveUsers = permissionList[13]
-        self.numberOfPatientsOpen = permissionList[14]
-        self.goalNumberOfOutReaches = permissionList[15]
-        self.setSystemOptions = permissionList[16]
-        self.consoleCommands = permissionList[17]
+        self.setSystemOptions = permissionList[14]
+        self.consoleCommands = permissionList[15]
+        self.numberOfPatientsOpen = permissionList[16]
+        self.goalNumberOfOutReaches = permissionList[17]
 
 class UserAction():
     def __init__(self, actionType, data):
@@ -82,6 +86,13 @@ class User():
         #Querry User Permissions Here
         self.permissions = SQL.getPermission(self.userType)
 
+        self.notificationList = None
+
+    def getNotifications(self, SQL):
+         if self.notificationList == None:
+              self.notificationList = SQL.getNotificationList(self.userType)
+         return self.notificationList 
+
     def addAction(self, action):
         self.currentUserSession.addAction(action)
 
@@ -100,3 +111,6 @@ class User():
     def getHistory(self):
         self.history = UserHistory(userId)
         return
+
+    def setPermissions(self, p):
+          self.permissions = p
