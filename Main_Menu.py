@@ -1134,7 +1134,7 @@ class mainMenu(ICA_super.icaSCREENS):
         self.permissionsGoalNumberOfOutreaches = Entry(self.root)
         self.permissionsGoalNumberOfOutreaches.place(x=715,y=240, width = 30)
         
-        self.changePermissionBUTTON = Button(self.root, text = "Create New\nUser", bg="blue",fg="white")
+        self.changePermissionBUTTON = Button(self.root, text = "Create New\nUser", bg="blue",fg="white", command=lambda: self.changePermission())
         self.changePermissionBUTTON.place(x=715, y=545, width = 70, height = 40)
 
         
@@ -1145,12 +1145,98 @@ class mainMenu(ICA_super.icaSCREENS):
 
         self.permissionsSCREEN = 1
 
-    #To do Querry
     def getPermissions(self):
         output = self.SQL.getAllPermissions()
         if output == -1:
             return []
         return output
+
+    def getPermission(self):
+        return Permissions([self.permissionEditNameField.get(),
+                          self.permissionEditDescriptionField.get(),
+                          self.permissionvar1.get(),
+                          self.permissionvar2.get(),
+                          self.permissionvar3.get(),
+                          self.permissionvar4.get(),
+                          self.permissionvar5.get(),
+                          self.permissionvar6.get(),
+                          self.permissionvar7.get(),
+                          self.permissionvar8.get(),
+                          self.permissionvar9.get(),
+                          self.permissionvar10.get(),
+                          self.permissionvar11.get(),
+                          self.permissionvar12.get(),
+                          self.permissionvar13.get(),
+                          self.permissionvar14.get(),
+                          int(self.permissionsPatientsOpen.get()),
+                          int(self.permissionsGoalNumberOfOutreaches.get())])
+
+    def clearPermissionEditor(self):
+        self.permissionEditNameField.delete(0, END)
+        self.permissionEditDescriptionField.delete(0, END)
+        
+        self.permissionvar1.set(0)
+        self.permissionvar2.set(0)
+        self.permissionvar3.set(0)
+        self.permissionvar4.set(0)
+        self.permissionvar5.set(0)
+        self.permissionvar6.set(0)
+        self.permissionvar7.set(0)
+        self.permissionvar8.set(0)
+        self.permissionvar9.set(0)
+        self.permissionvar10.set(0)
+        self.permissionvar11.set(0)
+        self.permissionvar12.set(0)
+        self.permissionvar13.set(0)
+        self.permissionvar14.set(0)
+        
+        self.permissionsPatientsOpen.delete(0, END)
+        self.permissionsGoalNumberOfOutreaches.delete(0, END)
+    
+    def changePermission(self):
+        p = self.getPermission()
+        if self.currentEditingPermission == None:
+            self.createNewPermission(p)
+            self.permssionList.append(p)
+            self.updatePermissionList(self.permissionList)
+        else:
+            self.editPermission(self.currentEditingPermission, p)
+        #p = Permission()
+        self.clearPermissionEditor()
+
+    def editPermission(self, oldPermission, newPermission):
+        self.SQL.editPermission(oldPermission, newPermission)
+
+    def deletePermission(self):
+        pass
+
+    def createNewPermission(self, p):
+        self.SQL.addPermission(p)
+
+    def loadPermission(self, permission):
+        self.clearPermissionEditor()
+        
+        self.permissionEditNameField.insert(0,permission.name)
+        self.permissionEditDescriptionField.insert(0,permission.description)
+        
+        self.permissionvar1.set(permission.importData)
+        self.permissionvar2.set(permission.exportData)
+        self.permissionvar3.set(permission.viewHistoryOfSelf)
+        self.permissionvar4.set(permission.viewHistoryOfEntireSystem)
+        self.permissionvar5.set(permission.viewSelfAnalytics)
+        self.permissionvar6.set(permission.viewSystemAnalytics)
+        self.permissionvar7.set(permission.createAlerts)
+        self.permissionvar8.set(permission.setPermissions)
+        self.permissionvar9.set(permission.serachEntireDatabase)
+        self.permissionvar10.set(permission.printFiles)
+        self.permissionvar11.set(permission.outReach)
+        self.permissionvar12.set(permission.approveUsers)
+        self.permissionvar13.set(permission.setSystemOptions)
+        self.permissionvar14.set(permission.consoleCommands)
+        
+        self.permissionsPatientsOpen.insert(0,str(int(permission.numberOfPatientsOpen)))
+        if not permission.goalNumberOfOutReaches == None:
+            self.permissionsGoalNumberOfOutreaches.insert(0,str(int(permission.goalNumberOfOutReaches)))
 
     def addPermissions(self, frame, permissionList):
         self.currentEditingPermission = None
@@ -1166,10 +1252,12 @@ class mainMenu(ICA_super.icaSCREENS):
                 b.configure(background = "lime green")
 
     def showPermissionEditor(self, button, permission):
+        self.clearPermissionEditor()
         if permission == self.currentEditingPermission:
             for b in self.permissionButtonList:
                 b.configure(background = self.root.cget('bg'))
             self.currentEditingPermission = None
+            self.changePermissionBUTTON.configure(text="Create New\nUser")
         else:
             for b in self.permissionButtonList:
                 b.configure(background = self.root.cget('bg'))
@@ -1178,6 +1266,14 @@ class mainMenu(ICA_super.icaSCREENS):
                 if b == button:
                     b.configure(background = "lime green")
             self.currentEditingPermission = permission
+            self.loadPermission(self.currentEditingPermission)
+            self.changePermissionBUTTON.configure(text="Change\nUser")
+
+    def updatePermissionList(self,newPermissionList):
+        for b in self.permissionButtonList:
+            b.destroy()
+        self.addPermissions(self.Permissionframe, newPermissionList)
+        self.queue = newPermissionList
             
     def closeALLTabs(self):
         if self.file == 1:
@@ -1212,7 +1308,7 @@ class mainMenu(ICA_super.icaSCREENS):
         for b in self.bList:
             b.destroy()
         self.addToQueue(self.frame, newPatientList)
-        self.queue = newPatientList
+        self.permssionList = newPatientList
 
 
     def addToQueue(self, frame, patientList):
