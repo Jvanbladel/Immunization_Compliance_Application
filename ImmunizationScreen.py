@@ -15,6 +15,7 @@ class ImmunizationScreen(icaSCREENS):
     patientMRN = [] # append MRNs to here. Helps prevent multiple of same patient screen
 
     def __init__(self, patient):
+        pass
 
 
 
