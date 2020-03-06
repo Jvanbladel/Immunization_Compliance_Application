@@ -35,9 +35,9 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         self.patientNotebook.add(self.contactPage, text="Outreach Report")
         self.patientNotebook.add(self.insurancePage,text="Insurance")
 
-        self.patientNotebook.place(x=100,y=100)
+        self.patientNotebook.place(x=0,y=100)
 
-        self.patientFrame = LabelFrame(self.root,width=1000,height=30,bg="Blue")
+        self.patientFrame = LabelFrame(self.root,width=1000,height=30,bg="midnight blue")
         self.patientFrame.place(x=0,y=0)
 
         self.patientFULL = Patient.fName + " " + Patient.lName
@@ -46,21 +46,8 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         self.patientLabelText = '{0:<27}{1:<17}{2:<10}{3:<17}{4:<10}'.format("PATIENT:" + self.patientFULL,"GENDER: Female","AGE:50 ",
                                                                              "DOB:3/21/2013","MRN:30")
 
-        self.patientLabel = Label(self.patientFrame, text=self.patientLabelText, font=('Consolas', 14),bg="Blue",fg="White")
+        self.patientLabel = Label(self.patientFrame, text=self.patientLabelText, font=('Consolas', 14),bg="midnight blue",fg="white")
         self.patientLabel.place(x=0, y=0)
-
-
-        self.buttonFrame = LabelFrame(self.root, width=100, height=560)
-        self.buttonFrame.place(x=0, y=40)
-
-
-        menuItems = ['Garantour ', 'Last Service', 'Create\n Outreach\n form', 'Immunization\nHistory',]
-
-
-        for index in range(len(menuItems)):
-
-            menuButton = Button(self.buttonFrame,text=menuItems[index],width=12,height=3)
-            menuButton.pack()
 
         #Contact info
         self.nameLabel = None
@@ -75,10 +62,9 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         self.apptDate = None
 
 
-
         #ExtensionWindow
-        self.extensionFrame = LabelFrame(self.root,width=200,height=500)
-        self.extensionFrame.place(x=600,y=100)
+        self.extensionFrame = LabelFrame(self.root,width=300,height=500)
+        self.extensionFrame.place(x=500,y=100)
 
 
         self.showDemos()
@@ -90,6 +76,8 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         self.serviceHistoryWidgets = []
 
     def showDemos(self): # uses self.demosPage for display
+
+        self.extensionGuarantor()
 
         patientFrame = LabelFrame(self.demosPage,text="<Patient>",width=500,height=65)
         patientFrame.place(x=0,y=25)
@@ -159,6 +147,36 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
         contactFrame.grid_columnconfigure(4, minsize=100)
         contactFrame.grid_rowconfigure(2, minsize=50)
+
+        GuarantorButton = Button(contactFrame, text = " Show Garantour",command= self.extensionGuarantor)
+        GuarantorButton.place(x=400,y=0)
+
+
+    def extensionGuarantor(self): # display the Garantour in the extension
+
+        self.checkExtension() # determine if something exists in
+
+
+        #obtain information here
+
+
+        # extension title
+        testLabel = Label(self.extensionFrame,text="Guarantor",relief=GROOVE, font=('consolas',20))
+        testLabel.place(x=75,y=0)
+
+
+        LName = Label(self.extensionFrame,text="Last Name: ",font=('consolas',14))
+        LName.place(x=0,y=75)
+
+        LNameLabel = Label(self.extensionFrame,text = "Jimenez",font=('consolas',14))
+        LNameLabel.place(x=100,y=75)
+
+
+        FName = Label(self.extensionFrame,text="First Name: ",font=('consolas',14))
+        FName.place(x=0,y=150)
+
+        FNameLabel = Label(self.extensionFrame,text = "Osvaldo",font=('consolas',14))
+        FNameLabel.place(x=125,y=150)
 
 
     def label_and_Text(self,frame,labelText,labelRow,labelCol,boxText):
@@ -381,7 +399,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         self.checkExtension()  # will close previous page
 
         tempLabel = Button(self.extensionFrame,text="Close extension",command= self.clearExtension)
-        tempLabel.place(x=100,y=0)
+        tempLabel.place(x=200,y=0)
 
         displayLabel = Label(self.extensionFrame,text="To:" + self.patientFULL ,font = ('Consolas', 14),relief="groove")
         displayLabel.place(x=0,y=30)
@@ -389,10 +407,10 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         templateLabel = Label(self.extensionFrame,text="<Email Template>")
         templateLabel.place(x=0,y=75)
 
-        self.emailText = Text(self.extensionFrame,width=24,height=15)
+        self.emailText = Text(self.extensionFrame,width=35,height=15,padx=10)
         self.emailText.place(x=0,y=100)
 
-        buttonFrame = LabelFrame(self.extensionFrame,text="<Email Options>",width=200,height=150)
+        buttonFrame = LabelFrame(self.extensionFrame,text="<Email Options>",width=300,height=150)
         buttonFrame.place(x=0,y=350)
 
         template1 = Button(buttonFrame,text="Load\n Template 1",command=lambda: self.loadTemplate(1))
