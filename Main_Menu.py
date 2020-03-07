@@ -4,6 +4,7 @@ from tkinter import messagebox
 from tkinter.ttk import Combobox
 from PIL import ImageTk,Image
 import datetime
+import math
 from Patients import *
 from Med_Info_Screen import *
 import Login_Screen
@@ -1049,7 +1050,7 @@ class mainMenu(ICA_super.icaSCREENS):
         self.permissionEditFrame = LabelFrame(self.root)
         self.permissionEditFrame.place(x=400, y = 100, height = 500, width = 400)
 
-        self.permissionEditMainLabel = Label(self.root, text = "Create New Role", font = (25))
+        self.permissionEditMainLabel = Label(self.root, text = "Create Role", font = (25))
         self.permissionEditMainLabel.place(x=402.5, y=110, width = 395)
 
         self.permissionEditNameField = Entry(self.root)
@@ -1134,9 +1135,10 @@ class mainMenu(ICA_super.icaSCREENS):
         self.permissionsGoalNumberOfOutreaches = Entry(self.root)
         self.permissionsGoalNumberOfOutreaches.place(x=715,y=240, width = 30)
         
-        self.changePermissionBUTTON = Button(self.root, text = "Create New\nUser", bg="blue",fg="white", command=lambda: self.changePermission())
+        self.changePermissionBUTTON = Button(self.root, text = "Create New\nRole", bg="blue",fg="white", command=lambda: self.changePermission())
         self.changePermissionBUTTON.place(x=715, y=545, width = 70, height = 40)
 
+        self.deleteRoleButton = None
         
         self.permissionButtonList = []
         self.permssionList = []
@@ -1192,23 +1194,63 @@ class mainMenu(ICA_super.icaSCREENS):
         
         self.permissionsPatientsOpen.delete(0, END)
         self.permissionsGoalNumberOfOutreaches.delete(0, END)
+        
     
     def changePermission(self):
         p = self.getPermission()
         if self.currentEditingPermission == None:
             self.createNewPermission(p)
             self.permssionList.append(p)
-            self.updatePermissionList(self.permissionList)
+            self.updatePermissionList(self.permssionList)
         else:
             self.editPermission(self.currentEditingPermission, p)
+            for b in self.permissionButtonList:
+                b.configure(background = self.root.cget('bg'))
+            self.currentButton = None
+            self.currentEditingPermission = None
+            self.updatePermissionList(self.getPermissions())
         #p = Permission()
         self.clearPermissionEditor()
+        for b in self.permissionButtonList:
+            b.destroy()
+
+        self.permissionButtonList = []
+        self.permssionList = []
+
+        self.addPermissions(self.Permissionframe, self.getPermissions())
+
+        self.currentEditingPermission = None
+        self.changePermissionBUTTON.configure(text="Create New\nRole")
+        self.permissionEditMainLabel.configure(text="Create Role")
+        self.deleteRoleButton.destroy()
+        self.deleteRoleButton = None
+           
+        
+        
 
     def editPermission(self, oldPermission, newPermission):
         self.SQL.editPermission(oldPermission, newPermission)
+        
 
-    def deletePermission(self):
-        pass
+    def deletePermission(self, role):
+        self.SQL.deletePermission(role)
+
+        for b in self.permissionButtonList:
+            b.destroy()
+
+        self.clearPermissionEditor()
+        
+        self.permissionButtonList = []
+        self.permssionList = []
+
+        self.addPermissions(self.Permissionframe, self.getPermissions())
+
+        self.currentEditingPermission = None
+        self.changePermissionBUTTON.configure(text="Create New\nRole")
+        self.permissionEditMainLabel.configure(text="Create Role")
+        if not self.deleteRoleButton == None:
+            self.deleteRoleButton.destroy()
+            self.deleteRoleButton = None
 
     def createNewPermission(self, p):
         self.SQL.addPermission(p)
@@ -1235,7 +1277,8 @@ class mainMenu(ICA_super.icaSCREENS):
         self.permissionvar14.set(permission.consoleCommands)
         
         self.permissionsPatientsOpen.insert(0,str(int(permission.numberOfPatientsOpen)))
-        if not permission.goalNumberOfOutReaches == None:
+        #print(type(permission.goalNumberOfOutReaches))
+        if not math.isnan(permission.goalNumberOfOutReaches):
             self.permissionsGoalNumberOfOutreaches.insert(0,str(int(permission.goalNumberOfOutReaches)))
 
     def addPermissions(self, frame, permissionList):
@@ -1247,9 +1290,9 @@ class mainMenu(ICA_super.icaSCREENS):
             self.permissionButtonList.append(b)
             self.permssionList.append(permissionList[i])
             b.configure(command=lambda i=i: self.showPermissionEditor(self.permissionButtonList[i], self.permssionList[i]))
-            if self.permssionList[i] == self.currentEditingPermission:
-                self.currentButton = b
-                b.configure(background = "lime green")
+            #if self.permssionList[i] == self.currentEditingPermission:
+            #    self.currentButton = b
+            #   b.configure(background = "lime green")
 
     def showPermissionEditor(self, button, permission):
         self.clearPermissionEditor()
@@ -1257,7 +1300,11 @@ class mainMenu(ICA_super.icaSCREENS):
             for b in self.permissionButtonList:
                 b.configure(background = self.root.cget('bg'))
             self.currentEditingPermission = None
-            self.changePermissionBUTTON.configure(text="Create New\nUser")
+            self.changePermissionBUTTON.configure(text="Create New\nRole")
+            self.permissionEditMainLabel.configure(text="Create Role")
+            if not self.deleteRoleButton == None:
+                self.deleteRoleButton.destroy()
+                self.deleteRoleButton = None
         else:
             for b in self.permissionButtonList:
                 b.configure(background = self.root.cget('bg'))
@@ -1267,13 +1314,21 @@ class mainMenu(ICA_super.icaSCREENS):
                     b.configure(background = "lime green")
             self.currentEditingPermission = permission
             self.loadPermission(self.currentEditingPermission)
-            self.changePermissionBUTTON.configure(text="Change\nUser")
+            self.changePermissionBUTTON.configure(text="Change\nRole")
+            self.permissionEditMainLabel.configure(text="Edit Role")
+
+            self.deleteRoleButton = Button(self.root, text = "Delete\nRole", bg="blue",fg="white", command=lambda: self.deletePermission(self.permissionEditNameField.get()))
+            self.deleteRoleButton.place(x=715, y=495, width = 70, height = 40)
+
+
+        
 
     def updatePermissionList(self,newPermissionList):
         for b in self.permissionButtonList:
             b.destroy()
         self.addPermissions(self.Permissionframe, newPermissionList)
         self.queue = newPermissionList
+        self.permissionList = None
             
     def closeALLTabs(self):
         if self.file == 1:
@@ -1443,6 +1498,7 @@ class mainMenu(ICA_super.icaSCREENS):
 
         self.pPrefix = Label(self.root, text = "Prefix: " +  patientData[7])
         self.pPrefix.place(x = 730, y = 175)
+
 
 
         self.expandBUTTON = Button(self.root,text="Expand Patient",command=lambda:self.xPand(patient))
