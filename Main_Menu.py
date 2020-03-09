@@ -4,6 +4,7 @@ from tkinter import messagebox
 from tkinter.ttk import Combobox
 from PIL import ImageTk,Image
 import datetime
+import math
 from Patients import *
 from Med_Info_Screen import *
 import Login_Screen
@@ -23,6 +24,7 @@ class mainMenu(ICA_super.icaSCREENS):
         self.bindKey("<Escape>",self.logOut)
 
         self.clockUpdater = None
+        
 
         #Max windows open
         self.currentPopOut = 0
@@ -347,26 +349,24 @@ class mainMenu(ICA_super.icaSCREENS):
         helpBUTTON.place(x=150,y=0,height=30,width=50)
 
         currentX = 200
+        if not self.user.permissions == None:
+            if self.user.permissions.viewSelfAnalytics == 1 or self.user.permissions.viewSystemAnalytics == 1:
+                self.analyticTABX = currentX
+                analyticBUTTON = Button(self.root,text="Analytics",command=lambda: self.togAnalyticsTab())
+                analyticBUTTON.place(x=currentX,y=0,height=30,width=60)
+                currentX = currentX + 60
 
-        if self.user.permissions.viewSelfAnalytics == 1 or self.user.permissions.viewSystemAnalytics == 1:
-            self.analyticTABX = currentX
-            analyticBUTTON = Button(self.root,text="Analytics",command=lambda: self.togAnalyticsTab())
-            analyticBUTTON.place(x=currentX,y=0,height=30,width=60)
-            currentX = currentX + 60
+            if self.user.permissions.viewHistoryOfSelf == 1 or self.user.permissions.viewHistoryOfEntireSystem == 1:
+                self.historyTABX = currentX
+                historyButton = Button(self.root,text="History",command=lambda: self.togHistoryTab())
+                historyButton.place(x=currentX,y=0,height=30,width=50)
+                currentX = currentX + 50
 
-        if self.user.permissions.viewHistoryOfSelf == 1 or self.user.permissions.viewHistoryOfEntireSystem == 1:
-            self.historyTABX = currentX
-            historyButton = Button(self.root,text="History",command=lambda: self.togHistoryTab())
-            historyButton.place(x=currentX,y=0,height=30,width=50)
-            currentX = currentX + 50
-
-        if self.user.permissions.approveUsers == 1 or self.user.permissions.setPermissions == 1 or self.user.permissions.createAlerts == 1 or self.user.permissions.createAlerts == 1 or self.user.permissions.consoleCommands == 1:
-            self.adminTABX = currentX
-            adminBUTTON = Button(self.root,text="Admin",command=lambda: self.togAdminTab())
-            adminBUTTON.place(x=currentX,y=0,height=30,width=50)
-            currentX = currentX + 50
-
-
+            if self.user.permissions.approveUsers == 1 or self.user.permissions.setPermissions == 1 or self.user.permissions.createAlerts == 1 or self.user.permissions.createAlerts == 1 or self.user.permissions.consoleCommands == 1:
+                self.adminTABX = currentX
+                adminBUTTON = Button(self.root,text="Admin",command=lambda: self.togAdminTab())
+                adminBUTTON.place(x=currentX,y=0,height=30,width=50)
+                currentX = currentX + 50
 
         #Set Up for TABS
         self.fileFRAME = None
@@ -818,21 +818,22 @@ class mainMenu(ICA_super.icaSCREENS):
             self.mainMenuBUTTON.place(x=0,y=currentY,height=30,width=100)
             currentY = currentY + 30
 
-            if self.user.permissions.importData == 1:
-                self.importData = Button(self.root, text = "Import", justify = LEFT,anchor=W)
-                self.importData.place(x=0,y=currentY,height=30,width=100)
-                currentY = currentY + 30
+            if not self.user.permissions == None:
+                if self.user.permissions.importData == 1:
+                    self.importData = Button(self.root, text = "Import", justify = LEFT,anchor=W)
+                    self.importData.place(x=0,y=currentY,height=30,width=100)
+                    currentY = currentY + 30
 
-            if self.user.permissions.exportData == 1:
-                self.export = Button(self.root, text = "Export", justify = LEFT,anchor=W, command=lambda: self.togExportTab())
-                self.export.place(x=0,y=currentY,height=30,width=100)
-                currentY = currentY + 30
+                if self.user.permissions.exportData == 1:
+                    self.export = Button(self.root, text = "Export", justify = LEFT,anchor=W, command=lambda: self.togExportTab())
+                    self.export.place(x=0,y=currentY,height=30,width=100)
+                    currentY = currentY + 30
 
 
-            if self.user.permissions.printFiles == 1:
-                self.print = Button(self.root, text = "Print", justify = LEFT,anchor=W)
-                self.print.place(x=0,y=currentY,height=30,width=100)
-                currentY = currentY + 30
+                if self.user.permissions.printFiles == 1:
+                    self.print = Button(self.root, text = "Print", justify = LEFT,anchor=W)
+                    self.print.place(x=0,y=currentY,height=30,width=100)
+                    currentY = currentY + 30
             
             self.logout = Button(self.root, text = "Log out", justify = LEFT,anchor=W, command=lambda: self.logoutofApp())
             self.logout.place(x=0,y=currentY,height=30,width=100)
@@ -842,14 +843,15 @@ class mainMenu(ICA_super.icaSCREENS):
             #self.fileFRAME.destroy()
             self.mainMenuBUTTON.destroy()
             self.logout.destroy()
-            if self.user.permissions.exportData == 1:
-                if self.exportTAB == 1:
-                    self.togExportTab()
-                self.export.destroy()
-            if self.user.permissions.printFiles == 1:
-                self.print.destroy()
-            if self.user.permissions.importData == 1:
-                self.importData.destroy()
+            if not self.user.permissions == None:
+                if self.user.permissions.exportData == 1:
+                    if self.exportTAB == 1:
+                        self.togExportTab()
+                    self.export.destroy()
+                if self.user.permissions.printFiles == 1:
+                    self.print.destroy()
+                if self.user.permissions.importData == 1:
+                    self.importData.destroy()
             self.file = 0
 
     def togExportTab(self):
@@ -931,24 +933,25 @@ class mainMenu(ICA_super.icaSCREENS):
             #self.analyticsFRAME.place(x=200,y=30,height=200,width=100)
 
             currentY = 30
+            if not self.user.permissions == None:
+                if self.user.permissions.viewSelfAnalytics == 1:
+                    self.myAnalytics = Button(self.root, text = "My Analytics", justify = LEFT,anchor=W)
+                    self.myAnalytics.place(x=self.analyticTABX,y=currentY,height=30,width=110)
+                    currentY = currentY + 30
 
-            if self.user.permissions.viewSelfAnalytics == 1:
-                self.myAnalytics = Button(self.root, text = "My Analytics", justify = LEFT,anchor=W)
-                self.myAnalytics.place(x=self.analyticTABX,y=currentY,height=30,width=110)
-                currentY = currentY + 30
-
-            if self.user.permissions.viewSystemAnalytics == 1:
-                self.systemAnalytics = Button(self.root, text = "System Analytics", justify = LEFT,anchor=W)
-                self.systemAnalytics.place(x=self.analyticTABX,y=currentY,height=30,width=110)
-                currentY = currentY + 30
+                if self.user.permissions.viewSystemAnalytics == 1:
+                    self.systemAnalytics = Button(self.root, text = "System Analytics", justify = LEFT,anchor=W)
+                    self.systemAnalytics.place(x=self.analyticTABX,y=currentY,height=30,width=110)
+                    currentY = currentY + 30
             
             self.analytics = 1
         else:
             #self.analyticsFRAME.destroy()
-            if self.user.permissions.viewSelfAnalytics == 1:
-                self.myAnalytics.destroy()
-            if self.user.permissions.viewSystemAnalytics == 1:
-                self.systemAnalytics.destroy()
+            if not self.user.permissions == None:
+                if self.user.permissions.viewSelfAnalytics == 1:
+                    self.myAnalytics.destroy()
+                if self.user.permissions.viewSystemAnalytics == 1:
+                    self.systemAnalytics.destroy()
             self.analytics = 0
 
     def togHistoryTab(self):
@@ -956,23 +959,24 @@ class mainMenu(ICA_super.icaSCREENS):
             self.closeALLTabs()
 
             currentY = 30
+            if not self.user.permissions == None:
+                if self.user.permissions.viewHistoryOfSelf == 1:
+                    self.myHistory = Button(self.root, text = "My History", justify = LEFT,anchor=W)
+                    self.myHistory.place(x=self.historyTABX,y=currentY,height=30,width=100)
+                    currentY = currentY + 30
 
-            if self.user.permissions.viewHistoryOfSelf == 1:
-                self.myHistory = Button(self.root, text = "My History", justify = LEFT,anchor=W)
-                self.myHistory.place(x=self.historyTABX,y=currentY,height=30,width=100)
-                currentY = currentY + 30
-
-            if self.user.permissions.viewHistoryOfEntireSystem == 1:
-                self.systemHistory = Button(self.root, text = "System History", justify = LEFT,anchor=W)
-                self.systemHistory.place(x=self.historyTABX,y=currentY,height=30,width=100)
-                currentY = currentY + 30
+                if self.user.permissions.viewHistoryOfEntireSystem == 1:
+                    self.systemHistory = Button(self.root, text = "System History", justify = LEFT,anchor=W)
+                    self.systemHistory.place(x=self.historyTABX,y=currentY,height=30,width=100)
+                    currentY = currentY + 30
 
             self.history = 1
         else:
-            if self.user.permissions.viewHistoryOfSelf == 1:
-                self.myHistory.destroy()
-            if self.user.permissions.viewHistoryOfEntireSystem == 1:
-                self.systemHistory.destroy()
+            if not self.user.permissions == None:
+                if self.user.permissions.viewHistoryOfSelf == 1:
+                    self.myHistory.destroy()
+                if self.user.permissions.viewHistoryOfEntireSystem == 1:
+                    self.systemHistory.destroy()
             self.history = 0
 
     def togAdminTab(self):
@@ -981,45 +985,47 @@ class mainMenu(ICA_super.icaSCREENS):
 
             currentY = 30
 
-            if self.user.permissions.createAlerts == 1:
-                self.createAlerts = Button(self.root, text = "Alert Manger", justify = LEFT,anchor=W)
-                self.createAlerts.place(x=self.adminTABX,y=currentY,height=30,width=125)
-                currentY = currentY + 30
+            if not self.user.permissions == None:
+                if self.user.permissions.createAlerts == 1:
+                    self.createAlerts = Button(self.root, text = "Alert Manger", justify = LEFT,anchor=W)
+                    self.createAlerts.place(x=self.adminTABX,y=currentY,height=30,width=125)
+                    currentY = currentY + 30
 
-            if self.user.permissions.approveUsers == 1:
-                self.accountManager = Button(self.root, text = "Account Manager", justify = LEFT,anchor=W)
-                self.accountManager.place(x=self.adminTABX,y=currentY,height=30,width=125)
-                currentY = currentY + 30
+                if self.user.permissions.approveUsers == 1:
+                    self.accountManager = Button(self.root, text = "Account Manager", justify = LEFT,anchor=W)
+                    self.accountManager.place(x=self.adminTABX,y=currentY,height=30,width=125)
+                    currentY = currentY + 30
 
-            if self.user.permissions.setPermissions == 1:
-                self.permissions = Button(self.root, text = "Permission Manager", justify = LEFT,anchor=W, command=lambda: self.showPermissionsSCREEN())
-                self.permissions.place(x=self.adminTABX,y=currentY,height=30,width=125)
-                currentY = currentY + 30
+                if self.user.permissions.setPermissions == 1:
+                    self.permissions = Button(self.root, text = "Permission Manager", justify = LEFT,anchor=W, command=lambda: self.showPermissionsSCREEN())
+                    self.permissions.place(x=self.adminTABX,y=currentY,height=30,width=125)
+                    currentY = currentY + 30
 
-            print(self.user.permissions.setSystemOptions)
-            if self.user.permissions.setSystemOptions == 1:
-                self.systemOptions = Button(self.root, text = "System Manager", justify = LEFT, anchor=W)
-                self.systemOptions.place(x=self.adminTABX,y=currentY,height=30,width=125)
-                currentY = currentY + 30
+                #print(self.user.permissions.setSystemOptions)
+                if self.user.permissions.setSystemOptions == 1:
+                    self.systemOptions = Button(self.root, text = "System Manager", justify = LEFT, anchor=W)
+                    self.systemOptions.place(x=self.adminTABX,y=currentY,height=30,width=125)
+                    currentY = currentY + 30
 
-            print(self.user.permissions.consoleCommands)
-            if self.user.permissions.consoleCommands == 1:
-                self.systemConsole = Button(self.root, text = "Console", justify = LEFT, anchor=W, command=lambda: self.showConsole())
-                self.systemConsole.place(x=self.adminTABX,y=currentY,height=30,width=125)
-                currentY = currentY + 30
+                #print(self.user.permissions.consoleCommands)
+                if self.user.permissions.consoleCommands == 1:
+                    self.systemConsole = Button(self.root, text = "Console", justify = LEFT, anchor=W, command=lambda: self.showConsole())
+                    self.systemConsole.place(x=self.adminTABX,y=currentY,height=30,width=125)
+                    currentY = currentY + 30
 
             self.admin = 1
         else:
-            if self.user.permissions.createAlerts == 1:
-                self.createAlerts.destroy()
-            if self.user.permissions.approveUsers == 1:
-                self.accountManager.destroy()
-            if self.user.permissions.setSystemOptions == 1:
-                self.systemOptions.destroy()
-            if self.user.permissions.setPermissions == 1:
-                self.permissions.destroy()
-            if self.user.permissions.consoleCommands == 1:
-                self.systemConsole.destroy()
+            if not self.user.permissions == None:
+                if self.user.permissions.createAlerts == 1:
+                    self.createAlerts.destroy()
+                if self.user.permissions.approveUsers == 1:
+                    self.accountManager.destroy()
+                if self.user.permissions.setSystemOptions == 1:
+                    self.systemOptions.destroy()
+                if self.user.permissions.setPermissions == 1:
+                    self.permissions.destroy()
+                if self.user.permissions.consoleCommands == 1:
+                    self.systemConsole.destroy()
             self.admin = 0
 
     def showPermissionsSCREEN(self):
@@ -1044,7 +1050,7 @@ class mainMenu(ICA_super.icaSCREENS):
         self.permissionEditFrame = LabelFrame(self.root)
         self.permissionEditFrame.place(x=400, y = 100, height = 500, width = 400)
 
-        self.permissionEditMainLabel = Label(self.root, text = "Create New Role", font = (25))
+        self.permissionEditMainLabel = Label(self.root, text = "Create Role", font = (25))
         self.permissionEditMainLabel.place(x=402.5, y=110, width = 395)
 
         self.permissionEditNameField = Entry(self.root)
@@ -1129,9 +1135,10 @@ class mainMenu(ICA_super.icaSCREENS):
         self.permissionsGoalNumberOfOutreaches = Entry(self.root)
         self.permissionsGoalNumberOfOutreaches.place(x=715,y=240, width = 30)
         
-        self.changePermissionBUTTON = Button(self.root, text = "Create New\nUser", bg="blue",fg="white")
+        self.changePermissionBUTTON = Button(self.root, text = "Create New\nRole", bg="blue",fg="white", command=lambda: self.changePermission())
         self.changePermissionBUTTON.place(x=715, y=545, width = 70, height = 40)
 
+        self.deleteRoleButton = None
         
         self.permissionButtonList = []
         self.permssionList = []
@@ -1140,9 +1147,139 @@ class mainMenu(ICA_super.icaSCREENS):
 
         self.permissionsSCREEN = 1
 
-    #To do Querry
     def getPermissions(self):
-        return self.SQL.getAllPermissions()
+        output = self.SQL.getAllPermissions()
+        if output == -1:
+            return []
+        return output
+
+    def getPermission(self):
+        return Permissions([self.permissionEditNameField.get(),
+                          self.permissionEditDescriptionField.get(),
+                          self.permissionvar1.get(),
+                          self.permissionvar2.get(),
+                          self.permissionvar3.get(),
+                          self.permissionvar4.get(),
+                          self.permissionvar5.get(),
+                          self.permissionvar6.get(),
+                          self.permissionvar7.get(),
+                          self.permissionvar8.get(),
+                          self.permissionvar9.get(),
+                          self.permissionvar10.get(),
+                          self.permissionvar11.get(),
+                          self.permissionvar12.get(),
+                          self.permissionvar13.get(),
+                          self.permissionvar14.get(),
+                          int(self.permissionsPatientsOpen.get()),
+                          int(self.permissionsGoalNumberOfOutreaches.get())])
+
+    def clearPermissionEditor(self):
+        self.permissionEditNameField.delete(0, END)
+        self.permissionEditDescriptionField.delete(0, END)
+        
+        self.permissionvar1.set(0)
+        self.permissionvar2.set(0)
+        self.permissionvar3.set(0)
+        self.permissionvar4.set(0)
+        self.permissionvar5.set(0)
+        self.permissionvar6.set(0)
+        self.permissionvar7.set(0)
+        self.permissionvar8.set(0)
+        self.permissionvar9.set(0)
+        self.permissionvar10.set(0)
+        self.permissionvar11.set(0)
+        self.permissionvar12.set(0)
+        self.permissionvar13.set(0)
+        self.permissionvar14.set(0)
+        
+        self.permissionsPatientsOpen.delete(0, END)
+        self.permissionsGoalNumberOfOutreaches.delete(0, END)
+        
+    
+    def changePermission(self):
+        p = self.getPermission()
+        if self.currentEditingPermission == None:
+            self.createNewPermission(p)
+            self.permssionList.append(p)
+            self.updatePermissionList(self.permssionList)
+        else:
+            self.editPermission(self.currentEditingPermission, p)
+            for b in self.permissionButtonList:
+                b.configure(background = self.root.cget('bg'))
+            self.currentButton = None
+            self.currentEditingPermission = None
+            self.updatePermissionList(self.getPermissions())
+        #p = Permission()
+        self.clearPermissionEditor()
+        for b in self.permissionButtonList:
+            b.destroy()
+
+        self.permissionButtonList = []
+        self.permssionList = []
+
+        self.addPermissions(self.Permissionframe, self.getPermissions())
+
+        self.currentEditingPermission = None
+        self.changePermissionBUTTON.configure(text="Create New\nRole")
+        self.permissionEditMainLabel.configure(text="Create Role")
+        self.deleteRoleButton.destroy()
+        self.deleteRoleButton = None
+           
+        
+        
+
+    def editPermission(self, oldPermission, newPermission):
+        self.SQL.editPermission(oldPermission, newPermission)
+        
+
+    def deletePermission(self, role):
+        self.SQL.deletePermission(role)
+
+        for b in self.permissionButtonList:
+            b.destroy()
+
+        self.clearPermissionEditor()
+        
+        self.permissionButtonList = []
+        self.permssionList = []
+
+        self.addPermissions(self.Permissionframe, self.getPermissions())
+
+        self.currentEditingPermission = None
+        self.changePermissionBUTTON.configure(text="Create New\nRole")
+        self.permissionEditMainLabel.configure(text="Create Role")
+        if not self.deleteRoleButton == None:
+            self.deleteRoleButton.destroy()
+            self.deleteRoleButton = None
+
+    def createNewPermission(self, p):
+        self.SQL.addPermission(p)
+
+    def loadPermission(self, permission):
+        self.clearPermissionEditor()
+        
+        self.permissionEditNameField.insert(0,permission.name)
+        self.permissionEditDescriptionField.insert(0,permission.description)
+        
+        self.permissionvar1.set(permission.importData)
+        self.permissionvar2.set(permission.exportData)
+        self.permissionvar3.set(permission.viewHistoryOfSelf)
+        self.permissionvar4.set(permission.viewHistoryOfEntireSystem)
+        self.permissionvar5.set(permission.viewSelfAnalytics)
+        self.permissionvar6.set(permission.viewSystemAnalytics)
+        self.permissionvar7.set(permission.createAlerts)
+        self.permissionvar8.set(permission.setPermissions)
+        self.permissionvar9.set(permission.serachEntireDatabase)
+        self.permissionvar10.set(permission.printFiles)
+        self.permissionvar11.set(permission.outReach)
+        self.permissionvar12.set(permission.approveUsers)
+        self.permissionvar13.set(permission.setSystemOptions)
+        self.permissionvar14.set(permission.consoleCommands)
+        
+        self.permissionsPatientsOpen.insert(0,str(int(permission.numberOfPatientsOpen)))
+        #print(type(permission.goalNumberOfOutReaches))
+        if not math.isnan(permission.goalNumberOfOutReaches):
+            self.permissionsGoalNumberOfOutreaches.insert(0,str(int(permission.goalNumberOfOutReaches)))
 
     def addPermissions(self, frame, permissionList):
         self.currentEditingPermission = None
@@ -1153,15 +1290,21 @@ class mainMenu(ICA_super.icaSCREENS):
             self.permissionButtonList.append(b)
             self.permssionList.append(permissionList[i])
             b.configure(command=lambda i=i: self.showPermissionEditor(self.permissionButtonList[i], self.permssionList[i]))
-            if self.permssionList[i] == self.currentEditingPermission:
-                self.currentButton = b
-                b.configure(background = "lime green")
+            #if self.permssionList[i] == self.currentEditingPermission:
+            #    self.currentButton = b
+            #   b.configure(background = "lime green")
 
     def showPermissionEditor(self, button, permission):
+        self.clearPermissionEditor()
         if permission == self.currentEditingPermission:
             for b in self.permissionButtonList:
                 b.configure(background = self.root.cget('bg'))
             self.currentEditingPermission = None
+            self.changePermissionBUTTON.configure(text="Create New\nRole")
+            self.permissionEditMainLabel.configure(text="Create Role")
+            if not self.deleteRoleButton == None:
+                self.deleteRoleButton.destroy()
+                self.deleteRoleButton = None
         else:
             for b in self.permissionButtonList:
                 b.configure(background = self.root.cget('bg'))
@@ -1170,6 +1313,22 @@ class mainMenu(ICA_super.icaSCREENS):
                 if b == button:
                     b.configure(background = "lime green")
             self.currentEditingPermission = permission
+            self.loadPermission(self.currentEditingPermission)
+            self.changePermissionBUTTON.configure(text="Change\nRole")
+            self.permissionEditMainLabel.configure(text="Edit Role")
+
+            self.deleteRoleButton = Button(self.root, text = "Delete\nRole", bg="blue",fg="white", command=lambda: self.deletePermission(self.permissionEditNameField.get()))
+            self.deleteRoleButton.place(x=715, y=495, width = 70, height = 40)
+
+
+        
+
+    def updatePermissionList(self,newPermissionList):
+        for b in self.permissionButtonList:
+            b.destroy()
+        self.addPermissions(self.Permissionframe, newPermissionList)
+        self.queue = newPermissionList
+        self.permissionList = None
             
     def closeALLTabs(self):
         if self.file == 1:
@@ -1195,13 +1354,16 @@ class mainMenu(ICA_super.icaSCREENS):
 
     def createQueue(self):
         plist = self.SQL.getDefaultWorkQueue()
+
+        if plist == -1:
+            return []
         return plist
 
     def updateQueue(self,newPatientList):
         for b in self.bList:
             b.destroy()
         self.addToQueue(self.frame, newPatientList)
-        self.queue = newPatientList
+        self.permssionList = newPatientList
 
 
     def addToQueue(self, frame, patientList):

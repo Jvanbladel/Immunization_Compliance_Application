@@ -86,6 +86,13 @@ class User():
         #Querry User Permissions Here
         self.permissions = SQL.getPermission(self.userType)
 
+        self.notificationList = None
+
+    def getNotifications(self, SQL):
+         if self.notificationList == None:
+              self.notificationList = SQL.getNotificationList(self.userType)
+         return self.notificationList 
+
     def addAction(self, action):
         self.currentUserSession.addAction(action)
 
@@ -104,3 +111,6 @@ class User():
     def getHistory(self):
         self.history = UserHistory(userId)
         return
+
+    def setPermissions(self, p):
+          self.permissions = p

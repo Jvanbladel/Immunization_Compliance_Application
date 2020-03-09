@@ -5,7 +5,7 @@ from datetime import datetime
 from time import sleep
 import SQLConnection
 
-versionNumber = "(Version 2.1.1)"
+versionNumber = "(Version 2.1.2)"
 
 class icaSCREENS():
     '''
@@ -25,6 +25,7 @@ class icaSCREENS():
         self.clockConnectionVar = None
 
         self.clockConnection()
+        
         
 
     def clearSCREEN(self):
