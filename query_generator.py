@@ -12,7 +12,7 @@ def exactSearch_sql(table, field, input_str):
         else:
             f += ta +','
 
-    sql = 'select p.PatientId,p.PatientMRN,p.PatientLastName,p.PatientFirstName,p.PatientMiddleInitial,p.PatientDateOfBirth,p.PatientGender,p.DeceasedStatus,Convert(VARCHAR(10),DateAdd(year, 1, Max(s.DateofService)),101) As DueDate,DateDiff(day, Max(s.DateofService),GetDate()) - 365 As Daysoverdue,p.PatientRace,p.PatientEthnicity,datediff(year, max(p.PatientDateOfBirth), getdate()) As Age where ' + field + ' like \'' + input_str[0:i] + '%\'' from ' + table + ' where ' + field + ' = \'' + input_str + '\''
+    sql = 'select PatientId,PatientMRN,PatientLastName,PatientFirstName,PatientMiddleInitial,PatientDateOfBirth,PatientGender,DeceasedStatus,Convert(VARCHAR(10),DateAdd(year, 1, Max(s.DateofService)),101) As DueDate,DateDiff(day, Max(s.DateofService),GetDate()) - 365 As Daysoverdue,PatientRace,PatientEthnicity,datediff(year, max(PatientDateOfBirth), getdate()) As Age where ' + field + '=\'' + input_str +'\' from ' + table
     return sql
 
 
@@ -35,11 +35,11 @@ def fuzzySearch_sql(table, field, input_str):
             f += ta +', '
 
     while i > 0:
-        fuzzy = 'select p.PatientId,p.PatientMRN,p.PatientLastName,p.PatientFirstName,p.PatientMiddleInitial,\
-        p.PatientDateOfBirth,p.PatientGender,p.DeceasedStatus,\
+        fuzzy = 'select PatientId,PatientMRN,PatientLastName,PatientFirstName,PatientMiddleInitial,\
+        PatientDateOfBirth,PatientGender,DeceasedStatus,\
         Convert(VARCHAR(10),DateAdd(year, 1, Max(s.DateofService)),101) As DueDate,DateDiff(day, Max(s.DateofService), \
-        GetDate()) - 365 As Daysoverdue,p.PatientRace,p.PatientEthnicity,\
-        datediff(year, max(p.PatientDateOfBirth), getdate()) As Age where ' + field + ' like \'' + input_str[0:i] + '%\''
+        GetDate()) - 365 As Daysoverdue,PatientRace,PatientEthnicity,\
+        datediff(year, max(PatientDateOfBirth), getdate()) As Age where ' + field + ' like \'' + input_str[0:i] + '%\''
         sql = sql + ' union ' + fuzzy
         i -= 1
     print(f)
