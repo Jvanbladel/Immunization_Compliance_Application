@@ -1,4 +1,7 @@
-def exactSearch_sql(table, field, input_str):
+
+tables = 'Patient Left Outer Join ServiceDetails On Patient.PatientId = ServiceDetails.PatientId'
+
+def exactSearch_sql(field, input_str):
     select = ['PatientID', 'PatientMRN', 'PatientLastName', 'PatientFirstName', 'PatientDateOfBirth']
     temp_id = select.index(field)
     temp = field
@@ -12,14 +15,15 @@ def exactSearch_sql(table, field, input_str):
         else:
             f += ta +','
 
-    sql = 'select PatientId,PatientMRN,PatientLastName,PatientFirstName,PatientMiddleInitial,PatientDateOfBirth,PatientGender,DeceasedStatus,Convert(VARCHAR(10),DateAdd(year, 1, Max(s.DateofService)),101) As DueDate,DateDiff(day, Max(s.DateofService),GetDate()) - 365 As Daysoverdue,PatientRace,PatientEthnicity,datediff(year, max(PatientDateOfBirth), getdate()) As Age where ' + field + '=\'' + input_str +'\' from ' + table
+    sql = 'select Patient.PatientID, PatientMRN, PatientLastName, PatientFirstName, PatientDateOfBirth' + ' from ' + tables + \
+          ' where ' + field + '=\'' + input_str + '\''
     return sql
 
 
-def fuzzySearch_sql(table, field, input_str):
+def fuzzySearch_sql(field, input_str):
     select = ['PatientID', 'PatientMRN', 'PatientLastName', 'PatientFirstName', 'PatientDateOfBirth']
     sql = ''
-    sql += exactSearch_sql(table, field, input_str)
+    sql += exactSearch_sql(field, input_str)
     i = len(input_str) - 1
 
     temp_id = select.index(field)
@@ -35,11 +39,8 @@ def fuzzySearch_sql(table, field, input_str):
             f += ta +', '
 
     while i > 0:
-        fuzzy = 'select PatientId,PatientMRN,PatientLastName,PatientFirstName,PatientMiddleInitial,\
-        PatientDateOfBirth,PatientGender,DeceasedStatus,\
-        Convert(VARCHAR(10),DateAdd(year, 1, Max(s.DateofService)),101) As DueDate,DateDiff(day, Max(s.DateofService), \
-        GetDate()) - 365 As Daysoverdue,PatientRace,PatientEthnicity,\
-        datediff(year, max(PatientDateOfBirth), getdate()) As Age where ' + field + ' like \'' + input_str[0:i] + '%\''
+        fuzzy = 'select Patient.PatientID, PatientMRN, PatientLastName, PatientFirstName, PatientDateOfBirth  ' \
+                ' from ' + tables + ' where ' + field + ' like \''+ str(input_str[0:i])+ '%\''
         sql = sql + ' union ' + fuzzy
         i -= 1
     print(f)
