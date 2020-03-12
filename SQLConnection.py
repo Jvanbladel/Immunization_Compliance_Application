@@ -206,10 +206,10 @@ class SQLConnection():
 
 
 
-    def fuzzySearch(self, table, field, input_str):
-        sql = query_generator.fuzzySearch_sql(table, field, input_str)
+    def fuzzySearch(self, field, input_str):
+        sql = query_generator.fuzzySearch_sql(field, input_str)
         # print(sql)
-        data = pd.read_sql(sql, self.conn, params={table, field, input_str})
+        data = pd.read_sql(sql, self.conn, params={field, input_str})
         if data.empty:
             # print("Empty Data")
             return
