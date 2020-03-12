@@ -214,8 +214,9 @@ class SQLConnection():
             # print("Empty Data")
             return
         plist = []
-        for rows in data:
-            plist.append(Patients.Patient(rows))
+        for p in data:
+            data = [p[0], p[1], p[2], p[3], None, p[4], None, None, None, None, None, None, None]
+            plist.append(Patients.Patient(data))
         return plist
 
 def main():
