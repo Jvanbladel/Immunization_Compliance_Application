@@ -1,4 +1,11 @@
 import datetime
+import re
+
+def checkSpecialCharacters(in_str):
+    special = re.compile('[@_!#$%^&*()<>?/\|}{~:]')
+    if special.search(in_str) == None:
+        return True
+    return False
 def checkDate(in_str):
     if len(in_str) != 10:
         return False
