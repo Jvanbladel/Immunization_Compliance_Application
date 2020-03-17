@@ -2,7 +2,7 @@ import datetime
 import re
 
 def checkSpecialCharacters(in_str):
-    special = re.compile('[@_!#$%^&*()<>?/\|}{~:]')
+    special = re.compile('[@_!#$%^&*()<>?/\|}{~: 1234567890]')
     if special.search(in_str) == None:
         return True
     return False
