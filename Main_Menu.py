@@ -52,6 +52,8 @@ class mainMenu(ICA_super.icaSCREENS):
         self.permissionsSCREEN = 0
         self.aboutUsSCREEN = 0
         self.guideSCREEN = 0
+        self.alertSCREEN = 0
+        
         self.showMainMenu()
 
 
@@ -181,6 +183,9 @@ class mainMenu(ICA_super.icaSCREENS):
 
         if self.aboutUsSCREEN == 1:
             self.aboutUsSCREEN = 0
+
+        if self.alertSCREEN ==1:
+            self.alertSCREEN = 0
 
     def showConsole(self):
         self.clearAllScreens()
@@ -987,7 +992,7 @@ class mainMenu(ICA_super.icaSCREENS):
 
             if not self.user.permissions == None:
                 if self.user.permissions.createAlerts == 1:
-                    self.createAlerts = Button(self.root, text = "Alert Manger", justify = LEFT,anchor=W)
+                    self.createAlerts = Button(self.root, text = "Alert Manger", justify = LEFT,anchor=W, command=lambda: self.showAlertsSCREEN())
                     self.createAlerts.place(x=self.adminTABX,y=currentY,height=30,width=125)
                     currentY = currentY + 30
 
@@ -1283,6 +1288,8 @@ class mainMenu(ICA_super.icaSCREENS):
 
     def addPermissions(self, frame, permissionList):
         self.currentEditingPermission = None
+        if permissionList == None:
+            return
         for i in range(len(permissionList)):
             pstr = '{0:<15} {1:<35}'.format(permissionList[i].name, permissionList[i].description)
             b = Button(frame, text = pstr,anchor=W, justify=LEFT, width = 55, font = ('Consolas', 10))
@@ -1757,6 +1764,76 @@ class mainMenu(ICA_super.icaSCREENS):
 
             self.largeQueue = 0
             self.addToQueue(self.frame, self.queue)
+
+
+    def showAlertsSCREEN(self):
+        self.clearAllScreens()
+
+
+        self.alertRoleFRAME = Label(self.root, text = '{0:<15} {1:<35}'.format("Role", "Description"), font = ('Consolas', 10),justify=LEFT, anchor=W)
+        self.alertRoleFRAME.place(x=0, y=102.5, height = 20, width = 400)
+            
+        self.alertRoleMyframe=Frame(self.root,relief=GROOVE,width=20,height=475,bd=1)
+        self.alertRoleMyframe.place(x=0,y=125,height=475,width=400)
+
+        self.alertRolecanvas=Canvas(self.alertRoleMyframe)
+        self.alertRoleframe=Frame(self.alertRolecanvas)
+        self.alertRoleMyscrollbarY=Scrollbar(self.alertRoleMyframe,orient="vertical",command=self.alertRolecanvas.yview)
+        self.alertRolecanvas.configure(yscrollcommand=self.alertRoleMyscrollbarY.set)
+        self.alertRoleMyscrollbarY.pack(side="right",fill="y")
+
+        self.alertRolecanvas.pack(side="left")
+        self.alertRolecanvas.create_window((0,0),window=self.alertRoleframe,anchor='nw')
+        self.alertRoleframe.bind("<Configure>", self.alertRoleMyfunction)
+
+
+
+        self.alertNotificationMyframe=Frame(self.root,relief=GROOVE,width=20,height=475,bd=1)
+        self.alertNotificationMyframe.place(x=400,y=100,height=500,width=400)
+
+        self.alertNotificationcanvas=Canvas(self.alertNotificationMyframe)
+        self.alertNotificationframe=Frame(self.alertNotificationcanvas)
+        self.alertNotificationMyscrollbarY=Scrollbar(self.alertNotificationMyframe,orient="vertical",command=self.alertNotificationcanvas.yview)
+        self.alertNotificationcanvas.configure(yscrollcommand=self.alertNotificationMyscrollbarY.set)
+        self.alertNotificationMyscrollbarY.pack(side="right",fill="y")
+
+        self.alertNotificationcanvas.pack(side="left")
+        self.alertNotificationcanvas.create_window((0,0),window=self.alertNotificationframe,anchor='nw')
+        self.alertNotificationframe.bind("<Configure>", self.alertNotificationMyfunction)
+
+
+        self.roleButtonList = []
+        self.notificationList = []
+
+        self.addAlertRoles(self.alertRoleframe, self.getPermissions())
+        
+
+        self.alertSCREEN = 1
+
+        
+    def alertRoleMyfunction(self,event):
+        self.alertRolecanvas.configure(scrollregion=self.alertRolecanvas.bbox("all"),width=400,height=500)
+
+    def alertNotificationMyfunction(self,event):
+        self.alertNotificationcanvas.configure(scrollregion=self.alertNotificationcanvas.bbox("all"),width=400,height=475)
+
+    def addAlertRoles(self, frame, roleList):
+        self.currentEditingRoleAlert = None
+        if roleList == None:
+            return
+        for i in range(len(roleList)):
+            pstr = '{0:<15} {1:<35}'.format(roleList[i].name, roleList[i].description)
+            b = Button(frame, text = pstr,anchor=W, justify=LEFT, width = 55, font = ('Consolas', 10))
+            b.grid(row=i)
+            self.roleButtonList.append(b)
+            self.roleList.append(roleList[i])
+            b.configure(command=lambda i=i: self.showNotifcationEditor(self.roleButtonList[i], self.roleList[i]))
+            #if self.permssionList[i] == self.currentEditingPermission:
+            #    self.currentButton = b
+            #   b.configure(background = "lime green")
+
+    def showNotifcationEditor(button, role):
+        
 
 
 
