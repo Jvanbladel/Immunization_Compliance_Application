@@ -2,6 +2,7 @@ import pyodbc
 import pandas as pd
 import Patients 
 import Users
+import query_generator
 
 
 
@@ -17,7 +18,7 @@ class SQLConnection():
         except:
             print("Database Connection Failed")
             self.online = 0
-        
+
     def checkConnection(self):
         if self.online == 1:
             return 1
@@ -48,7 +49,7 @@ class SQLConnection():
     def loginUser(self, userName, password):
         if self.checkConnection() == 0:
             return -1
-        
+
         sql = self.loadQuerry("login_querry")
         
         #print(sql)
@@ -63,11 +64,17 @@ class SQLConnection():
             return Users.User(values, 1, self)
         else:
             return None
+    def loadQuerry(self, fileName):
+        output = ""
+        fp = open("Querries/" + fileName + ".txt", "r")
+        for line in fp:
+            output = output + line
+        return output
 
     def getDefaultWorkQueue(self):
         if self.checkConnection() == 0:
             return -1
-        
+
         sql = self.loadQuerry("default_work_queue")
         
         #print(sql)
@@ -172,7 +179,7 @@ class SQLConnection():
                 newPermission.consoleCommands,
                 newPermission.numberOfPatientsOpen,
                 newPermission.goalNumberOfOutReaches, oldPermission.name)
-        
+
         self.conn.execute(sql,params)
         self.conn.commit()
 
@@ -195,6 +202,23 @@ class SQLConnection():
         pass
 
     
+
+
+
+
+    def fuzzySearch(self, field, input_str):
+        sql = query_generator.fuzzySearch_sql(field, input_str)
+        # print(sql)
+        data = pd.read_sql(sql, self.conn, params={field, input_str})
+        if data.empty:
+            # print("Empty Data")
+            return
+        plist = []
+        for p in data:
+            data = [p[0], p[1], p[2], p[3], None, p[4], None, None, None, None, None, None, None]
+            plist.append(Patients.Patient(data))
+        return plist
+
 def main():
     SQL = SQLConnection()
     SQL.editPermission(Users.Permissions(["Hi", "decr", 1,1,1,1,1,1,1,1,1,1,1,1,1,1, 7, 10]), Users.Permissions(["Hi", "decr", 0,0,0,0,0,0,0,0,0,0,0,0,0,0, 7, 10]))

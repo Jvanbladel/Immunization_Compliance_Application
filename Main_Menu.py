@@ -1833,7 +1833,7 @@ class mainMenu(ICA_super.icaSCREENS):
             #   b.configure(background = "lime green")
 
     def showNotifcationEditor(button, role):
-        
+        pass
 
 
 
