@@ -187,7 +187,15 @@ class SQLConnection():
         pass
 
     def getDemographics(self, patientId):
-        pass
+        if self.checkConnection() == 0:
+            return
+        sql = self.loadQuerry("Demographics")
+        data = pd.read_sql(sql, self.conn, params={patientId})
+        if data.empty:
+            return
+        data = data.values.tolist()
+        return data
+
 
     def getGarentor(self, patientId):
         pass
@@ -221,8 +229,8 @@ class SQLConnection():
 
 def main():
     SQL = SQLConnection()
-    SQL.editPermission(Users.Permissions(["Hi", "decr", 1,1,1,1,1,1,1,1,1,1,1,1,1,1, 7, 10]), Users.Permissions(["Hi", "decr", 0,0,0,0,0,0,0,0,0,0,0,0,0,0, 7, 10]))
-    #SQL.deletePermission("Test")
+    demographics = SQL.getDemographics(105998)
+    print (demographics)
     SQL.closeConnection()
 if __name__ == "__main__":
     main()

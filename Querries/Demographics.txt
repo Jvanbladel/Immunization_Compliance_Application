@@ -1,155 +1,45 @@
-/*
-Demographics Screen
-Runtime:
-************************************************************
-Purpose: Populate available fields in demographics screen
-
-Tables being referenced:
-Patient Basic Profile -- db_pacific_ica.dbo.Patient
-Address Information -- db_pacific_ica.dbo.Address
-Phone Number Information -- db_pacific_ica.dbo.Phone
-Responsible Party Information -- db_pacific_ica.dbo.ResponsibleParty
-Guarantor Name -- db_pacific_ica.dbo.Guarantor
-*/
-
-IF OBJECT_ID('temp.dbo.myDemos', 'U') IS NOT NULL
-DROP TABLE myDemos;
-DROP TABLE #myDemos2;
-
-;with myDemos
-as
-    (
-SELECT
-p.PatientId,
-p.PatientLastName,
-p.PatientFirstName,
-p.PatientMiddleInitial,
-p.PatientGender,
-p.PatientDateOfBirth,
-p.PreferredLanguage,
-p.PatientRace,
-p.PatientEthnicity,
-datediff(year, max(p.PatientDateOfBirth), getdate()) As PatientAge,
-n.EmailAddress,
-p.PreferredCommMode,
-g.GuarantorLastName,
-g.GuarantorFirstName,
-g.GuarantorMiddleInitial,
-r.PatientGuarantorType
+SELECT p.PatientId, p.PatientLastName, p.PatientFirstName, p.PatientMiddleInitial, p.PatientGender, p.PatientDateOfBirth,
+p.PreferredLanguage, p.PatientRace, p.PatientEthnicity, datediff(year, max(p.PatientDateOfBirth), getdate()) As PatientAge,
+n.EmailAddress, p.PreferredCommMode, g.GuarantorLastName, g.GuarantorFirstName, g.GuarantorMiddleInitial, r.PatientGuarantorType
+INTO ##myDemos
 FROM Patient p
 left outer join Phone n on p.PatientId = n.PatientId
 left outer join ResponsibleParty r on p.PatientId = r.PatientId
 left outer join Guarantor g on r.GuarantorId = g.GuarantorId
-WHERE
-p.DeceasedStatus = 'N'
-GROUP BY
-p.PatientId,
-p.PatientLastName,
-p.PatientFirstName,
-p.PatientMiddleInitial,
-p.PatientGender,
-p.PatientDateOfBirth,
-p.PreferredLanguage,
-p.PatientRace,
-p.PatientEthnicity,
-n.PhoneNumber,
-n.PhoneType,
-n.EmailAddress,
-p.PreferredCommMode,
-g.GuarantorLastName,
-g.GuarantorFirstName,
-g.GuarantorMiddleInitial,
-r.PatientGuarantorType
-)
-select
-PatientId,
-PatientLastName,
-PatientFirstName,
-PatientMiddleInitial,
-PatientGender,
-PatientDateOfBirth,
-PreferredLanguage,
-PatientRace,
-PatientEthnicity,
-PatientAge,
-space(50) as StreetName1,
-space(25) as StreetName2,
-space(15) as City,
-space(2) as [State],
-space(10) as ZipCode,
-space(15) as County,
-space(15) as Country,
-space(10) as AddressType,
-space(15) as HomeNumber,
-space(15) as WorkNumber,
-space(15) as MobileNumber,
-EmailAddress,
-PreferredCommMode,
-GuarantorLastName,
-GuarantorFirstName,
-GuarantorMiddleInitial,
-PatientGuarantorType
-into #myDemos2
-from myDemos
-
-update #myDemos2
+WHERE p.DeceasedStatus = 'N'
+GROUP BY p.PatientId, p.PatientLastName, p.PatientFirstName, p.PatientMiddleInitial, p.PatientGender, p.PatientDateOfBirth,
+p.PreferredLanguage, p.PatientRace, p.PatientEthnicity, n.PhoneNumber, n.PhoneType, n.EmailAddress, p.PreferredCommMode,
+g.GuarantorLastName, g.GuarantorFirstName, g.GuarantorMiddleInitial, r.PatientGuarantorType
+select PatientId, PatientLastName, PatientFirstName, PatientMiddleInitial, PatientGender, PatientDateOfBirth, PreferredLanguage, PatientRace, PatientEthnicity, PatientAge,
+space(50) as StreetName1, space(25) as StreetName2, space(15) as City, space(2) as [State], space(10) as ZipCode, space(15) as County, space(15) as Country, space(10) as AddressType, space(15) as HomeNumber, space(15) as WorkNumber, space(15) as MobileNumber,
+EmailAddress, PreferredCommMode, GuarantorLastName, GuarantorFirstName, GuarantorMiddleInitial, PatientGuarantorType
+into ##myDemos2
+from ##myDemos
+update ##myDemos2
 set
-StreetName1 = b.StreetName1,
-StreetName2 = b.StreetName2,
-City = b.City,
-[State] = b.[State],
-ZipCode = b.ZipCode,
-County = b.County,
-Country = b.Country,
-AddressType = b.AddressType
-from #myDemos2 a inner join db_pacific_ica.dbo.Address b on a.PatientId = b.PatientId
+StreetName1 = b.StreetName1, StreetName2 = b.StreetName2, City = b.City, [State] = b.[State], ZipCode = b.ZipCode, County = b.County, Country = b.Country, AddressType = b.AddressType
+from ##myDemos2 a inner join db_pacific_ica.dbo.Address b on a.PatientId = b.PatientId
 where b.BadAddressIndicator = 'N'
-
-update #myDemos2
+update ##myDemos2
 set
 HomeNumber = p.PhoneNumber
-from #myDemos2 a inner join db_pacific_ica.dbo.Phone p on a.PatientId = p.PatientId
+from ##myDemos2 a inner join db_pacific_ica.dbo.Phone p on a.PatientId = p.PatientId
 where p.PhoneType = 'Home'
 and p.PhoneActiveInd = 'Y'
-
-update #myDemos2
+update ##myDemos2
 set
 WorkNumber = p.PhoneNumber
-from #myDemos2 a inner join db_pacific_ica.dbo.Phone p on a.PatientId = p.PatientId
+from ##myDemos2 a inner join db_pacific_ica.dbo.Phone p on a.PatientId = p.PatientId
 where p.PhoneType = 'Work'
 and p.PhoneActiveInd = 'Y'
-
-update #myDemos2
+update ##myDemos2
 set
 MobileNumber = p.PhoneNumber
-from #myDemos2 a inner join db_pacific_ica.dbo.Phone p on a.PatientId = p.PatientId
+from ##myDemos2 a inner join db_pacific_ica.dbo.Phone p on a.PatientId = p.PatientId
 where p.PhoneType = 'Mobile'
 and p.PhoneActiveInd = 'Y'
-
-select
-PatientLastName,
-PatientFirstName,
-PatientMiddleInitial,
-PatientDateOfBirth,
-PreferredLanguage,
-PatientRace,
-PatientEthnicity,
-PatientAge,
-StreetName1,
-StreetName2,
-City,
-[State],
-ZipCode,
-County,
-Country,
-AddressType,
-HomeNumber,
-WorkNumber,
-MobileNumber,
-EmailAddress,
-PreferredCommMode,
-GuarantorLastName,
-GuarantorFirstName,
-GuarantorMiddleInitial,
+select PatientId, PatientLastName, PatientFirstName, PatientMiddleInitial, PatientDateOfBirth, PreferredLanguage, PatientRace, PatientEthnicity, PatientAge, StreetName1, StreetName2, City,
+[State], ZipCode, County, Country, AddressType, HomeNumber, WorkNumber, MobileNumber, EmailAddress, PreferredCommMode, GuarantorLastName, GuarantorFirstName, GuarantorMiddleInitial,
 PatientGuarantorType
-from #myDemos2
+from ##myDemos2
+where PatientId = ?
