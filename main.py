@@ -20,7 +20,7 @@ def main(): # Main loop of ICA
 
     currentSCREEN = Login_Screen.loginScreen(window, None)
 
-    #sql = SQLConnection.SQLConnection()
+    sql = SQLConnection.SQLConnection()
     #currentUser = Users.User([0, "Jason", "Van Bladel", "Admin", 1], 1, sql)
     #currentUser.setPermissions(Users.Permissions(["Hi", "decr", 1,1,1,1,1,1,1,1,1,1,1,1,1,1, 7, 10]))
     #currentSCREEN = Main_Menu.mainMenu(window, currentUser)
@@ -29,8 +29,12 @@ def main(): # Main loop of ICA
     #currentUser = User([0, "Jason", "Van Bladel", "Admin"], 1)
     #currentSCREEN = mainMenu(window, currentUser)
 
-    #currentSCREEN = Med_Info_Screen.med_INFO_SCREEN(window,Patient(["John","Smith","20","2/3/2013","32","30"]),SQL)
 
+    #test patient information for med info screen since DB is down
+    testPatientData = [20,10,"Test","Account","L","4/31/2000","F","No","4/21/2020",0,"Insert Race", "Insert ethnicity",20]
+    testPatient = Patient(testPatientData)
+
+    #currentSCREEN = Med_Info_Screen.med_INFO_SCREEN(window,testPatient)
     window.mainloop()
 
 if __name__ == "__main__":
