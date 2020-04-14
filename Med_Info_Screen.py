@@ -32,16 +32,18 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
         self.servicePage = Frame(self.patientNotebook)
         self.contactPage = Frame(self.patientNotebook)
+        self.immunizationHistory = Frame(self.patientNotebook)
         self.insurancePage = Frame(self.patientNotebook)
 
         self.patientNotebook.add(self.demosPage,text="Demographics")
         self.patientNotebook.add(self.servicePage, text="Service History")
         self.patientNotebook.add(self.contactPage, text="Outreach Report")
+        self.patientNotebook.add(self.immunizationHistory,text="Immunizations")
         self.patientNotebook.add(self.insurancePage,text="Insurance")
 
 
 
-        self.headlineFrame = LabelFrame(self.root, width=1100, height=30, bg="midnight blue")
+        self.headlineFrame = LabelFrame(self.root, width=1100, height=30, bg="RoyalBlue3")
         self.headlineFrame.place(x=0, y=0)
         self.patientFULL = Patient.fName + " " + Patient.lName
         self.patientLabel = None
@@ -75,6 +77,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         self.showDemos()
         self.showService()
         self.showOutReach()
+        self.showImmunizationHistory()
 
 
         #hold service history listing
@@ -83,6 +86,67 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
         #will hold the previous location in the service page
         self.previousLocation = 0
+
+
+
+    def showImmunizationHistory(self):
+
+        immunizationGroups = ["Polio", "DTap/Td","HIB", "MMR", "HepB","Varicella",
+                              "HepA","Pneumococcal","Infuenza","Meningococcal","Rotavirusz"]
+
+        theFrame = self.immunizationHistory
+        theFrame.update()
+        theFrame.configure(bg="light blue")
+
+
+        generalFont = ('consolas',12)
+        Width = theFrame.winfo_width()
+        Height = theFrame.winfo_height()
+
+
+        header = Label(theFrame,text="List of immunizations we have on file for " + self.patientFULL,
+                       font=generalFont)
+        header.place(x=0,y=0)
+
+        self.addImmunization(theFrame,30)
+
+    def addImmunization(self,theFrame,startingY):
+
+        generalFont = ('consolas',12)
+        generalBG = "light blue"
+
+        newImmunization = LabelFrame(theFrame,bg="light blue",width=790,height=150,highlightcolor="white",highlightthickness=2,bd=0)
+        newImmunization.place(x=5, y=startingY)
+
+        immunizationName = "ImmunizationName: DTap (Diphtheria, Tetanus, acellular Pertussis)"
+
+        datesAdministered = ["8/9/2002", "7/16/1998", "10/10/1997", "8/15/1997", "6/17/1997"]
+
+        administeredString = "Adminstered: "
+
+        for date in datesAdministered:
+            administeredString += (date + ", ")
+
+        immunizationLabel = Label(newImmunization,text=immunizationName,font=generalFont,bg=generalBG)
+        immunizationLabel.place(x=5,y=0)
+        immunizationLabel.update()
+
+        nextY = immunizationLabel.winfo_y() + immunizationLabel.winfo_height() + 15
+
+        administeredLabel = Label(newImmunization,text=administeredString,font=generalFont,bg=generalBG)
+        administeredLabel.place(x=5,y=nextY)
+        administeredLabel.update()
+
+        nextY = administeredLabel.winfo_height() + administeredLabel.winfo_y() + 30
+
+
+        learnMoreButton = Button(newImmunization, text="Learn more", font=generalFont)
+        learnMoreButton.place(x=5,y=nextY)
+
+
+
+
+
 
 
     def label_and_TextDEP(self,frame,labelText,xPos,yPos,insertedText): # this should create a label and place the text beneath it
@@ -336,6 +400,12 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         self.contactINFO = Frame(self.demosNoteBook,bg="light blue")
         self.demosNoteBook.add(self.contactINFO,text="Contact Information")
 
+
+        
+        self.guarantorInformation = Frame(self.demosNoteBook,bg="light blue")
+        self.demosNoteBook.add(self.guarantorInformation,text="Guarantor Information")
+
+
         self.demoOtherFrame = Frame(self.demosNoteBook)
         self.demoOtherFrame.config(bg="light blue")
         self.demosNoteBook.add(self.demoOtherFrame, text="Other")
@@ -391,6 +461,12 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         contactNotesText.update()
 
 
+        #guarantor information
+
+        guarantorInformationlabels = ["First Name", "Last Name","Middle Initial", "GuarantorGender"]
+
+
+
         headerLabel = Label(self.demoOtherFrame,text="These are just here for testing purposes")
         headerLabel.pack()
 
@@ -402,10 +478,13 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         emailButton.pack()
 
 
+
+
+
     def extensionGuarantor(self): # display the Garantour in the extension
 
         self.addExtension()
-        self.checkExtension() # determine if something exists in
+
 
         #obtain information here
 
@@ -448,7 +527,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
             self.guarantorLabels[formatText] = newLabel # store our labels connected to the formattedText
 
-        closeButton = Button(self.extensionFrame,text = "Close Guarantor Example Page", command= self.clearExtension)
+        closeButton = Button(self.extensionFrame,text = "Close Guarantor Example Page", command= self.removeExtension)
         closeButton.place(x=50,y=450)
 
     def label_and_Text(self,frame,labelText,labelRow,labelCol,boxText):
@@ -462,20 +541,14 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         patientLname.grid(row=labelRow+2, column=labelCol)
 
     def putFormat(self):
-        '''
-        formatString = '{0:<20}{1:<20}{2:<19}{3:<20}{4:<10}'.format("Service ID", "Immunization",
-                                                                   "Compliance", "Service Date", "Doses")
+
+        formatString = '{0:<20}{1:<20}{2:<17}{3:<20}{4:<10}'.format("Service ID", "Immunization",
+                                                                   "Administered?", "Service Date", "Dose Number")
 
         self.formatLabel = Label(self.servicePage, text=formatString, font=('Consolas', 11)
-                            , relief="raised", pady=10)
+                            , relief="raised",width=800,height=2)
         self.formatLabel.pack()
         self.formatLabel.update()
-        '''
-
-
-        formatLabelString = "Showing service history for " + self.patientFULL
-
-        self.formatLabel = Label(self.servicePage,text=formatLabelString,font=('Consolas',12))
 
     def showService(self): # uses servicePage Canvas for display
 
@@ -492,6 +565,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         self.canvas.pack(side="left",expand=True,fill="both")
         self.canvas.create_window((0, 0), window=self.newnewFrame, anchor='nw')
         self.newnewFrame.bind("<Configure>", self.scrollFunction)
+        self.newnewFrame.configure(bg="light blue")
 
         # format Service ID, Immunization Name, Compliance, Service Date, Extra Tab?
 
@@ -523,14 +597,16 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
     def formatService(self,patientService): # will format the buttons to be displayed in the service history
 
         # format Service ID, Immunization Name, Compliance, Service Date, Extra Tab?
-        formatString = '{0:<20}{1:<20}{2:<17}{3:<20}{4:<10}'.format(patientService[0],patientService[1],patientService[2]
-                                                                   ,patientService[3],patientService[4])
+        #formatString = '{0:<7}{1:<10}{2:<20}{3:<17}{4:<20}{5:<20}'.format("",patientService[0],patientService[1],patientService[2]
+        #                                                          ,patientService[3],patientService[4])
+
+
+        # new format has spacing to make the design look neater
+        formatString = '{0:<7}{1:<10}{2:<8}{3:<20}{4:<5}{5:<14}{6:<0}{7:<20}{8:<2}{9:<20}'.format("",patientService[0],"",patientService[1],
+                                                                                                  "",patientService[2],"",patientService[3],
+                                                                                                  "",patientService[4])
 
         return formatString
-
-    def demosScrollFunction(self,event):
-
-        self.demosCanvas.configure(scrollregion=self.canvas.bbox("all"), width=500, height=500)
 
     def scrollFunction(self,event): # this will scroll the service canvas
 
@@ -580,46 +656,175 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         patientLname.grid(row=labelRow + 2, column=labelCol)
         '''
 
+        #does basic setup for the service screen
         self.hideServiceHistory()
         self.formatLabel.configure(text="Showing details for Service #" + patientINFO[0],font=('consolas',12))
         self.myScrollBar.pack_forget()
         self.canvas.yview_moveto(0)
-        self.newnewFrame.configure(bg="light blue")
 
-        testButton = Button(self.newnewFrame,text = "return",font =('consolas',14), command = self.displayServiceHistory)
-        testButton.place(x=720,y=0)
 
-        generalFont = ('consolas',11)
-
+        #general widget settings
+        generalFont = ('consolas', 12)
+        generalBG = "light blue"
         theFrame = self.newnewFrame
-        serviceDate = Label(theFrame,text = "Date of Service",font = generalFont)
-        serviceDate.place(x=50,y=50)
 
 
-        immunizationIDLabel = Label(theFrame,text = "ImmunizationID",font = generalFont)
-        immunizationIDLabel.place(x=300,y=50)
 
-        #immunizationIDButton = Button(theFrame,text = "Expand Immunization",command = self.extensionImmunization)
-        #immunizationIDButton.place(x=300,y=75)
+        #static data that is used during developement
+        DOS = "1/1/2000"
+        receivedImmunization = "diphtheria, tetanus toxoids, and acellular pertussis"
+        immunizationABBV = "DTaP"
+        allergicReactions = "N/A"
 
+        xPos = 200
+        yPos = 10
+        increment = 20
+        textX = 400
 
-        completionStatusLabel = Label(theFrame,text = "Completion Status", font = generalFont)
-        completionStatusLabel.place(x = 50, y = 150)
-
-
-        allergicReactionLabel = Label(theFrame,text = "Allergic Reactions", font = generalFont)
-        allergicReactionLabel.place(x = 300, y = 150)
-
-
-        informationSourceLabel = Label(theFrame,text= "Information Source", font = generalFont)
-        informationSourceLabel.place(x=50, y = 300)
+        serviceDetailsHeader = Label(theFrame,text="Service Details",width= theFrame.winfo_width(),height = 1,bg="RoyalBlue3",font=generalFont,fg="white",anchor=W)
+        serviceDetailsHeader.place(x=0,y=0)
+        serviceDetailsHeader.update()
 
 
-        sourceSystemLabel = Label(theFrame,text = "Source System",font = generalFont)
-        sourceSystemLabel.place(x=300,y=300)
+        yPos = serviceDetailsHeader.winfo_height() + serviceDetailsHeader.winfo_y() + increment
 
-        createDateLabel =Label(theFrame,text = "Created Date", font = generalFont)
-        createDateLabel.place(x=500,y=150)
+
+        serviceDateLabel = Label(theFrame,text="Date of Service",bg=generalBG,font=generalFont)
+        serviceDateLabel.place(x=xPos,y=yPos)
+        serviceDateLabel.update()
+
+
+
+        serviceDateText = Text(theFrame,width=len(DOS),height = 1,font=generalFont)
+        serviceDateText.place(x=textX,y=yPos)
+        serviceDateText.insert('end',DOS)
+        serviceDateText.configure(state=DISABLED)
+
+        yPos = serviceDateLabel.winfo_height() + serviceDateLabel.winfo_y() + increment
+
+
+        immunizationLabel = Label(theFrame,text="Immunizations Received",bg=generalBG,font=generalFont)
+        immunizationLabel.place(x=xPos,y=yPos)
+        immunizationLabel.update()
+
+
+        immuX = immunizationLabel.winfo_width() + immunizationLabel.winfo_x() + 5
+
+
+        immuReceived = StringVar(theFrame)
+        immuReceived.set("DTaP")
+
+
+        immunizationsReceived = Combobox(theFrame,values=["DTaP","Flu","HIV"])
+        immunizationsReceived.set("DtaP")
+        #immunizationsReceived = OptionMenu(theFrame,immuReceived,'Flu',"HIV")
+        immunizationsReceived.place(x=immuX,y=yPos)
+        immunizationsReceived.update()
+
+
+        immuXtension = immunizationsReceived.winfo_width() + immunizationsReceived.winfo_x() + 10
+        extendImmunizationButton = Button(theFrame,text="Information on \nSelected Immunization",
+                                        command=self.extensionImmunization)
+        extendImmunizationButton.place(x=immuXtension,y=yPos)
+
+
+        yPos = immunizationLabel.winfo_y() + immunizationLabel.winfo_height() + increment
+
+
+        completionStatusLabel = Label(theFrame,text="Completion Status",bg=generalBG,font=generalFont)
+        completionStatusLabel.place(x=xPos,y=yPos)
+        completionStatusLabel.update()
+
+
+        completionX = completionStatusLabel.winfo_x() + completionStatusLabel.winfo_width() + 5
+
+        completionStatusText = Text(theFrame,width=15,font=generalFont,height=1)
+        completionStatusText.place(x=completionX,y=yPos)
+        completionStatusText.configure(state=DISABLED)
+
+
+        yPos = completionStatusLabel.winfo_y() + completionStatusLabel.winfo_height() + increment
+
+
+        informationSourceLabel = Label(theFrame,text="Information Source",bg=generalBG,font=generalFont)
+        informationSourceLabel.place(x=xPos,y=yPos)
+        informationSourceLabel.update()
+
+        informationX = informationSourceLabel.winfo_width() + informationSourceLabel.winfo_x() + 5
+
+        informationSourceText = Text(theFrame,width=15,font=generalFont,height=1)
+        informationSourceText.place(x=informationX,y=yPos)
+        informationSourceText.configure(state=DISABLED)
+
+
+        yPos = informationSourceLabel.winfo_y() + informationSourceLabel.winfo_height() + increment
+
+        sourceSystemLabel = Label(theFrame,text="Source System",bg=generalBG,font=generalFont)
+        sourceSystemLabel.place(x=xPos,y=yPos)
+        sourceSystemLabel.update()
+
+        sourceX = sourceSystemLabel.winfo_x() + sourceSystemLabel.winfo_width() + 5
+
+
+        sourceSystemText = Text(theFrame,width=15,font=generalFont,height=1)
+        sourceSystemText.place(x=sourceX,y=yPos)
+        sourceSystemText.configure(state=DISABLED)
+
+
+
+
+        yPos = sourceSystemLabel.winfo_y() + sourceSystemLabel.winfo_height() + increment
+
+
+        reactionsHeader = Label(theFrame, text="Reactions", width=theFrame.winfo_width(), height=1,
+                                     bg="RoyalBlue3", font=generalFont, fg="white", anchor=W)
+
+        reactionsHeader.place(x=0,y=yPos + 30)
+        reactionsHeader.update()
+
+        yPos = reactionsHeader.winfo_height() + reactionsHeader.winfo_y() + increment
+
+        allergicReactionsLabel = Label(theFrame,text="Allergic Reactions",bg=generalBG,font=generalFont)
+        allergicReactionsLabel.place(x=xPos,y=yPos)
+        allergicReactionsLabel.update()
+
+
+
+        allergicReactionsText = Text(theFrame,width=30,height=3)
+        allergicReactionsText.place(x=textX,y=yPos)
+        allergicReactionsText.configure(state=DISABLED)
+        allergicReactionsText.update()
+
+        yPos = allergicReactionsText.winfo_y() + allergicReactionsText.winfo_height() + increment
+
+
+        serviceProviderHeader = Label(theFrame,text="Service Provider",bg="RoyalBlue3",fg="white",
+                                      font=generalFont,anchor=W,
+                                      width=theFrame.winfo_width(),height=1)
+        serviceProviderHeader.place(x=0,y=yPos)
+        serviceProviderHeader.update()
+
+
+        yPos = serviceProviderHeader.winfo_height() + serviceProviderHeader.winfo_y() + increment
+
+        serviceProviderLabel = Label(theFrame,text="Provider Name",bg=generalBG,font=generalFont)
+        serviceProviderLabel.place(x=xPos,y=yPos)
+        serviceDateLabel.update()
+
+        providerX = serviceDateLabel.winfo_x() + serviceDateLabel.winfo_width() + 10
+
+
+        serviceProviderText = Text(theFrame,width=20,height=1,font=generalFont)
+        serviceProviderText.place(x=providerX,y=yPos)
+        serviceProviderText.update()
+
+        yPos += (serviceProviderText.winfo_height() + increment + 50)
+
+
+        returnButton = Button(theFrame,text="Back to Service History",bg="RoyalBlue3",fg="white",font=generalFont,
+                              command=self.displayServiceHistory)
+        returnButton.place(x=xPos,y=yPos)
+
 
 
 
@@ -628,10 +833,16 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
         self.addExtension()
         self.checkExtension()
+        theFrame = self.extensionFrame # easier to reference
+        generalFont = ('consolas', 12)
 
-        immunizationID = "A150" # would pass this into this function
-        immunizationIDLabel = Label(self.extensionFrame,text = "Immunization ID: " + immunizationID)
-        immunizationIDLabel.place(x=0,y=0)
+        immunizationName = "DTaP (Diphtheria, Tetanus, acellular Pertussis)"
+        immunizationName2 = "HBV (Hepatitis B)"
+
+
+        immunizationHeader = Label(theFrame,text=immunizationName,font=generalFont,wraplengt=300)
+        immunizationHeader.place(x=50,y=0)
+
 
 
     def showOutReachDEP(self): # uses patient Canvas for display
@@ -693,8 +904,16 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
     def showOutReach(self): # newer version of outreaching to patients
 
+        # Setup for  the contact page
+        self.contactPage.update()
+        Width = self.contactPage.winfo_width()
+
+
         self.contactPage.configure(bg="light blue")
 
+
+        # initialized vars
+        theFrame = self.contactPage
 
 
     def getPatientHistory(self):
@@ -710,7 +929,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
         self.addExtension()
 
-        tempLabel = Button(self.extensionFrame,text="Close extension",command= self.clearExtension)
+        tempLabel = Button(self.extensionFrame,text="Close extension",command= self.removeExtension)
         tempLabel.place(x=200,y=0)
 
         displayLabel = Label(self.extensionFrame,text="To:" + self.patientFULL ,font = ('Consolas', 14),relief="groove")
@@ -806,7 +1025,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
                                                                              "DOB:3/21/2013", "MRN:30")
 
         self.patientLabel = Label(self.headlineFrame, text=self.patientLabelText, font=('Consolas', 14),
-                                  bg="midnight blue", fg="white")
+                                  bg="RoyalBlue3", fg="white")
         self.patientLabel.place(x=0, y=0)
 
     def originalHeadline(self):
@@ -819,13 +1038,14 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
                                                                              "DOB:3/21/2013", "MRN:30")
 
         self.patientLabel = Label(self.headlineFrame, text=self.patientLabelText, font=('Consolas', 14),
-                                  bg="midnight blue", fg="white")
+                                  bg="RoyalBlue3", fg="white")
         self.patientLabel.place(x=0, y=0)
 
 
 
     def removeExtension(self): # remove extension to extended patient screen
 
+        self.clearExtension()
         self.root.geometry("800x730")
         self.extensionFrame.destroy()
         self.extensionFrame = None
@@ -836,14 +1056,13 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         if self.extensionFrame is None: # Extension does not exist
             return
 
-        if len(self.extensionFrame.winfo_children()) > 0:
-            self.clearExtension()
+        self.clearExtension()
 
     def clearExtension(self): # will clear the extension Frame
 
         for widget in self.extensionFrame.winfo_children():
             widget.destroy()
 
-        self.removeExtension()
+
 
 
