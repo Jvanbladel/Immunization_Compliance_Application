@@ -197,8 +197,18 @@ class SQLConnection():
         data = data.values.tolist()
         return data
 
+    def getServiceDetails(self, patientId):
+        if self.checkConnection() == 0:
+            return
+        sql = self.loadQuerry("Service_Details")
+        data = pd.read_sql(sql, self.conn, params={patientId})
+        if data.empty:
+            return
+        data = data.values.tolist()
+        return data
 
-    def getGarentor(self, patientId):
+
+    def getGuarantor(self, patientId):
         pass
 
     def getInsurence(self, patientId):
