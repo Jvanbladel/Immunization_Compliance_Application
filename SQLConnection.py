@@ -204,7 +204,7 @@ class SQLConnection():
         data = pd.read_sql(sql, self.conn, params={patientId})
         if data.empty:
             return
-        data = data.values.tolist()
+        #data = data.values.tolist()
         return data
 
 

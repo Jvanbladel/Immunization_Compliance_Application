@@ -626,16 +626,23 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         self.displayServiceHistory()
 
     def displayServiceHistory(self): # will create a list of buttons that hold links to service info
+        SQL = self.SQL
+        serviceHistory = SQL.getServiceDetails(self.thisPatient.patientID)
+        print(serviceHistory)
 
-        if  not self.myScrollBar.winfo_ismapped():  # will repack scroll bar and formatLabel
+
+        if not self.myScrollBar.winfo_ismapped():  # will repack scroll bar and formatLabel
             self.formatLabel.forget()
             self.putFormat()
             self.formatLabel.pack()
             self.myScrollBar.pack(side="right", fill="y")
 
-        for index in range(30): # This is where we would queue the database for information. Probably modify to only do once
-            serviceID = "E15" + str(index)
-            patientINFO = [serviceID, "Immunization", "Yes", "1/1/2000", 2]
+        for index in range(len(serviceHistory)): # This is where we would queue the database for information. Probably modify to only do once
+            serviceID = serviceHistory.ServiceDetailsId[index]
+
+            patientINFO = [serviceID, serviceHistory.ImmDisplayDescription[index], \
+                           serviceHistory.CompletionStatus[index], \
+                           serviceHistory.DateofService[index]]
             buttonINFO = self.formatService(patientINFO)
 
             self.serviceHistory = [] # holds all service
@@ -687,7 +694,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
         #does basic setup for the service screen
         self.hideServiceHistory()
-        self.formatLabel.configure(text="Showing details for Service #" + patientINFO[0],font=('consolas',12)) #replaced data[0], if this does not work use Service DetailId
+        self.formatLabel.configure(text="Showing details for Service #" + patientINFO[0],font=('consolas',12))
         self.myScrollBar.pack_forget()
         self.canvas.yview_moveto(0)
 

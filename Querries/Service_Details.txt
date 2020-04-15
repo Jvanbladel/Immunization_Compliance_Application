@@ -1,6 +1,7 @@
 select
 p.PatientId,
 s.DateofService,
+s.ServiceDetailsId,
 s.CompletionStatus,
 s.AllergicReactions,
 s.InformationSource,

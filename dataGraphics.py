@@ -139,8 +139,8 @@ def getData():
     xs = data.OutreachDetailsDate
     ys = data.Count_OutreachDetailsPatientId
     SQL.closeConnection()
-    return xs,ys
+    return data
 
 
 
-print(getData())
+print((getData().Count_OutreachDetailsPatientId)[0])
