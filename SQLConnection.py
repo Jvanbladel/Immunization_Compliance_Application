@@ -3,6 +3,7 @@ import pandas as pd
 import Patients 
 import Users
 import query_generator
+import Type_Check
 
 
 
@@ -209,23 +210,30 @@ class SQLConnection():
     def getAddress(self, patientId0):
         pass
 
-    
-
-
-
-
-    def fuzzySearch(self, field, input_str):
-        sql = query_generator.fuzzySearch_sql(field, input_str)
-        # print(sql)
-        data = pd.read_sql(sql, self.conn, params={field, input_str})
+    def executeQuery(self, query):
+        data = pd.read_sql(query, self.conn)
         if data.empty:
-            # print("Empty Data")
+            print("Empty Data")
             return
-        plist = []
-        for p in data:
-            data = [p[0], p[1], p[2], p[3], None, p[4], None, None, None, None, None, None, None]
-            plist.append(Patients.Patient(data))
-        return plist
+        else:
+            return data
+
+def fuzzySearch(self, field, input_str, type):
+    if not Type_Check.checkType(input_str, type):
+        print("invalid input")
+        return
+    sql = query_generator.fuzzySearch_sql(field, input_str, type)
+    # print(sql)
+    data = pd.read_sql(sql, self.conn, params={field, input_str})
+    if data.empty:
+        print("Empty Data")
+        return
+    plist = []
+    for p in data:
+        data = [p[0], p[1], p[2], p[3], None, p[4], None, None, None, None, None, None, None]
+        plist.append(Patients.Patient(data))
+    return plist
+
 
 def main():
     SQL = SQLConnection()
