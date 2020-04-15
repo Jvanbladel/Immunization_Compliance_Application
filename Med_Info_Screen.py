@@ -687,11 +687,13 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
         SQL = SQLConnection.SQLConnection()
         data = SQL.getServiceDetails(patientId)
+        SQL.closeConnection()
 
 
         #does basic setup for the service screen
         self.hideServiceHistory()
-        self.formatLabel.configure(text="Showing details for Service #" + data[0],font=('consolas',12)) #replaced data[0], if this does not work use Service DetailId
+        self.formatLabel.configure(text="Showing details for Service #" + data[0],font=('consolas',12))
+        #replaced data[0], if this does not work use 'data.ServiceDetailId'
         self.myScrollBar.pack_forget()
         self.canvas.yview_moveto(0)
 
@@ -702,12 +704,11 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         theFrame = self.newnewFrame
 
 
-
         #static data that is used during developement
-        DOS = "1/1/2000"
-        receivedImmunization = "diphtheria, tetanus toxoids, and acellular pertussis"
-        immunizationABBV = "DTaP"
-        allergicReactions = "N/A"
+        DOS = data.DateOfService
+        receivedImmunization = data.ImmDisplayDescription
+        immunizationABBV = data.ImmunizationType
+        allergicReactions = data.AllergicReactions
 
         xPos = 200
         yPos = 10
@@ -748,7 +749,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         immuReceived.set("DTaP")
 
 
-        immunizationsReceived = Combobox(theFrame,values=["DTaP","Flu","HIV"])
+        immunizationsReceived = Combobox(theFrame,values=receivedImmunization)
         immunizationsReceived.set("DtaP")
         #immunizationsReceived = OptionMenu(theFrame,immuReceived,'Flu',"HIV")
         immunizationsReceived.place(x=immuX,y=yPos)
