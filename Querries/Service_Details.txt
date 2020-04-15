@@ -1,0 +1,13 @@
+select p.PatientId,
+s.ServiceDetailsId,
+s.DateofService,
+s.ServiceDetailsId,
+s.CompletionStatus,
+s.AllergicReactions,
+s.InformationSource,
+i.ImmDisplayDescription,
+i.ImmunizationType
+from ServiceDetails s
+inner join Patient p on p.PatientId = s.PatientId
+inner join Immunization i on i.ImmunizationID = s.ImmunizationId
+where p.PatientId = ?

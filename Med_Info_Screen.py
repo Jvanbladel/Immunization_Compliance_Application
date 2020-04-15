@@ -5,6 +5,7 @@ from PIL import ImageTk,Image
 from Patients import *
 from tkinter import ttk
 import ICA_super
+import SQLConnection
 
 class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
@@ -23,6 +24,9 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
         #setup the notebook for patient screen
         self.patientNotebook = ttk.Notebook(self.root,width=800,height=670)
+
+
+
 
         self.demosPage = Frame(self.patientNotebook)
 
@@ -129,13 +133,16 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
         immunizationNames = ["DTap (Diphtheria, Tetanus, acellular Pertussis)",
                              "HBV (Hepatitis B", "HIB HbOC (Haemophilus influenzae b)",
-                             "Polio (IPV)", "Pneumococcal (PCV)"]
+                             "HBV (Hepatitis B", "HIB HbOC (Haemophilus influenzae b)",
+                             "HBV (Hepatitis B", "HIB HbOC (Haemophilus influenzae b)"]
 
         datesAdministered = [["8/9/2002", "7/16/1998", "10/10/1997", "8/15/1997", "6/17/1997"],
                              ["3/9/1998","8/15/1997","6/17/1997"],
                              ["7/16/1998","10/10/1997", "8/15/1997", "6/17/1997"],
-                             ["9/10/2009","2/15/2005","6/27/2001"],
-                             ["4/12/2010","4/18/2004","12/12/2002"]]
+                             ["7/16/1998","10/10/1997", "8/15/1997", "6/17/1997"],
+                             ["7/16/1998","10/10/1997", "8/15/1997", "6/17/1997"],
+                             ["7/16/1998","10/10/1997", "8/15/1997", "6/17/1997"],
+                             ["7/16/1998","10/10/1997", "8/15/1997", "6/17/1997"]]
 
 
         nextY = 5
@@ -619,16 +626,23 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         self.displayServiceHistory()
 
     def displayServiceHistory(self): # will create a list of buttons that hold links to service info
+        SQL = self.SQL
+        serviceHistory = SQL.getServiceDetails(self.thisPatient.patientID)
+        print(serviceHistory)
 
-        if  not self.myScrollBar.winfo_ismapped():  # will repack scroll bar and formatLabel
+
+        if not self.myScrollBar.winfo_ismapped():  # will repack scroll bar and formatLabel
             self.formatLabel.forget()
             self.putFormat()
             self.formatLabel.pack()
             self.myScrollBar.pack(side="right", fill="y")
 
-        for index in range(30): # This is where we would queue the database for information. Probably modify to only do once
-            serviceID = "E15" + str(index)
-            patientINFO = [serviceID, "Immunization", "Yes", "1/1/2000", 2]
+        for index in range(len(serviceHistory)): # This is where we would queue the database for information. Probably modify to only do once
+            serviceID = serviceHistory.ServiceDetailsId[index]
+
+            patientINFO = [serviceID, serviceHistory.ImmDisplayDescription[index], \
+                           serviceHistory.CompletionStatus[index], \
+                           serviceHistory.DateofService[index]]
             buttonINFO = self.formatService(patientINFO)
 
             self.serviceHistory = [] # holds all service
@@ -664,7 +678,19 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
 
 
-    def loadService(self,patientINFO): # will diplay specific service in expansion window
+    def loadServiceHistory(self): # will load patient service history from the database
+                                  # I have a temp format here for now though
+
+        serviceID = 1
+        immunizations = ["Immunization 1", "Immunization 2"]
+        compliance = ["Yes", "No"]
+        ServiceDate = ["2/1/2013"]
+        Doses = [1,2]
+        patientService = [serviceID,immunizations[1], compliance[0],ServiceDate, Doses[0]]
+
+        self.formatService(patientService)
+
+    def loadService(self,patientINFO): # will display specific service in expansion window
 
         #does basic setup for the service screen
         self.hideServiceHistory()

@@ -1,16 +1,29 @@
 import datetime
 import re
 
+dataSize = 50
+
+
 def checkSpecialCharacters(in_str):
-    special = re.compile('[@_!#$%^&*()<>?/\|}{~:]')
-    if special.search(in_str) == None:
+    special = re.compile('[@_!#$%^&*()<>?/\\\|}{~: 1234567890]')
+    if len(in_str) > dataSize:
+        return False
+    elif special.search(in_str) is None:
         return True
     return False
+
+
 def checkDate(in_str):
-    if len(in_str) != 10:
-        return False
-    #formate mm/dd/yyyy
-    month, day, year = in_str.split('/')
+    if '/' in in_str:
+        if len(in_str) != 10:
+            return False
+        # format mm/dd/yyyy
+        month, day, year = in_str.split('/')
+    else:
+        if len(in_str) != 8:
+            return False
+        month, day, year = in_str[0:2], in_str[2:4], in_str[4:8]
+        # print(month,day,year)
     try:
         datetime.datetime(int(year), int(month), int(day))
         if datetime.datetime(int(year), int(month), int(day)) > datetime.datetime.now():
@@ -22,9 +35,11 @@ def checkDate(in_str):
 
 
 def checkType(in_str, tp):
-    if len(in_str) > 50:
+    # if len(in_str) > 50:
+    #     return False
+    if checkSpecialCharacters(in_str):
         return False
-    elif tp is 'int':
+    if tp is 'int':
         try:
             val = int(in_str)
             print("Input is an integer number. Number = ", val)
@@ -40,4 +55,7 @@ def checkType(in_str, tp):
         except ValueError:
             print("No.. input is not a float. It's a string")
             return False
-# print(checkDate('23/23/2323'))
+    elif tp is 'date':
+        return checkDate(in_str)
+    else:
+        return True
