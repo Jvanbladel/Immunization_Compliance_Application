@@ -197,7 +197,7 @@ class SQLConnection():
         return data
 
 
-    def getGarentor(self, patientId):
+    def getGuarantor(self, patientId):
         pass
 
     def getInsurence(self, patientId):
