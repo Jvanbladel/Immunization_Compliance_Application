@@ -98,34 +98,84 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         theFrame.update()
         theFrame.configure(bg="light blue")
 
-
         generalFont = ('consolas',12)
         Width = theFrame.winfo_width()
         Height = theFrame.winfo_height()
+
+        self.immunizationFrame = Frame(theFrame)
+        self.immunizationFrame.configure(bg="light blue")
+        self.immunizationCanvas = Canvas(self.immunizationFrame)
+        self.immunizationCanvas.configure(bg="light blue")
+        self.immunizationScrollbar = Scrollbar(self.immunizationFrame,orient="vertical"
+                                               ,command=self.immunizationCanvas.yview)
+        self.scrollableFrame = Frame(self.immunizationCanvas)
+
+        self.scrollableFrame.bind("<Configure>", lambda e: self.immunizationCanvas.configure(
+           scrollregion=self.immunizationCanvas.bbox("all"), width=500,height=500)
+        )
+
+        self.immunizationCanvas.create_window((0,0), window=self.scrollableFrame,anchor="nw")
+        self.immunizationCanvas.configure(yscrollcommand=self.immunizationScrollbar.set)
+
 
 
         header = Label(theFrame,text="List of immunizations we have on file for " + self.patientFULL,
                        font=generalFont)
         header.place(x=0,y=0)
+        header.update()
 
-        self.addImmunization(theFrame,30)
+        # self.immunizationFrame.pack()
+        self.immunizationFrame.place(x=0, y=header.winfo_height(), width=800, height=800)
+        self.immunizationCanvas.pack(side="left", fill="both", expand=True)
+        self.immunizationScrollbar.pack(side="right", fill="y")
+        self.immunizationCanvas.update()
 
-    def addImmunization(self,theFrame,startingY):
+        immunizationNames = ["DTap (Diphtheria, Tetanus, acellular Pertussis)",
+                             "HBV (Hepatitis B", "HIB HbOC (Haemophilus influenzae b)",
+                             "HBV (Hepatitis B", "HIB HbOC (Haemophilus influenzae b)",
+                             "HBV (Hepatitis B", "HIB HbOC (Haemophilus influenzae b)"]
+
+        datesAdministered = [["8/9/2002", "7/16/1998", "10/10/1997", "8/15/1997", "6/17/1997"],
+                             ["3/9/1998","8/15/1997","6/17/1997"],
+                             ["7/16/1998","10/10/1997", "8/15/1997", "6/17/1997"],
+                             ["7/16/1998","10/10/1997", "8/15/1997", "6/17/1997"],
+                             ["7/16/1998","10/10/1997", "8/15/1997", "6/17/1997"],
+                             ["7/16/1998","10/10/1997", "8/15/1997", "6/17/1997"],
+                             ["7/16/1998","10/10/1997", "8/15/1997", "6/17/1997"]]
+
+
+        nextY = 5
+        addedFrames = []
+        canvasWidth = self.immunizationCanvas.winfo_width()
+
+        for index in range(len(immunizationNames)):
+
+            newFrame = self.addImmunization(self.immunizationCanvas,nextY,canvasWidth,immunizationNames[index],
+                                 datesAdministered[index])
+            newFrame.update()
+
+            addedFrames.append(newFrame)
+
+            nextY = newFrame.winfo_height() + newFrame.winfo_y() + 10
+
+
+    def addImmunization(self,theFrame,startingY,canvasWidth,immunizationName,datesAdministered):
 
         generalFont = ('consolas',12)
         generalBG = "light blue"
 
-        newImmunization = LabelFrame(theFrame,bg="light blue",width=790,height=150,highlightcolor="white",highlightthickness=2,bd=0)
+        newImmunization = LabelFrame(theFrame,bg="light blue",width=canvasWidth - 10,height=150,highlightcolor="white",highlightthickness=2,bd=0)
         newImmunization.place(x=5, y=startingY)
+        #newImmunization.pack()
 
-        immunizationName = "ImmunizationName: DTap (Diphtheria, Tetanus, acellular Pertussis)"
-
-        datesAdministered = ["8/9/2002", "7/16/1998", "10/10/1997", "8/15/1997", "6/17/1997"]
+        immunizationName = "ImmunizationName: " + immunizationName
 
         administeredString = "Adminstered: "
 
         for date in datesAdministered:
             administeredString += (date + ", ")
+
+        administeredString = administeredString.rstrip(", ")
 
         immunizationLabel = Label(newImmunization,text=immunizationName,font=generalFont,bg=generalBG)
         immunizationLabel.place(x=5,y=0)
@@ -144,8 +194,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         learnMoreButton.place(x=5,y=nextY)
 
 
-
-
+        return newImmunization # return the Frame holding all this
 
 
 
