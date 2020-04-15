@@ -5,6 +5,7 @@ from PIL import ImageTk,Image
 from Patients import *
 from tkinter import ttk
 import ICA_super
+import SQLConnection
 
 class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
@@ -682,32 +683,15 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
         self.formatService(patientService)
 
-    def loadService(self,patientINFO): # will diplay specific service in expansion window
+    def loadService(self,patientId): # will display specific service in expansion window
 
-        '''
-        self.checkExtension() # will close previous page
+        SQL = SQLConnection.SQLConnection()
+        data = SQL.getServiceDetails(patientId)
 
-        label = Label(self.extensionFrame,text = "Service #" + str(patientINFO[0]) ,font = ('consolas', 14),relief=GROOVE) # will display the specific service
-        label.place(x=0,y=0)
-
-
-        serviceDateLabel = Label(self.extensionFrame,text = "Service Date: ",font = ('consolas', 10))
-        serviceDateLabel.place(x=0,y=40)
-
-        serviceDate = Text(self.extensionFrame,width = len(patientINFO[3]),height = 1,padx =5)
-        serviceDate.place(x=85,y=40)
-        serviceDate.insert('end',patientINFO[3])
-        serviceDate.configure(state=DISABLED)
-
-        patientLname = Text(frame, width=len(boxText), height=1, padx=5)
-        patientLname.insert('end', boxText)
-        patientLname.configure(state=DISABLED)
-        patientLname.grid(row=labelRow + 2, column=labelCol)
-        '''
 
         #does basic setup for the service screen
         self.hideServiceHistory()
-        self.formatLabel.configure(text="Showing details for Service #" + patientINFO[0],font=('consolas',12))
+        self.formatLabel.configure(text="Showing details for Service #" + data[0],font=('consolas',12)) #replaced data[0], if this does not work use Service DetailId
         self.myScrollBar.pack_forget()
         self.canvas.yview_moveto(0)
 
