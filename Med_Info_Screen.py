@@ -24,9 +24,6 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         #setup the notebook for patient screen
         self.patientNotebook = ttk.Notebook(self.root,width=800,height=670)
 
-
-
-
         self.demosPage = Frame(self.patientNotebook)
 
 
@@ -132,16 +129,13 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
         immunizationNames = ["DTap (Diphtheria, Tetanus, acellular Pertussis)",
                              "HBV (Hepatitis B", "HIB HbOC (Haemophilus influenzae b)",
-                             "HBV (Hepatitis B", "HIB HbOC (Haemophilus influenzae b)",
-                             "HBV (Hepatitis B", "HIB HbOC (Haemophilus influenzae b)"]
+                             "Polio (IPV)", "Pneumococcal (PCV)"]
 
         datesAdministered = [["8/9/2002", "7/16/1998", "10/10/1997", "8/15/1997", "6/17/1997"],
                              ["3/9/1998","8/15/1997","6/17/1997"],
                              ["7/16/1998","10/10/1997", "8/15/1997", "6/17/1997"],
-                             ["7/16/1998","10/10/1997", "8/15/1997", "6/17/1997"],
-                             ["7/16/1998","10/10/1997", "8/15/1997", "6/17/1997"],
-                             ["7/16/1998","10/10/1997", "8/15/1997", "6/17/1997"],
-                             ["7/16/1998","10/10/1997", "8/15/1997", "6/17/1997"]]
+                             ["9/10/2009","2/15/2005","6/27/2001"],
+                             ["4/12/2010","4/18/2004","12/12/2002"]]
 
 
         nextY = 5
@@ -670,40 +664,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
 
 
-    def loadServiceHistory(self): # will load patient service history from the database
-                                  # I have a temp format here for now though
-
-        serviceID = 1
-        immunizations = ["Immunization 1", "Immunization 2"]
-        compliance = ["Yes", "No"]
-        ServiceDate = ["2/1/2013"]
-        Doses = [1,2]
-        patientService = [serviceID,immunizations[1], compliance[0],ServiceDate, Doses[0]]
-
-        self.formatService(patientService)
-
     def loadService(self,patientINFO): # will diplay specific service in expansion window
-
-        '''
-        self.checkExtension() # will close previous page
-
-        label = Label(self.extensionFrame,text = "Service #" + str(patientINFO[0]) ,font = ('consolas', 14),relief=GROOVE) # will display the specific service
-        label.place(x=0,y=0)
-
-
-        serviceDateLabel = Label(self.extensionFrame,text = "Service Date: ",font = ('consolas', 10))
-        serviceDateLabel.place(x=0,y=40)
-
-        serviceDate = Text(self.extensionFrame,width = len(patientINFO[3]),height = 1,padx =5)
-        serviceDate.place(x=85,y=40)
-        serviceDate.insert('end',patientINFO[3])
-        serviceDate.configure(state=DISABLED)
-
-        patientLname = Text(frame, width=len(boxText), height=1, padx=5)
-        patientLname.insert('end', boxText)
-        patientLname.configure(state=DISABLED)
-        patientLname.grid(row=labelRow + 2, column=labelCol)
-        '''
 
         #does basic setup for the service screen
         self.hideServiceHistory()
