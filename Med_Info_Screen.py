@@ -592,8 +592,8 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
     def putFormat(self):
 
-        formatString = '{0:<20}{1:<20}{2:<17}{3:<20}{4:<10}'.format("Service ID", "Immunization",
-                                                                   "Administered?", "Service Date", "Dose Number")
+        formatString = '{0:<35}{1:<20}{2:<17}{3:<20}'.format("Service ID", "Immunization",
+                                                                   "Administered?", "Service Date")
 
         self.formatLabel = Label(self.servicePage, text=formatString, font=('Consolas', 11)
                             , relief="raised",width=800,height=2)
@@ -628,7 +628,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
     def displayServiceHistory(self): # will create a list of buttons that hold links to service info
         SQL = self.SQL
         serviceHistory = SQL.getServiceDetails(self.thisPatient.patientID)
-        print(serviceHistory)
+        #print(serviceHistory)
 
 
         if not self.myScrollBar.winfo_ismapped():  # will repack scroll bar and formatLabel
@@ -637,10 +637,14 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
             self.formatLabel.pack()
             self.myScrollBar.pack(side="right", fill="y")
 
-        for index in range(len(serviceHistory)): # This is where we would queue the database for information. Probably modify to only do once
-            serviceID = serviceHistory.ServiceDetailsId[index]
 
-            patientINFO = [serviceID, serviceHistory.ImmDisplayDescription[index], \
+        for index in range(len(serviceHistory)): # This is where we would queue the database for information. Probably modify to only do once
+            # print((serviceHistory.ServiceDetailsId))
+            serviceID = str(serviceHistory.ServiceDetailsId[index])
+
+
+            patientINFO = [serviceID, \
+                           serviceHistory.ImmDisplayDescription[index], \
                            serviceHistory.CompletionStatus[index], \
                            serviceHistory.DateofService[index]]
             buttonINFO = self.formatService(patientINFO)
@@ -659,9 +663,10 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
 
         # new format has spacing to make the design look neater
-        formatString = '{0:<7}{1:<10}{2:<8}{3:<20}{4:<5}{5:<14}{6:<0}{7:<20}{8:<2}{9:<20}'.format("",patientService[0],"",patientService[1],
+        #print((patientService[3]))
+        formatString = '{0:<7}{1:<5}{2:<8}{3:<20}{4:<5}{5:<14}{6:<0}{7:<20}'.format("",patientService[0],"",patientService[1],
                                                                                                   "",patientService[2],"",patientService[3],
-                                                                                                  "",patientService[4])
+                                                                                                    )
 
         return formatString
 
@@ -685,8 +690,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         immunizations = ["Immunization 1", "Immunization 2"]
         compliance = ["Yes", "No"]
         ServiceDate = ["2/1/2013"]
-        Doses = [1,2]
-        patientService = [serviceID,immunizations[1], compliance[0],ServiceDate, Doses[0]]
+        patientService = [serviceID,immunizations[1], compliance[0],ServiceDate]
 
         self.formatService(patientService)
 
