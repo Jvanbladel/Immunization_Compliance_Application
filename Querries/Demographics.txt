@@ -1,24 +1,5 @@
-/*
-Demographics Screen
-Runtime:
-************************************************************
-Purpose: Populate available fields in demographics screen
-
-Tables being referenced:
-Patient Basic Profile -- db_pacific_ica.dbo.Patient
-Address Information -- db_pacific_ica.dbo.Address
-Phone Number Information -- db_pacific_ica.dbo.Phone
-Responsible Party Information -- db_pacific_ica.dbo.ResponsibleParty
-Guarantor Name -- db_pacific_ica.dbo.Guarantor
-*/
-
-IF OBJECT_ID('temp.dbo.myDemos', 'U') IS NOT NULL
-DROP TABLE myDemos;
-DROP TABLE #myDemos2;
-
 ;with myDemos
-as
-    (
+as(
 SELECT
 p.PatientId,
 p.PatientLastName,
@@ -59,8 +40,7 @@ p.PreferredCommMode,
 g.GuarantorLastName,
 g.GuarantorFirstName,
 g.GuarantorMiddleInitial,
-r.PatientGuarantorType
-)
+r.PatientGuarantorType)
 select
 PatientId,
 PatientLastName,
@@ -91,7 +71,6 @@ GuarantorMiddleInitial,
 PatientGuarantorType
 into #myDemos2
 from myDemos
-
 update #myDemos2
 set
 StreetName1 = b.StreetName1,
@@ -104,28 +83,24 @@ Country = b.Country,
 AddressType = b.AddressType
 from #myDemos2 a inner join db_pacific_ica.dbo.Address b on a.PatientId = b.PatientId
 where b.BadAddressIndicator = 'N'
-
 update #myDemos2
 set
 HomeNumber = p.PhoneNumber
 from #myDemos2 a inner join db_pacific_ica.dbo.Phone p on a.PatientId = p.PatientId
 where p.PhoneType = 'Home'
 and p.PhoneActiveInd = 'Y'
-
 update #myDemos2
 set
 WorkNumber = p.PhoneNumber
 from #myDemos2 a inner join db_pacific_ica.dbo.Phone p on a.PatientId = p.PatientId
 where p.PhoneType = 'Work'
 and p.PhoneActiveInd = 'Y'
-
 update #myDemos2
 set
 MobileNumber = p.PhoneNumber
 from #myDemos2 a inner join db_pacific_ica.dbo.Phone p on a.PatientId = p.PatientId
 where p.PhoneType = 'Mobile'
 and p.PhoneActiveInd = 'Y'
-
 select
 PatientLastName,
 PatientFirstName,
@@ -153,3 +128,4 @@ GuarantorFirstName,
 GuarantorMiddleInitial,
 PatientGuarantorType
 from #myDemos2
+where PatientId = 105998

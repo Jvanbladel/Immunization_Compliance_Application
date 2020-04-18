@@ -198,11 +198,23 @@ class SQLConnection():
     def getContact(self, patientId):
         pass
 
-    def getAddress(self, patientId0):
+    def getAddress(self, patientId):
         pass
 
     
+    def getHistory(self, patientId):
+        if self.checkConnection() == 0:
+            return
+        sql = self.loadQuerry("Service_Details")
 
+        data = pd.read_sql(sql, self.conn,params={patientId})
+        if data.empty:
+            #print("Empty Data")
+            return
+        data = data.values.tolist()
+        print(data)
+        #output = Users.Permissions(data[0])
+        return output
 
 
 
@@ -220,9 +232,9 @@ class SQLConnection():
         return plist
 
 def main():
+    #test patint ID 635632
     SQL = SQLConnection()
-    SQL.editPermission(Users.Permissions(["Hi", "decr", 1,1,1,1,1,1,1,1,1,1,1,1,1,1, 7, 10]), Users.Permissions(["Hi", "decr", 0,0,0,0,0,0,0,0,0,0,0,0,0,0, 7, 10]))
-    #SQL.deletePermission("Test")
+    SQL.getHistory(635632)
     SQL.closeConnection()
 if __name__ == "__main__":
     main()
