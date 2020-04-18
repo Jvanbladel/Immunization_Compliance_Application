@@ -1,0 +1,9 @@
+Select
+Immunization.ImmCPTcode,
+Immunization.ImmunizationType,
+Immunization.ImmDisplayDescription,
+Immunization.ImmLongDescription,
+Immunization.ImmActiveInd
+From
+Immunization   
+where Immunization.ImmunizationID = ?

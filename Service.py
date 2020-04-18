@@ -1,7 +1,7 @@
 
 class patientHistory():
     def __init__(self, data):
-        self.ImmunizationServiceList = data[0]
+        self.ImmunizationServiceList = data
         pass
 
 class ImmunizationService():

@@ -1,0 +1,21 @@
+Select
+p.PatientId,
+s.ServiceDetailsId,
+s.DateofService,
+s.CompletionStatus,
+s.AllergicReactions,
+s.InformationSource,
+i.ImmDisplayDescription,
+i.ImmunizationType,
+i.ImmunizationID,
+prd.ProviderLastName,
+prd.ProviderFirstName,
+prd.ProviderNPI,
+pr.PatientLastVisitDate
+From
+ServiceDetails s Inner Join
+Patient p On p.PatientId = s.PatientId Inner Join
+Immunization i On i.ImmunizationID = s.ImmunizationId
+inner join ProviderRelationship pr on pr.PatientId = s.PatientId
+inner join Provider prd on prd.ProviderId = pr.ProviderId
+where p.PatientId = ?

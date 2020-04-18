@@ -1,0 +1,10 @@
+Select
+Insurance.InsuranceName,
+Insurance.ActiveInd,
+PatientInsurance.PatientInsuranceId,
+PatientInsurance.PatientId,
+PatientInsurance.InsuranceId
+From
+PatientInsurance inner join Insurance ON PatientInsurance.InsuranceId = Insurance.InsuranceId
+where  
+PatientInsurance.PatientId = ?

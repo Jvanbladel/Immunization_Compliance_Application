@@ -3,6 +3,8 @@ import pandas as pd
 import Patients 
 import Users
 import query_generator
+import Type_Check
+import Service
 
 
 
@@ -183,24 +185,25 @@ class SQLConnection():
         self.conn.execute(sql,params)
         self.conn.commit()
 
-    def getNotificationList(self, userType):
-        pass
-
     def getDemographics(self, patientId):
-        pass
-
-    def getGarentor(self, patientId):
-        pass
+        if self.checkConnection() == 0:
+            return
+        sql = self.loadQuerry("Demographics")
+        data = pd.read_sql(sql, self.conn, params={patientId})
+        if data.empty:
+            return
+        data = data.values.tolist()
+        return data
 
     def getInsurence(self, patientId):
-        pass
-
-    def getContact(self, patientId):
-        pass
-
-    def getAddress(self, patientId):
-        pass
-
+        if self.checkConnection() == 0:
+            return
+        sql = self.loadQuerry("Insurence")
+        data = pd.read_sql(sql, self.conn, params={patientId})
+        if data.empty:
+            return
+        data = data.values.tolist()
+        return data
     
     def getHistory(self, patientId):
         if self.checkConnection() == 0:
@@ -212,29 +215,87 @@ class SQLConnection():
             #print("Empty Data")
             return
         data = data.values.tolist()
-        print(data)
-        #output = Users.Permissions(data[0])
+        #print(data)
+        output = Service.patientHistory(data)
         return output
-
-
 
     def fuzzySearch(self, field, input_str):
         sql = query_generator.fuzzySearch_sql(field, input_str)
         # print(sql)
         data = pd.read_sql(sql, self.conn, params={field, input_str})
+
+    def executeQuery(self, query):
+        data = pd.read_sql(query, self.conn)
         if data.empty:
-            # print("Empty Data")
+            print("Empty Data")
             return
-        plist = []
-        for p in data:
-            data = [p[0], p[1], p[2], p[3], None, p[4], None, None, None, None, None, None, None]
-            plist.append(Patients.Patient(data))
-        return plist
+        else:
+            return data
+
+    def getImmunization(self, immunization_id):
+        if self.checkConnection() == 0:
+            return
+        sql = self.loadQuerry("Immunization_Info")
+
+        data = pd.read_sql(sql, self.conn,params={immunization_id})
+        if data.empty:
+            #print("Empty Data")
+            return
+        data = data.values.tolist()
+        #print(data)
+        return data
+
+    def getOutreachInfo(self, patientID):
+        if self.checkConnection() == 0:
+            return
+        sql = self.loadQuerry("Outreach")
+
+        data = pd.read_sql(sql, self.conn,params={patientID})
+        if data.empty:
+            #print("Empty Data")
+            return
+        data = data.values.tolist()
+        #print(data)
+        return data
+
+    def getNotificationList(self, userType):
+        pass
+    
+'''def fuzzySearch(self, field, input_str, type):
+    if not Type_Check.checkType(input_str, type):
+        print("invalid input")
+        return
+    sql = query_generator.fuzzySearch_sql(field, input_str, type)
+    # print(sql)
+    data = pd.read_sql(sql, self.conn, params={field, input_str})
+    if data.empty:
+        print("Empty Data")
+        return
+    plist = []
+    for p in data:
+        data = [p[0], p[1], p[2], p[3], None, p[4], None, None, None, None, None, None, None]
+        plist.append(Patients.Patient(data))
+    return plist'''
+
 
 def main():
     #test patint ID 635632
     SQL = SQLConnection()
-    SQL.getHistory(635632)
+
+    patientHistory = SQL.getHistory(635632)
+    print(patientHistory.ImmunizationServiceList)
+    #demographics = SQL.getDemographics(105998)
+    #print(demographics)
+
+    #insurence = SQL.getInsurence(105998)
+    #print(insurence)
+
+    #immun = SQL.getImmunization(82824)
+    #print(immun)
+
+    #outreach = SQL.getOutreachInfo(105998)
+    #print(outreach)
+      
     SQL.closeConnection()
 if __name__ == "__main__":
     main()
