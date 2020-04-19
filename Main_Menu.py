@@ -429,7 +429,7 @@ class mainMenu(ICA_super.icaSCREENS):
 
             #Options for first Name
             self.var1 = IntVar()
-            self.FnameSearch = Checkbutton(self.root, text="First Name", variable=self.var1)
+            self.FnameSearch = Checkbutton(self.root, text="First Name", variable=self.var1, command=lambda: self.searchFunc())
             self.FnameSearch.place(x=2.5,y=160)
 
             fNameSearchOptions=("Exact Search", "Ascending", "Descending", "Fuzy Search")
@@ -439,7 +439,7 @@ class mainMenu(ICA_super.icaSCREENS):
 
             #Options for last Name
             self.var2 = IntVar()
-            self.LnameSearch = Checkbutton(self.root, text="Last Name", variable=self.var2)
+            self.LnameSearch = Checkbutton(self.root, text="Last Name", variable=self.var2, command=lambda: self.searchFunc())
             self.LnameSearch.place(x=2.5,y=185)
 
             lNameSearchOptions=("Exact Search", "Ascending", "Descending", "Fuzy Search")
@@ -450,7 +450,7 @@ class mainMenu(ICA_super.icaSCREENS):
 
             #Options for DOB Search
             self.var3 = IntVar()
-            self.DOBSearch = Checkbutton(self.root, text="Date of Birth", variable=self.var3)
+            self.DOBSearch = Checkbutton(self.root, text="Date of Birth", variable=self.var3, command=lambda: self.searchFunc())
             self.DOBSearch.place(x=2.5,y=210)
 
             DOBOptions=("Exact Search", "Ascending", "Descending")
@@ -470,7 +470,7 @@ class mainMenu(ICA_super.icaSCREENS):
 
             #Options for MRN
             self.var4 = IntVar()
-            self.MRNSearch = Checkbutton(self.root, text="MRN", variable=self.var4)
+            self.MRNSearch = Checkbutton(self.root, text="MRN", variable=self.var4,command=lambda: self.searchFunc())
             self.MRNSearch.place(x=2.5,y=235)
 
             MRNSearchOptions=("Exact Search", "Ascending", "Descending", "Fuzy Search")
@@ -529,6 +529,25 @@ class mainMenu(ICA_super.icaSCREENS):
                 self.togAdvancedSearch()
             self.searchBox = 0
 
+    def searchFunc(self):
+        if self.filterVar1.get():
+            # PatientId
+            newlist = sort.fuzzySearch(self.queue, "PatientFirstName", self.var1, "str")
+            self.updateQueue(newlist)
+        elif self.filterVar2.get():
+            # First Name
+            newlist = sort.fuzzySearch(self.queue, "PatientLastName", self.var2, "str")
+            self.updateQueue(newlist)
+
+        elif self.filterVar3.get():
+            # Last Name
+            newlist = sort.fuzzySearch(self.queue, "PatientDateOfBirth", self.var3, "date")
+            self.updateQueue(newlist)
+
+        '''elif self.filterVar4.get():
+            # DateofBirth
+            newlist = sort.fuzzySearch(self.queue, "PatientDateOfBirth", self.var3, "date")
+            self.updateQueue(newlist)'''
     def resetQueueToDefault(self):
         pass
 
