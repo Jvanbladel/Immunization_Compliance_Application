@@ -16,9 +16,14 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         self.bindKey("<Escape>",self.closeWindow)
 
         self.thisPatient = Patient
+        self.demoGraphics = self.SQL.getDemographics(Patient.patientID)
+        #print(self.demoGraphics.address)
+        #print(self.demoGraphics.demographics)
+        #print(self.demoGraphics.contact)
+        
         self.currentUser = None
         self.insurance = None
-        self.demoGraphics = None
+        #self.demoGraphics = None
         self.immunizationHistory = None
 
 
@@ -360,8 +365,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         PatientDemographicsList = ["Last Name","First Name","Nickname","Middle Name(s)","Prefix","Sex",
                                    "D.O.B","Age", "Race", "Ethnicity","Pref. Language", "Deceased Status"]
 
-        staticDetails = ["Random", "Random", "Rand", "Random", "No Prefix", "Male",
-                         "1/23/1991","29","Insert Race","Insert Ethnicity", "English", "Alive"]
+        staticDetails = self.demoGraphics.demographics
 
 
 
@@ -396,7 +400,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         self.addressFrame.update()
 
         addressLabels = ["Street 1", "Street 2", "City", "State", "Zipcode", "County", "Country"]
-        staticAddress = ["12345 Randomstreet Circle", "5783 anotherstreet drive","Stockton", "CA","32131",  "Some County", "United States"]
+        staticAddress = self.demoGraphics.address
 
         addedLabels = []
 
@@ -468,7 +472,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         contactLabels = ["Phone Number","Phone Extension","Phone Type","Email Address", "Preferred Contact",
                          "Interpreter Required"]
 
-        staticContactINFO = ["123-456-789 ", "+1 (916)","Work","r_Andom@u.pacific.edu", "Email", "No"]
+        staticContactINFO = self.demoGraphics.contact
 
 
         xPos = 5

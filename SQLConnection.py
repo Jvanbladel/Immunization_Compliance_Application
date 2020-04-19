@@ -195,7 +195,7 @@ class SQLConnection():
         if data.empty:
             return
         data = data.values.tolist()
-        return data
+        return Patients.Demographics(data)
 
     def getServiceDetails(self, patientId):
         if self.checkConnection() == 0:
