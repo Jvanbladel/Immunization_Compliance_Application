@@ -207,6 +207,15 @@ class SQLConnection():
         #data = data.values.tolist()
         return data
 
+    def getWorkEfficiency(self, userId):
+        if self.checkConnection() == 0:
+            return
+        sql = self.loadQuerry("Work_Efficiency")
+        data = pd.read_sql(sql, self.conn, params={userId})
+        if data.empty:
+            return
+        #data = data.values.tolist()
+        return data
 
     def getGuarantor(self, patientId):
         pass
