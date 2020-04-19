@@ -5,12 +5,10 @@ dataSize = 50
 
 
 def checkSpecialCharacters(in_str):
-    special = re.compile('[@_!#$%^&*()<>?/\\\|}{~: 1234567890]')
-    if len(in_str) > dataSize:
-        return False
-    elif special.search(in_str) is None:
-        return True
-    return False
+    special = re.compile('[@_!#$%^&*()<>?/\\\|}{~: 1234567890]\'\";~`-_\+=')
+    in_str = str(in_str)
+
+    return special.search(in_str) is None
 
 
 def checkDate(in_str):
@@ -58,4 +56,4 @@ def checkType(in_str, tp):
     elif tp is 'date':
         return checkDate(in_str)
     else:
-        return True
+        return len(in_str) < dataSize

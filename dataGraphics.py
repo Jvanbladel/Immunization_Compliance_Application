@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 import SQLConnection
+import Type_Check
 
 
 def pieChart(data, labels, color):
@@ -129,13 +130,31 @@ def tkinter():
     app.mainloop()
 
 
-def getData():
+def getData(userID):
+    Type_Check.checkType(userID, 'int')
     SQL = SQLConnection.SQLConnection()
-    query = 'Select Outreach_Details.OutreachDetailsDate,\
-     Count(Outreach_Details.OutreachDetailsPatientId) As Count_OutreachDetailsPatientId From Outreach_Details\
-     Where Outreach_Details.OutreachDetailsNotes Like \'%appoint%\' Group By Outreach_Details.OutreachDetailsDate'
 
-    data = SQL.executeQuery(query)
+    query = 'Select\
+    Count(Outreach_Details.OutreachDetailsPatientId) As Count_OutreachDetailsPatientId,\
+    Outreach_Details.OutreachDetailsCreatedPrsnlId,\
+    Outreach_Details.OutreachDetailsDate,\
+    Users.UserFirstName,\
+    Users.UserLastName\
+From\
+    Outreach_Details Inner Join\
+    Users On Outreach_Details.OutreachDetailsCreatedPrsnlId = Users.PersonnelId\
+Where\
+    Outreach_Details.OutreachDetailsNotes Like \'%appoint%\' \
+    Outreach_Details.OutreachDetailsCreatedPrsnlId = ?\
+Group By\
+    Outreach_Details.OutreachDetailsCreatedPrsnlId,\
+    Outreach_Details.OutreachDetailsDate,\
+    Users.UserFirstName,\
+    Users.UserLastName'
+
+    data = SQL.executeQuery(query,params={userID))
+
+
     xs = data.OutreachDetailsDate
     ys = data.Count_OutreachDetailsPatientId
     SQL.closeConnection()
@@ -143,4 +162,4 @@ def getData():
 
 
 
-print((getData().Count_OutreachDetailsPatientId)[0])
+print((getData((2)).Count_OutreachDetailsPatientId))
