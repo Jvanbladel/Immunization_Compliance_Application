@@ -4,7 +4,6 @@ import Patients
 import Users
 import query_generator
 import Type_Check
-import Service
 
 
 
@@ -185,6 +184,9 @@ class SQLConnection():
         self.conn.execute(sql,params)
         self.conn.commit()
 
+    def getNotificationList(self, userType):
+        pass
+
     def getDemographics(self, patientId):
         if self.checkConnection() == 0:
             return
@@ -195,34 +197,28 @@ class SQLConnection():
         data = data.values.tolist()
         return data
 
-    def getInsurence(self, patientId):
-        if self.checkConnection() == 0:
-            return
-        sql = self.loadQuerry("Insurence")
-        data = pd.read_sql(sql, self.conn, params={patientId})
-        if data.empty:
-            return
-        data = data.values.tolist()
-        return data
-    
-    def getHistory(self, patientId):
+    def getServiceDetails(self, patientId):
         if self.checkConnection() == 0:
             return
         sql = self.loadQuerry("Service_Details")
-
-        data = pd.read_sql(sql, self.conn,params={patientId})
+        data = pd.read_sql(sql, self.conn, params={patientId})
         if data.empty:
-            #print("Empty Data")
             return
-        data = data.values.tolist()
-        #print(data)
-        output = Service.patientHistory(data)
-        return output
+        #data = data.values.tolist()
+        return data
 
-    def fuzzySearch(self, field, input_str):
-        sql = query_generator.fuzzySearch_sql(field, input_str)
-        # print(sql)
-        data = pd.read_sql(sql, self.conn, params={field, input_str})
+
+    def getGuarantor(self, patientId):
+        pass
+
+    def getInsurence(self, patientId):
+        pass
+
+    def getContact(self, patientId):
+        pass
+
+    def getAddress(self, patientId0):
+        pass
 
     def executeQuery(self, query):
         data = pd.read_sql(query, self.conn)
@@ -232,36 +228,7 @@ class SQLConnection():
         else:
             return data
 
-    def getImmunization(self, immunization_id):
-        if self.checkConnection() == 0:
-            return
-        sql = self.loadQuerry("Immunization_Info")
-
-        data = pd.read_sql(sql, self.conn,params={immunization_id})
-        if data.empty:
-            #print("Empty Data")
-            return
-        data = data.values.tolist()
-        #print(data)
-        return data
-
-    def getOutreachInfo(self, patientID):
-        if self.checkConnection() == 0:
-            return
-        sql = self.loadQuerry("Outreach")
-
-        data = pd.read_sql(sql, self.conn,params={patientID})
-        if data.empty:
-            #print("Empty Data")
-            return
-        data = data.values.tolist()
-        #print(data)
-        return data
-
-    def getNotificationList(self, userType):
-        pass
-    
-'''def fuzzySearch(self, field, input_str, type):
+def fuzzySearch(self, field, input_str, type):
     if not Type_Check.checkType(input_str, type):
         print("invalid input")
         return
@@ -275,27 +242,13 @@ class SQLConnection():
     for p in data:
         data = [p[0], p[1], p[2], p[3], None, p[4], None, None, None, None, None, None, None]
         plist.append(Patients.Patient(data))
-    return plist'''
+    return plist
 
 
 def main():
-    #test patint ID 635632
     SQL = SQLConnection()
-
-    patientHistory = SQL.getHistory(635632)
-    print(patientHistory.ImmunizationServiceList)
-    #demographics = SQL.getDemographics(105998)
-    #print(demographics)
-
-    #insurence = SQL.getInsurence(105998)
-    #print(insurence)
-
-    #immun = SQL.getImmunization(82824)
-    #print(immun)
-
-    #outreach = SQL.getOutreachInfo(105998)
-    #print(outreach)
-      
+    demographics = SQL.getDemographics(105998)
+    print (demographics)
     SQL.closeConnection()
 if __name__ == "__main__":
     main()
