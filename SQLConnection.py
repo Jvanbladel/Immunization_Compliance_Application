@@ -195,7 +195,7 @@ class SQLConnection():
         if data.empty:
             return
         data = data.values.tolist()
-        return data
+        return Patients.Demographics(data)
 
     def getServiceDetails(self, patientId):
         if self.checkConnection() == 0:
@@ -207,11 +207,21 @@ class SQLConnection():
         #data = data.values.tolist()
         return data
 
-    def getWorkEfficiency(self, userId):
+    def getIndWorkEfficiency(self, userId):
+        if self.checkConnection() == 0:
+            return
+        sql = self.loadQuerry("Individual_Work")
+        data = pd.read_sql(sql, self.conn, params={userId})
+        if data.empty:
+            return
+        #data = data.values.tolist()
+        return data
+
+    def getWorkEfficiency(self):
         if self.checkConnection() == 0:
             return
         sql = self.loadQuerry("Work_Efficiency")
-        data = pd.read_sql(sql, self.conn, params={userId})
+        data = pd.read_sql(sql, self.conn)
         if data.empty:
             return
         #data = data.values.tolist()
