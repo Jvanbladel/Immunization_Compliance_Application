@@ -32,22 +32,20 @@ def sortPatients(listOfPatients, fields, desc):
     return sortedPatients
 
 
-def fuzzySearch(self, field, input_str, input_type):
+def fuzzySearch(field, input_str, input_type):
     if not Type_Check.checkType(input_str, input_type):
-        print("invalid input")
         return
     SQLConn = SQLConnection.SQLConnection()
     query = query_generator.fuzzySearch_sql(field, input_str, input_type)
-    # print(sql)
-    data = pd.read_sql(query, self.conn, params={field, input_str})
-    if data.empty:
+
+    df = pd.read_sql(query, SQLConn.conn)
+    if df.empty:
         SQLConn.closeConnection()
-        print("Empty Data")
         return
     plist = []
+    data = df.values.tolist()
     for p in data:
-        data = [p[0], p[1], p[2], p[3], None, p[4], None, None, None, None, None, None, None]
-        plist.append(Patients.Patient(data))
+        plist.append(Patients.Patient(p))
     SQLConn.closeConnection()
     return plist
 

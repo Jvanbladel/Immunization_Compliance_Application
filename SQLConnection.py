@@ -247,23 +247,6 @@ class SQLConnection():
         else:
             return data
 
-def fuzzySearch(self, field, input_str, type):
-    if not Type_Check.checkType(input_str, type):
-        print("invalid input")
-        return
-    sql = query_generator.fuzzySearch_sql(field, input_str, type)
-    # print(sql)
-    data = pd.read_sql(sql, self.conn, params={field, input_str})
-    if data.empty:
-        print("Empty Data")
-        return
-    plist = []
-    for p in data:
-        data = [p[0], p[1], p[2], p[3], None, p[4], None, None, None, None, None, None, None]
-        plist.append(Patients.Patient(data))
-    return plist
-
-
 def main():
     SQL = SQLConnection()
     demographics = SQL.getDemographics(105998)

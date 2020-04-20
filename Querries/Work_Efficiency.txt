@@ -1,8 +1,7 @@
 Select
     Count(Outreach_Details.OutreachDetailsPatientId) As Count_OutreachDetailsPatientId,
     Outreach_Details.OutreachDetailsCreatedPrsnlId,
-    Users.UserFirstName,
-    Users.UserLastName
+    Concat(Users.UserFirstName, ' ', Users.UserLastName) As name
 From
     Outreach_Details Inner Join
     Users On Outreach_Details.OutreachDetailsCreatedPrsnlId = Users.PersonnelId
@@ -12,3 +11,5 @@ Group By
     Outreach_Details.OutreachDetailsCreatedPrsnlId,
     Users.UserFirstName,
     Users.UserLastName
+Order By
+    Count_OutreachDetailsPatientId

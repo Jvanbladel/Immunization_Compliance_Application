@@ -429,7 +429,7 @@ class mainMenu(ICA_super.icaSCREENS):
 
             #Options for first Name
             self.var1 = IntVar()
-            self.FnameSearch = Checkbutton(self.root, text="First Name", variable=self.var1, command=lambda: self.searchFunc())
+            self.FnameSearch = Checkbutton(self.root, text="First Name", variable=self.var1)
             self.FnameSearch.place(x=2.5,y=160)
 
             fNameSearchOptions=("Exact Search", "Ascending", "Descending", "Fuzy Search")
@@ -439,7 +439,7 @@ class mainMenu(ICA_super.icaSCREENS):
 
             #Options for last Name
             self.var2 = IntVar()
-            self.LnameSearch = Checkbutton(self.root, text="Last Name", variable=self.var2, command=lambda: self.searchFunc())
+            self.LnameSearch = Checkbutton(self.root, text="Last Name", variable=self.var2)
             self.LnameSearch.place(x=2.5,y=185)
 
             lNameSearchOptions=("Exact Search", "Ascending", "Descending", "Fuzy Search")
@@ -450,7 +450,7 @@ class mainMenu(ICA_super.icaSCREENS):
 
             #Options for DOB Search
             self.var3 = IntVar()
-            self.DOBSearch = Checkbutton(self.root, text="Date of Birth", variable=self.var3, command=lambda: self.searchFunc())
+            self.DOBSearch = Checkbutton(self.root, text="Date of Birth", variable=self.var3)
             self.DOBSearch.place(x=2.5,y=210)
 
             DOBOptions=("Exact Search", "Ascending", "Descending")
@@ -470,7 +470,7 @@ class mainMenu(ICA_super.icaSCREENS):
 
             #Options for MRN
             self.var4 = IntVar()
-            self.MRNSearch = Checkbutton(self.root, text="MRN", variable=self.var4,command=lambda: self.searchFunc())
+            self.MRNSearch = Checkbutton(self.root, text="MRN", variable=self.var4)
             self.MRNSearch.place(x=2.5,y=235)
 
             MRNSearchOptions=("Exact Search", "Ascending", "Descending", "Fuzy Search")
@@ -494,7 +494,7 @@ class mainMenu(ICA_super.icaSCREENS):
             self.defaultQueueBUTTON = Button(self.root, text = "Default Work Queue", command=lambda: self.resetQueueToDefault())
             self.defaultQueueBUTTON.place(x=20, y = 290, width = 177.5, height = 25)
 
-            self.searchforBUTTON = Button(self.root, text = "Search",bg="blue",fg="white")
+            self.searchforBUTTON = Button(self.root, text = "Search",bg="blue",fg="white", command=lambda: self.searchFunc())
             self.searchforBUTTON.place(x=122.5, y = 320, width = 75, height = 32.5)
 
             self.advancedsearchBUTTON = Button(self.root, text = "More\nOptions", command=lambda: self.togAdvancedSearch())
@@ -530,24 +530,25 @@ class mainMenu(ICA_super.icaSCREENS):
             self.searchBox = 0
 
     def searchFunc(self):
-        if self.filterVar1.get():
-            # PatientId
-            newlist = sort.fuzzySearch(self.queue, "PatientFirstName", self.var1, "str")
+        if self.var1.get():
+            # print(type(self.searchENTRY.get()))
+            # PatientFirstName
+            newlist = sort.fuzzySearch("PatientFirstName", self.searchENTRY.get(), "str")
             self.updateQueue(newlist)
-        elif self.filterVar2.get():
+        elif self.var2.get():
             # First Name
-            newlist = sort.fuzzySearch(self.queue, "PatientLastName", self.var2, "str")
+            newlist = sort.fuzzySearch("PatientLastName", self.searchENTRY.get(), "str")
             self.updateQueue(newlist)
 
-        elif self.filterVar3.get():
+        elif self.var3.get():
             # Last Name
-            newlist = sort.fuzzySearch(self.queue, "PatientDateOfBirth", self.var3, "date")
+            newlist = sort.fuzzySearch("PatientDateOfBirth", self.searchENTRY.get(), "date")
             self.updateQueue(newlist)
 
-        '''elif self.filterVar4.get():
-            # DateofBirth
-            newlist = sort.fuzzySearch(self.queue, "PatientDateOfBirth", self.var3, "date")
-            self.updateQueue(newlist)'''
+        elif self.var4.get():
+            # MRN
+            newlist = sort.fuzzySearch("PatientMRN", self.searchENTRY, "int")
+            self.updateQueue(newlist)
     def resetQueueToDefault(self):
         pass
 
