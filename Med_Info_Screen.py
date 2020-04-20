@@ -26,8 +26,6 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         self.patientNotebook = ttk.Notebook(self.root,width=800,height=670)
 
 
-
-
         self.demosPage = Frame(self.patientNotebook)
 
 
@@ -144,7 +142,6 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
                              ["7/16/1998","10/10/1997", "8/15/1997", "6/17/1997"],
                              ["7/16/1998","10/10/1997", "8/15/1997", "6/17/1997"]]
 
-
         nextY = 5
         addedFrames = []
         canvasWidth = self.immunizationCanvas.winfo_width()
@@ -199,145 +196,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
 
 
-    def label_and_TextDEP(self,frame,labelText,xPos,yPos,insertedText): # this should create a label and place the text beneath it
-
-        newLabel = Label(frame,text = labelText,font = ('consolas',12),bg="light blue")
-        newLabel.place(x=xPos,y=yPos)
-        newLabel.update()
-
-
-        newText = Text(frame,width=len(insertedText),height=1)
-        newText.place(x=xPos,y=yPos + newLabel.winfo_height() + 2)
-
-
-
-    def showDemosDEP(self): # uses self.demosPage for display
-
-        self.extensionGuarantor()
-        self.demosPage.update()
-        self.demosPage.config(bg="light blue")
-
-        Width= self.demosPage.winfo_width()
-        Height = self.demosPage.winfo_height()
-
-        patientFrame = LabelFrame(self.demosPage,text="<Patient>",width=Width - 10,height=80,bg="light blue",
-                                       highlightcolor="white",highlightthickness=2,font=('consolas',12),bd=0,labelanchor="n")
-        patientFrame.place(x=5,y=5)
-        patientFrame.grid_propagate(False)
-
-        self.label_and_Text(patientFrame,"Lastname",0,0,self.thisPatient.lName)
-
-        self.label_and_Text(patientFrame,"Firstname",0,4,self.thisPatient.fName)
-
-        self.label_and_Text(patientFrame,"Middle Initial",0,8,"Init")
-
-        self.label_and_Text(patientFrame, "Prefix", 0, 12, "Ms.")
-
-        self.label_and_Text(patientFrame, "NickName", 0,16, "nick")
-
-        patientFrame.grid_columnconfigure(4, minsize=125)
-        patientFrame.grid_rowconfigure(2,minsize=25)
-
-
-        demoFrame = LabelFrame(self.demosPage,text="<Demographics>",width=Width,height=80,bg="light blue",
-                                       highlightcolor="white",highlightthickness=2,font=('consolas',12),bd=0,labelanchor="n")
-        demoFrame.place(x=0,y=100)
-        demoFrame.grid_propagate(False)
-
-
-        self.label_and_Text(demoFrame, "Sex", 0, 0, "Female")
-        self.label_and_Text(demoFrame, "DOB", 0, 2, "2/20/2013")
-        self.label_and_Text(demoFrame, "Pref. Language", 0, 4, "English")
-        self.label_and_Text(demoFrame, "Race", 0, 6, "Caucasian")
-        self.label_and_Text(demoFrame, "Ethnicity", 0, 8, "White")
-        self.label_and_Text(demoFrame, "Age", 0, 10, "50")
-
-        demoFrame.grid_columnconfigure(4, minsize=125)
-        demoFrame.grid_rowconfigure(2, minsize=25)
-
-        addressFrame = LabelFrame(self.demosPage,text="<Address>",width=Width,height=125,bg="light blue",
-                                       highlightcolor="white",highlightthickness=2,font=('consolas',12),bd=0,labelanchor="n")
-        addressFrame.place(x=0,y=175)
-        addressFrame.grid_propagate(False)
-
-        self.label_and_Text(addressFrame,"Street 1",0,0,"1234 random Street")
-        self.label_and_Text(addressFrame, "Street 2", 4, 0, "1234 random Street 2")
-        self.label_and_Text(addressFrame, "Zipcode", 0, 2, "00000")
-        self.label_and_Text(addressFrame, "City", 0, 3, "Pacific City")
-        self.label_and_Text(addressFrame, "State", 4, 2, "CA")
-        self.label_and_Text(addressFrame, "County", 4,3, "randomCounty")
-        self.label_and_Text(addressFrame, "Country", 0,4, "Some Country")
-
-        addressFrame.grid_columnconfigure(4, minsize=125)
-        addressFrame.grid_rowconfigure(2, minsize=25)
-
-        contactFrame = LabelFrame(self.demosPage,text="<Contact>",width=Width,height=175,bg="light blue",
-                                       highlightcolor="white",highlightthickness=2,font=('consolas',12),bd=0,labelanchor="n")
-        contactFrame.place(x=0,y=300)
-        contactFrame.grid_propagate(False)
-
-        self.label_and_Text(contactFrame, "Phone", 0, 0, "123-456-789")
-        self.label_and_Text(contactFrame, "Mobile", 4, 0, "987-654-321")
-        self.label_and_Text(contactFrame, "Work Phone", 0, 2, "123-456-789")
-        self.label_and_Text(contactFrame, "Email", 0, 4, "r_Andom@u.pacific.edu")
-        self.label_and_Text(contactFrame, "Preferred Contact", 4,2 , "Mobile")
-
-        contactLabel = Label(contactFrame,text= "Contact Notes")
-        contactLabel.grid(row=4, column=4)
-
-        self.contactNotes = Text(contactFrame,width=30,height=3,padx=5)
-        self.contactNotes.place(x=230,y=125)
-        self.contactNotes.insert('end',"Notes about contacting this patient here")
-        self.contactNotes.configure(state=DISABLED)
-
-        contactFrame.grid_columnconfigure(4, minsize=100)
-        contactFrame.grid_rowconfigure(2, minsize=50)
-
-        GuarantorButton = Button(contactFrame, text = "Guarantor Info",command= self.extensionGuarantor)
-        GuarantorButton.place(x=400,y=0)
-
-
-
     def showDemos(self): # secondary attempt at the demos page
-
-        '''
-        self.demosPage.update() # will now contain the width and height
-        Width = self.demosPage.winfo_width()
-        Height = self.demosPage.winfo_height()
-
-
-        self.demosFrame = Frame(self.demosPage, relief=GROOVE, bd=1,bg = "light blue")
-        self.demosFrame.place(x=0, width=Width, y=0, height=Height)
-
-        self.demosCanvas = Canvas(self.demosFrame,bg="light blue",highlightbackground="light blue")
-        self.theFrame = Frame(self.demosCanvas,bg="light blue")
-        self.demosScrollBar = Scrollbar(self.demosFrame, orient="vertical", command=self.demosCanvas.yview)
-        self.demosCanvas.configure(yscrollcommand=self.demosScrollBar.set)
-        self.demosScrollBar.pack(side="right", fill="y")
-        self.demosCanvas.pack(side="left")
-        self.demosCanvas.create_window((0, 0), window=self.theFrame, anchor='nw')
-        self.theFrame.bind("<Configure>", self.demosScrollFunction)
-
-
-
-        emptyLabel = Label(self.theFrame,anchor=W,justify=LEFT)
-        emptyLabel.pack()
-
-        patientDetails = LabelFrame(self.theFrame,text="<Patient Details>",bg = "light blue",width=300,height=200)
-        patientDetails.pack()
-
-
-
-        labels = ["Last Name", "First Name"]
-
-
-        for label in labels:
-
-            newLabel = Label(patientDetails,text = label,bg = "light blue")
-            newLabel.grid(row=0,column=0)
-
-
-        '''
 
         self.demosPage.update()  # will now contain the width and height
         Width = self.demosPage.winfo_width()
@@ -360,11 +219,10 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         PatientDemographicsList = ["Last Name","First Name","Nickname","Middle Name(s)","Prefix","Sex",
                                    "D.O.B","Age", "Race", "Ethnicity","Pref. Language", "Deceased Status"]
 
+
+
         staticDetails = ["Random", "Random", "Rand", "Random", "No Prefix", "Male",
                          "1/23/1991","29","Insert Race","Insert Ethnicity", "English", "Alive"]
-
-
-
 
         detailsPosY = 30
         detailsPosXIncrease = 0
@@ -527,10 +385,6 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         emailButton = Button(self.demoOtherFrame,text="Email Extension before update",command=self.extensionEmail)
         emailButton.pack()
 
-
-
-
-
     def extensionGuarantor(self): # display the Garantour in the extension
 
         self.addExtension()
@@ -592,7 +446,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
     def putFormat(self):
 
-        formatString = '{0:<35}{1:<20}{2:<17}{3:<20}'.format("Service ID", "Immunization",
+        formatString = '{0:<20}{1:<35}{2:<20}{3:<15}'.format("Service ID", "Immunization",
                                                                    "Administered?", "Service Date")
 
         self.formatLabel = Label(self.servicePage, text=formatString, font=('Consolas', 11)
@@ -617,6 +471,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         self.newnewFrame.bind("<Configure>", self.scrollFunction)
         self.newnewFrame.configure(bg="light blue")
 
+
         # format Service ID, Immunization Name, Compliance, Service Date, Extra Tab?
 
         immunizations = ["Flu shot", "Menengitis", "Tetanus", "Allergy?"]
@@ -628,7 +483,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
     def displayServiceHistory(self): # will create a list of buttons that hold links to service info
         SQL = self.SQL
         serviceHistory = SQL.getServiceDetails(self.thisPatient.patientID)
-        #print(serviceHistory)
+
 
 
         if not self.myScrollBar.winfo_ismapped():  # will repack scroll bar and formatLabel
@@ -655,18 +510,17 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
             button.configure(command=lambda x=patientINFO: self.loadService(x))
             self.serviceHistory.append(button)
 
+
     def formatService(self,patientService): # will format the buttons to be displayed in the service history
 
-        # format Service ID, Immunization Name, Compliance, Service Date, Extra Tab?
-        #formatString = '{0:<7}{1:<10}{2:<20}{3:<17}{4:<20}{5:<20}'.format("",patientService[0],patientService[1],patientService[2]
-        #                                                          ,patientService[3],patientService[4])
+        #{0: < 20}{1: < 35}{2: < 20}{3: < 15}
 
+        if len(patientService[1]) > 30:
+            immunizationString = patientService[1][0:30] + "..."
+        else:
+            immunizationString = patientService[1]
 
-        # new format has spacing to make the design look neater
-        #print((patientService[3]))
-        formatString = '{0:<7}{1:<5}{2:<8}{3:<20}{4:<5}{5:<14}{6:<0}{7:<20}'.format("",patientService[0],"",patientService[1],
-                                                                                                  "",patientService[2],"",patientService[3],
-                                                                                                    )
+        formatString = '{0:<5}{1:<15}{2:<40}{3:<20}{4:<15}'.format("",patientService[0],immunizationString,patientService[2],patientService[3])
 
         return formatString
 
@@ -707,6 +561,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         generalFont = ('consolas', 12)
         generalBG = "light blue"
         theFrame = self.newnewFrame
+        theFrame.configure(width=800,height=700)
 
 
 
@@ -723,6 +578,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
         serviceDetailsHeader = Label(theFrame,text="Service Details",width= theFrame.winfo_width(),height = 1,bg="RoyalBlue3",font=generalFont,fg="white",anchor=W)
         serviceDetailsHeader.place(x=0,y=0)
+        serviceDetailsHeader
         serviceDetailsHeader.update()
 
 
@@ -745,6 +601,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
         immunizationLabel = Label(theFrame,text="Immunizations Received",bg=generalBG,font=generalFont)
         immunizationLabel.place(x=xPos,y=yPos)
+        immunizationLabel.winfo_toplevel()
         immunizationLabel.update()
 
 
@@ -865,10 +722,6 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
                               command=self.displayServiceHistory)
         returnButton.place(x=xPos,y=yPos)
 
-
-
-
-
     def extensionImmunization(self): # pass detailed immunization information here and place on extension window
 
         self.addExtension()
@@ -884,76 +737,137 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         immunizationHeader.place(x=50,y=0)
 
 
-
-    def showOutReachDEP(self): # uses patient Canvas for display
-
-        contactFrame = LabelFrame(self.contactPage, text="<Contact>",width=500,height=120)
-        contactFrame.place(x=0, y=25)
-        contactFrame.grid_propagate(False)
-
-        self.label_and_Text(contactFrame, "Phone", 0, 0, "123-456-789")
-        self.label_and_Text(contactFrame, "Mobile", 4, 0, "987-654-321")
-        self.label_and_Text(contactFrame, "Work Phone", 0, 2, "123-456-789")
-        self.label_and_Text(contactFrame, "Email", 0, 4, "r_Andom@u.pacific.edu")
-        self.label_and_Text(contactFrame, "Preferred Contact", 4, 2, "Mobile")
-        self.label_and_Text(contactFrame, "Pref. Language", 4, 4, "English")
-
-
-        #contact notes and outreach notes
-        notesLabel = Label(self.contactPage,text="Contact Notes")
-        notesLabel.place(x=75,y=150)
-
-        contactNotes = Text(self.contactPage,width=30,height=10,padx=5)
-        contactNotes.place(x=0,y=175)
-        contactNotes.insert('end',"Notes about contacting this patient here")
-
-        outreachNotesLabel = Label(self.contactPage, text="Outreach Notes")
-        outreachNotesLabel.place(x=350, y=150)
-
-        self.outreachNotes = Text(self.contactPage, width=27, height=10,padx=5)
-        self.outreachNotes.place(x=275, y=175)
-        self.outreachNotes.insert('end',"Patient did not want an to schedule an appointment")
-
-
-        #update widget positions for tkinter
-        notesLabel.update()
-        self.outreachNotes.update()
-        #self.contactNotes.update()
-        outreachNotesLabel.update()
-
-        contactSubmitX = notesLabel.winfo_x()
-        SubmitY = self.outreachNotes.winfo_y() + self.outreachNotes.winfo_height() + 10
-        outreachSubmitX = outreachNotesLabel.winfo_x()
-
-
-        contactNotesButton = Button(self.contactPage,text="Submit Changes")
-        contactNotesButton.place(x=contactSubmitX,y=SubmitY)
-
-        outreachNotesButton = Button(self.contactPage,text="Submit Changes")
-        outreachNotesButton.place(x=outreachSubmitX,y=SubmitY)
-
-
-        #contact Method Frame
-        contactMethodFrame = LabelFrame(self.contactPage, text="<Method of contact>",width=500,height=100)
-        contactMethodFrame.place(x=0,y=400)
-        contactMethodFrame.grid_propagate(False)
-
-        emailPatient = Button(contactMethodFrame,text="Email Patient",command=self.extensionEmail)
-        emailPatient.place(x=25,y=25)
-
-
     def showOutReach(self): # newer version of outreaching to patients
 
         # Setup for  the contact page
         self.contactPage.update()
-        Width = self.contactPage.winfo_width()
-
+        Width = 800
 
         self.contactPage.configure(bg="light blue")
 
 
         # initialized vars
         theFrame = self.contactPage
+
+        contactFrame = LabelFrame(theFrame,bg="light blue",width=Width-10,height=150,
+                                            highlightcolor="white",highlightthickness=2,bd=0)
+        contactFrame.place(x=5,y=5)
+
+        labels = ["Home Phone","Mobile Phone","Work Phone","Email Address","Preferred Contact","Interpreter",
+                  "Guarantor Name","Guarantor Relationship"]
+
+        # Queue for textboxes here
+        staticInformation = ["123-456-789","213-432-9789","321-897-1231","c_remmert@u.pacific.edu","Email", "None", "Angela Ayala","Classmate"]
+
+        patientLabels = []
+        patientText = []
+
+        for index in range(len(labels)):
+
+            #create new label for the frame
+            newLabel = Label(contactFrame,text = labels[index],bg="light blue", font = ('consolas',12))
+
+            newText = Text(contactFrame,width=len(staticInformation[index]),height=1)
+            newText.insert('end',staticInformation[index])
+            newText.configure(state=DISABLED)
+
+            patientLabels.append(newLabel)
+            patientText.append(newText)
+
+
+        index = 0
+        startingX = 5
+        startingY = 5
+        labelPTR = None
+
+
+        # will refactor into a for loop later
+        patientLabels[index].place(x=startingX,y=startingY)
+        patientLabels[index].update()
+        nextX = patientLabels[index].winfo_x() + patientLabels[index].winfo_width() + 10
+
+        patientText[index].place(x=nextX,y=startingY)
+        startingY = patientLabels[index].winfo_y() + patientLabels[index].winfo_height() + 20
+        index += 1
+
+
+        patientLabels[index].place(x=startingX, y=startingY)
+        patientLabels[index].update()
+        nextX = patientLabels[index].winfo_x() + patientLabels[index].winfo_width() + 10
+
+        patientText[index].place(x=nextX, y=startingY)
+        startingY = patientLabels[index].winfo_y() + patientLabels[index].winfo_height() + 20
+        index += 1
+
+        patientLabels[index].place(x=startingX, y=startingY)
+        patientLabels[index].update()
+        nextX = patientLabels[index].winfo_x() + patientLabels[index].winfo_width() + 10
+
+        patientText[index].place(x=nextX, y=startingY)
+        startingY = 5
+        startingX = 250
+        index += 1
+
+        patientLabels[index].place(x=startingX, y=startingY)
+        patientLabels[index].update()
+        nextX = patientLabels[index].winfo_x() + patientLabels[index].winfo_width() + 10
+
+        patientText[index].place(x=nextX, y=startingY)
+        startingY = patientLabels[index].winfo_y() + patientLabels[index].winfo_height() + 20
+        index += 1
+
+        patientLabels[index].place(x=startingX, y=startingY)
+        patientLabels[index].update()
+        nextX = patientLabels[index].winfo_x() + patientLabels[index].winfo_width() + 10
+
+        patientText[index].place(x=nextX, y=startingY)
+        startingY = patientLabels[index].winfo_y() + patientLabels[index].winfo_height() + 20
+        index += 1
+
+
+
+        patientLabels[index].place(x=startingX, y=startingY)
+        patientLabels[index].update()
+        nextX = patientLabels[index].winfo_x() + patientLabels[index].winfo_width() + 10
+
+        patientText[index].place(x=nextX, y=startingY)
+        startingY = 45
+        startingX = 475
+        index += 1
+
+        patientLabels[index].place(x=startingX, y=startingY)
+        patientLabels[index].update()
+        nextX = patientLabels[index].winfo_x() + patientLabels[index].winfo_width() + 10
+
+        patientText[index].place(x=nextX, y=startingY)
+        startingY = patientLabels[index].winfo_y() + patientLabels[index].winfo_height() + 20
+        index += 1
+
+        patientLabels[index].place(x=startingX, y=startingY)
+        patientLabels[index].update()
+        nextX = patientLabels[index].winfo_x() + patientLabels[index].winfo_width() + 10
+
+        patientText[index].place(x=nextX, y=startingY)
+        startingY = patientLabels[index].winfo_y() + patientLabels[index].winfo_height() + 20
+        index += 1
+
+        contactFrame.update()
+        nextFrameY = contactFrame.winfo_y() + contactFrame.winfo_height() + 5
+
+
+
+
+        # label frame for outreach details
+
+        outreachDetailsFrame = LabelFrame(theFrame, text="Outreach Details", width=Width - 10, height=250,
+                                       bg="light blue",
+                                       highlightcolor="white", highlightthickness=2, font=('consolas', 12), bd=0,
+                                       labelanchor="n")
+        outreachDetailsFrame.place(x=5,y=nextFrameY)
+
+        detailsLabels = ["Date", "Method", "Outcome","Attempt Number"]
+
+        outcomeLabels = ["Answered", "Missed Call", "Hung Up","Will Call Back","Wrong Number", "Attempt Again Later"]
 
 
     def getPatientHistory(self):
