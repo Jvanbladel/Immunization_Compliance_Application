@@ -5,7 +5,7 @@ class Demographics():
     def __init__(self, data):
         data = data[0]
         self.address = [data[0], data[1], data[2], data[3], data[4], data[5], data[6]]
-        self.demographics = [data[8], data[9], data[9], data[10], "", data[11], data[12], "", data[14], data[15], data[13], ""]
+        self.demographics = [data[8], data[9], data[10], data[11], data[12], data[13], data[14], data[20], data[16], data[17], data[15], data[19]]
         self.patientID = data[7]
         self.contact = [data[17], "", "", data[22],"","", ""] 
 

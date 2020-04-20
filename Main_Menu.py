@@ -1475,7 +1475,7 @@ class mainMenu(ICA_super.icaSCREENS):
             return
 
         newWindow = Toplevel()
-        newWindow.title("Patient Details MRN: " + patient.MRN)
+        newWindow.title("Patient Details MRN: " + str(patient.MRN))
         patientInfo = med_INFO_SCREEN(newWindow,patient)
         self.currentPopOut += 1
 
@@ -1507,7 +1507,7 @@ class mainMenu(ICA_super.icaSCREENS):
         self.pLName = Label(self.root, text = "Last Name: " +  patientData[1])
         self.pLName.place(x = 590, y = 175)
 
-        self.pMName = Label(self.root, text = "MI: " +  patientData[2])
+        self.pMName = Label(self.root, text = "MI: " +  str(patientData[2]))
         self.pMName.place(x = 730, y = 145)
 
         self.pDOB = Label(self.root, text = "Date of Birth: " +  patientData[3])

@@ -219,9 +219,9 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
 
         # contains a list of labels to be added for patient details frame
-        patientDetailsList = ["Last Name","First Name","Nickname","Middle Name(s)","Prefix","Sex"]
+        patientDetailsList = ["Last Name","First Name","Nickname","Middle Initial","Prefix","Sex"]
 
-        PatientDemographicsList = ["Last Name","First Name","Nickname","Middle Name(s)","Prefix","Sex",
+        PatientDemographicsList = ["Last Name","First Name","Nickname","Middle Initial","Prefix","Sex",
                                    "D.O.B","Age", "Race", "Ethnicity","Pref. Language", "Deceased Status"]
 
         staticDetails = self.demoGraphics.demographics
@@ -243,7 +243,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
             #display the textboxes
             newTextBox = Text(self.patientFrame,width=20,height=1)
             newTextBox.place(x=150 + detailsPosXIncrease,y=detailsPosY)
-            newTextBox.insert('end',staticDetails[index])
+            newTextBox.insert('end',str(staticDetails[index]))
             newTextBox.configure(state=DISABLED)
 
             detailsPosY += 30

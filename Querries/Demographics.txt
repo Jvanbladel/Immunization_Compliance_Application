@@ -9,13 +9,17 @@ Address.Country,
 Patient.PatientId,
 Patient.PatientLastName,
 Patient.PatientFirstName,
+Patient.PatientNickname,
 Patient.PatientMiddleInitial,
+Patient.Prefix,
 Patient.PatientGender,
 Patient.PatientDateOfBirth,
 Patient.PreferredLanguage,
 Patient.PatientRace,
 Patient.PatientEthnicity,
 Patient.PreferredCommMode,
+Patient.DeceasedStatus,
+datediff(year, max(Patient.PatientDateOfBirth), getdate()) As PatientAge,
 Phone.Home_PhoneNumber,
 Phone.MobileNumber,
 Phone.WorkNumber,
@@ -28,10 +32,42 @@ Guarantor.GuarantorFirstName,
 Guarantor.GuarantorMiddleInitial,
 Guarantor.GuarantorGender
 From
-Patient Left Outer Join
-Address On Patient.PatientId = Address.PatientId Left Outer Join
-Phone On Patient.PatientId = Phone.PatientId Left Outer Join
-ResponsibleParty On Patient.PatientId = ResponsibleParty.PatientId left Outer Join
-Guarantor On ResponsibleParty.GuarantorId = Guarantor.GuarantorId
+Patient
+Left Outer Join Address On Patient.PatientId = Address.PatientId
+Left Outer Join Phone On Patient.PatientId = Phone.PatientId
+Left Outer Join ResponsibleParty On Patient.PatientId = ResponsibleParty.PatientId
+Left Outer Join Guarantor On ResponsibleParty.GuarantorId = Guarantor.GuarantorId
 Where
 Patient.PatientId = ?
+Group by
+Address.StreetName1,
+Address.StreetName2,
+Address.City,
+Address.State,
+Address.ZipCode,
+Address.County,
+Address.Country,
+Patient.PatientId,
+Patient.PatientLastName,
+Patient.PatientFirstName,
+Patient.PatientNickname,
+Patient.PatientMiddleInitial,
+Patient.Prefix,
+Patient.PatientGender,
+Patient.PatientDateOfBirth,
+Patient.PreferredLanguage,
+Patient.PatientRace,
+Patient.PatientEthnicity,
+Patient.PreferredCommMode,
+Patient.DeceasedStatus,
+Phone.Home_PhoneNumber,
+Phone.MobileNumber,
+Phone.WorkNumber,
+Phone.WorkExtension,
+Phone.EmailAddress,
+Phone.PhoneType,
+ResponsibleParty.PatientGuarantorType,
+Guarantor.GuarantorLastName,
+Guarantor.GuarantorFirstName,
+Guarantor.GuarantorMiddleInitial,
+Guarantor.GuarantorGender
