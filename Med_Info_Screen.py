@@ -325,7 +325,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
         #contact information displayed below here
 
-        contactLabels = ["Phone Number","Phone Extension","Phone Type","Email Address", "Preferred Contact",
+        contactLabels = ["Home Number","Mobile Number","Work Number", "Ext", "Email Address", "Preferred Contact",
                          "Interpreter Required"]
 
         staticContactINFO = self.demoGraphics.contact
@@ -333,6 +333,8 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
         xPos = 5
         yPos = 5
+        ExtXPos = 0
+
         self.contactINFO.update()
         for index in range(len(contactLabels)):
 
@@ -343,8 +345,12 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
 
             newLabel = Label(self.contactINFO,text=labelInsert,font=('consolas',12),bg="light blue")
-            newLabel.place(x=xPos,y=yPos)
-            newLabel.update()
+            if labelInsert == "Ext":
+                newLabel.place(x=ExtXPos, y=yPos)
+                newLabel.update()
+            else:
+                newLabel.place(x=xPos, y=yPos)
+                newLabel.update()
 
 
             textX = newLabel.winfo_width() + newLabel.winfo_x() + 5
@@ -356,8 +362,11 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
             newText.place(x=textX,y=textY)
             newText.update()
 
+            if labelInsert == "Work Number":
+                ExtXPos = newText.winfo_x() + newText.winfo_width() + 100
+            else:
+                yPos += 45
 
-            yPos += 45
 
 
         contactNotesLabel = Label(self.contactINFO,text="Contact Notes",bg="light blue",font=('consolas',12))
