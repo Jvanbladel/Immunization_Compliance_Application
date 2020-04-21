@@ -225,6 +225,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
                                    "D.O.B","Age", "Race", "Ethnicity","Pref. Language", "Deceased Status"]
 
         staticDetails = self.demoGraphics.demographics
+        self.checkNone(staticDetails)
 
         detailsPosY = 30
         detailsPosXIncrease = 0
@@ -257,6 +258,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
         addressLabels = ["Street 1", "Street 2", "City", "State", "Zipcode", "County", "Country"]
         staticAddress = self.demoGraphics.address
+        self.checkNone(staticAddress)
 
         addedLabels = []
 
@@ -311,7 +313,6 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         self.demosNoteBook.add(self.contactINFO,text="Contact Information")
 
 
-        
         self.guarantorInformation = Frame(self.demosNoteBook,bg="light blue")
         self.demosNoteBook.add(self.guarantorInformation,text="Guarantor Information")
 
@@ -325,10 +326,11 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
         #contact information displayed below here
 
-        contactLabels = ["Home Number","Mobile Number","Work Number", "Ext", "Email Address", "Preferred Contact",
+        contactLabels = ["Home Number","Mobile Number","Work Number", "Ext", "Email Address", "Preferred Mode of Contact",
                          "Interpreter Required"]
 
         staticContactINFO = self.demoGraphics.contact
+        self.checkNone(staticContactINFO)
 
 
         xPos = 5
@@ -370,11 +372,11 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
 
         contactNotesLabel = Label(self.contactINFO,text="Contact Notes",bg="light blue",font=('consolas',12))
-        contactNotesLabel.place(x=500,y=5)
+        contactNotesLabel.place(x=550,y=5)
         contactNotesLabel.update()
 
-        contactNotesText = Text(self.contactINFO,width=40,height=13,padx=5)
-        contactNotesText.place(x=400,y=contactNotesLabel.winfo_y() + contactNotesLabel.winfo_height() + 5)
+        contactNotesText = Text(self.contactINFO,width=35,height=13,padx=5)
+        contactNotesText.place(x=460,y=contactNotesLabel.winfo_y() + contactNotesLabel.winfo_height() + 5)
         contactNotesText.insert('end',"This patient is a member of Professor Gao's COMP 129 class!")
         contactNotesText.configure(state=DISABLED)
         contactNotesText.update()
@@ -396,51 +398,64 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         emailButton = Button(self.demoOtherFrame,text="Email Extension before update",command=self.extensionEmail)
         emailButton.pack()
 
-    def extensionGuarantor(self): # display the Garantour in the extension
+        self.extensionGuarantor()
 
-        self.addExtension()
+    def extensionGuarantor(self): # display the Guarantor in the extension
+
+        self.guarantorInformation.update()
+        height=self.guarantorInformation.winfo_height()
+
+        #self.addExtension()
 
 
         #obtain information here
 
 
-        generalFont = ('consolas',10) # general font used for the labels
+        generalFont = ('consolas',12) # general font used for the labels
+
+        #newText = Text(self.contactINFO, width=len(textInsert), height=1, font=('consolas', 12))
 
 
         # extension title
-        testLabel = Label(self.extensionFrame,text="Guarantor Information",relief=GROOVE, font=('consolas',19))
-        testLabel.place(x=0,y=0)
+        #testLabel = Label(self.guarantorInformation,text="Guarantor Information",relief=GROOVE, font=('consolas',19))
+        #testLabel.place(x=0,y=0)
 
-        informationLabel = ["First name: ", "Last Name: ", "Middle Initial: ",
-                            "Source System: ", "Created Date Time: ", "Created Person ID: ",
-                            "Update Date Time: ", "Update Person ID: "]
+        informationLabel = ["First name ", "Last Name ", "Middle Initial ", "Gender", "Relationship to Patient", "Home Phone", "Mobile Number"]
 
-        staticInfo = ["Colton", "Remmert", "J", '<Insert Here>', "<Insert Here>", "<Insert Here>",
-                      "<Insert Here>", "<Insert Here>", "<Insert Here>"]
+        #staticInfo = ["Colton", "Remmert", "J", '<Insert Here>', "<Insert Here>", "<Insert Here>",
+        #              "<Insert Here>", "<Insert Here>", "<Insert Here>"]
+
+        staticInfo = self.demoGraphics.guarantor
+        self.checkNone(staticInfo)
 
 
         self.guarantorLabels = {} # contains labels that are connected to label text/ginfo
 
-        xPos = 0
-        yPos = 50
+        xPos = 5
+        yPos = 10
         for index in range(len(informationLabel)): # set the page up
 
             formatText = informationLabel[index] # text to go onto the first label
             ourText = staticInfo[index] # this Guarantor's text
 
-            newLabel = Label(self.extensionFrame, text=formatText, font=generalFont, relief=GROOVE)
+            newLabel = Label(self.guarantorInformation, text=formatText, font=generalFont, bg='light blue')
             newLabel.place(x=xPos, y=yPos)
 
             newLabel.update()
 
             formatWidth = newLabel.winfo_width() + 15
 
-            gINFO = Label(self.extensionFrame,text = ourText, font = generalFont)
+            gINFO = Text(self.guarantorInformation,width = len(ourText), height = 1, font = generalFont)
+            gINFO.insert("end", ourText)
+            gINFO.configure(state=DISABLED)
             gINFO.place(x=formatWidth,y=yPos)
 
             yPos += 50
 
             self.guarantorLabels[formatText] = newLabel # store our labels connected to the formattedText
+            if yPos >= height-100:
+                xPos += 200
+                yPos = 5
 
         closeButton = Button(self.extensionFrame,text = "Close Guarantor Example Page", command= self.removeExtension)
         closeButton.place(x=50,y=450)
@@ -1027,6 +1042,13 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
         for widget in self.extensionFrame.winfo_children():
             widget.destroy()
+
+    def checkNone(self,myList): # checks if any of the information being added is of None type
+
+        for index in range(len(myList)):
+
+            if myList[index] == None:
+                myList[index] = ""
 
 
 
