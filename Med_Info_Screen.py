@@ -256,7 +256,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         self.addressFrame.place(x=5,y=self.patientFrame.winfo_y() + self.patientFrame.winfo_height() + 5)
         self.addressFrame.update()
 
-        addressLabels = ["Street 1", "Street 2", "City", "State", "Zipcode", "County", "Country"]
+        addressLabels = ["Street 1", "Street 2", "City ", "State", "Zipcode", "County", "Country"]
         staticAddress = self.demoGraphics.address
         self.checkNone(staticAddress)
 
@@ -273,15 +273,15 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
         addedLabels[1].place(x=5,y=35)
 
-        addedLabels[2].place(x=300,y=5)
+        addedLabels[2].place(x=240,y=5)
 
-        addedLabels[3].place(x=300,y=35)
+        addedLabels[3].place(x=240,y=35)
 
-        addedLabels[4].place(x=425,y=5)
+        addedLabels[4].place(x=450,y=5)
 
-        addedLabels[5].place(x=425,y=35)
+        addedLabels[5].place(x=450,y=35)
 
-        addedLabels[6].place(x=550,y=5)
+        addedLabels[6].place(x=590,y=5)
 
         yPos = 5
         for index in range(len(staticAddress)):
@@ -295,7 +295,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
             addedText = staticAddress[index]
 
-            newText = Text(self.addressFrame,width=len(addedText),height=1)
+            newText = Text(self.addressFrame,width=18,height=1)#Replaced dynamic width=len(addedText) with fixed size
             newText.place(x=xPos,y=yPos)
             newText.insert('end',addedText)
             newText.configure(state=DISABLED)
@@ -386,24 +386,25 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
         guarantorInformationlabels = ["First Name", "Last Name","Middle Initial", "GuarantorGender"]
 
+        #####This section populates the 'other' tab in the patient details#####
+
+        #headerLabel = Label(self.demoOtherFrame,text="These are just here for testing purposes")
+        #headerLabel.pack()
+
+        #guarantorButton = Button(self.demoOtherFrame,text="Guarantor Extension before update",command=self.extensionGuarantor)
+        #guarantorButton.pack()
 
 
-        headerLabel = Label(self.demoOtherFrame,text="These are just here for testing purposes")
-        headerLabel.pack()
-
-        guarantorButton = Button(self.demoOtherFrame,text="Guarantor Extension before update",command=self.extensionGuarantor)
-        guarantorButton.pack()
-
-
-        emailButton = Button(self.demoOtherFrame,text="Email Extension before update",command=self.extensionEmail)
-        emailButton.pack()
+        #emailButton = Button(self.demoOtherFrame,text="Email Extension before update",command=self.extensionEmail)
+        #emailButton.pack()
 
         self.extensionGuarantor()
 
     def extensionGuarantor(self): # display the Guarantor in the extension
 
         self.guarantorInformation.update()
-        height=self.guarantorInformation.winfo_height()
+        width = self.guarantorInformation.winfo_width()
+        height = 300
 
         #self.addExtension()
 
@@ -420,10 +421,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         #testLabel = Label(self.guarantorInformation,text="Guarantor Information",relief=GROOVE, font=('consolas',19))
         #testLabel.place(x=0,y=0)
 
-        informationLabel = ["First name ", "Last Name ", "Middle Initial ", "Gender", "Relationship to Patient", "Home Phone", "Mobile Number"]
-
-        #staticInfo = ["Colton", "Remmert", "J", '<Insert Here>', "<Insert Here>", "<Insert Here>",
-        #              "<Insert Here>", "<Insert Here>", "<Insert Here>"]
+        informationLabel = ["First name", "Last Name ", "Middle Initial", "Sex  ", "Relationship to Patient", "Home Phone   ", "Mobile Number"]
 
         staticInfo = self.demoGraphics.guarantor
         self.checkNone(staticInfo)
@@ -435,17 +433,17 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         yPos = 10
         for index in range(len(informationLabel)): # set the page up
 
-            formatText = informationLabel[index] # text to go onto the first label
-            ourText = staticInfo[index] # this Guarantor's text
+            formatText = informationLabel[index] # guarantor labels
+            ourText = staticInfo[index] # database values
 
             newLabel = Label(self.guarantorInformation, text=formatText, font=generalFont, bg='light blue')
             newLabel.place(x=xPos, y=yPos)
 
             newLabel.update()
 
-            formatWidth = newLabel.winfo_width() + 15
+            formatWidth = newLabel.winfo_width() + 15 + newLabel.winfo_x()
 
-            gINFO = Text(self.guarantorInformation,width = len(ourText), height = 1, font = generalFont)
+            gINFO = Text(self.guarantorInformation,width = 20, height = 1, font = generalFont) #replacing dynamic width = len(ourText) with fixed width
             gINFO.insert("end", ourText)
             gINFO.configure(state=DISABLED)
             gINFO.place(x=formatWidth,y=yPos)
@@ -454,11 +452,11 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
             self.guarantorLabels[formatText] = newLabel # store our labels connected to the formattedText
             if yPos >= height-100:
-                xPos += 200
+                xPos += 350
                 yPos = 5
 
-        closeButton = Button(self.extensionFrame,text = "Close Guarantor Example Page", command= self.removeExtension)
-        closeButton.place(x=50,y=450)
+        #closeButton = Button(self.extensionFrame,text = "Close Guarantor Example Page", command= self.removeExtension)
+        #closeButton.place(x=50,y=450)
 
     def label_and_Text(self,frame,labelText,labelRow,labelCol,boxText):
 
