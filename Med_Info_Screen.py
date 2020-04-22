@@ -225,6 +225,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
                                    "D.O.B","Age", "Race", "Ethnicity","Pref. Language", "Deceased Status"]
 
         staticDetails = self.demoGraphics.demographics
+        self.checkNone(staticDetails)
 
         detailsPosY = 30
         detailsPosXIncrease = 0
@@ -319,9 +320,6 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         self.demoOtherFrame = Frame(self.demosNoteBook)
         self.demoOtherFrame.config(bg="light blue")
         self.demosNoteBook.add(self.demoOtherFrame, text="Other")
-
-
-
 
         #contact information displayed below here
 
@@ -755,6 +753,8 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         Width = 800
 
         self.contactPage.configure(bg="light blue")
+        generalBG = "light blue"
+        generalFont = ('consolas',14)
 
 
         # initialized vars
@@ -866,8 +866,6 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         nextFrameY = contactFrame.winfo_y() + contactFrame.winfo_height() + 5
 
 
-
-
         # label frame for outreach details
 
         outreachDetailsFrame = LabelFrame(theFrame, text="Outreach Details", width=Width - 10, height=250,
@@ -879,6 +877,17 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         detailsLabels = ["Date", "Method", "Outcome","Attempt Number"]
 
         outcomeLabels = ["Answered", "Missed Call", "Hung Up","Will Call Back","Wrong Number", "Attempt Again Later"]
+
+        outCome = StringVar(theFrame)
+        outCome.set(outcomeLabels[0])
+
+        outComeBox = Combobox(outreachDetailsFrame, values=["DTaP", "Flu", "HIV"])
+        outComeBox.set("DtaP")
+
+        outComeBox.place(x=100, y=100)
+        outComeBox.update()
+
+
 
 
     def getPatientHistory(self):
@@ -1028,6 +1037,10 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         for widget in self.extensionFrame.winfo_children():
             widget.destroy()
 
+    def checkNone(self,myList): # checks if any of the information being added is of None type
 
+        for index in range(len(myList)):
 
+            if myList[index] == None:
+                myList[index] = ""
 
