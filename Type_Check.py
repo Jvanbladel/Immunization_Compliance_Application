@@ -40,6 +40,7 @@ def checkType(in_str, tp):
         return False
     if tp is 'int':
         try:
+            print(in_str)
             val = int(in_str)
             print("Input is an integer number. Number = ", val)
             return True

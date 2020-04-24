@@ -1,15 +1,21 @@
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+
 import ICA_super
 from tkinter import *
 from tkinter import messagebox
 from tkinter.ttk import Combobox
 from PIL import ImageTk,Image
 import datetime
+
+import dataGraphics
+from dataGraphics import *
 import math
 from Patients import *
 from Med_Info_Screen import *
 import Login_Screen
 import sort
 from Users import *
+
 
 class mainMenu(ICA_super.icaSCREENS):
 
@@ -432,20 +438,20 @@ class mainMenu(ICA_super.icaSCREENS):
             self.FnameSearch = Checkbutton(self.root, text="First Name", variable=self.var1)
             self.FnameSearch.place(x=2.5,y=160)
 
-            fNameSearchOptions=("Exact Search", "Ascending", "Descending", "Fuzy Search")
+            #fNameSearchOptions=("Exact Search", "Ascending", "Descending", "Fuzy Search")
             
-            self.fNameCombo=Combobox(self.root, values=fNameSearchOptions)
-            self.fNameCombo.place(x=110, y=160, width = 100)
+            #self.fNameCombo=Combobox(self.root, values=fNameSearchOptions)
+            #self.fNameCombo.place(x=110, y=160, width = 100)
 
             #Options for last Name
             self.var2 = IntVar()
             self.LnameSearch = Checkbutton(self.root, text="Last Name", variable=self.var2)
             self.LnameSearch.place(x=2.5,y=185)
 
-            lNameSearchOptions=("Exact Search", "Ascending", "Descending", "Fuzy Search")
+            #lNameSearchOptions=("Exact Search", "Ascending", "Descending", "Fuzy Search")
             
-            self.LnameCombo=Combobox(self.root, values=lNameSearchOptions)
-            self.LnameCombo.place(x=110, y=185, width = 100)
+            #self.LnameCombo=Combobox(self.root, values=lNameSearchOptions)
+            #self.LnameCombo.place(x=110, y=185, width = 100)
 
 
             #Options for DOB Search
@@ -453,10 +459,10 @@ class mainMenu(ICA_super.icaSCREENS):
             self.DOBSearch = Checkbutton(self.root, text="Date of Birth", variable=self.var3)
             self.DOBSearch.place(x=2.5,y=210)
 
-            DOBOptions=("Exact Search", "Ascending", "Descending")
+            #DOBOptions=("Exact Search", "Ascending", "Descending")
             
-            self.DOBCombo=Combobox(self.root, values=DOBOptions)
-            self.DOBCombo.place(x=110, y=210, width = 100)
+            #self.DOBCombo=Combobox(self.root, values=DOBOptions)
+            #self.DOBCombo.place(x=110, y=210, width = 100)
             
             #Options for Due Date
             #self.var3 = IntVar()
@@ -473,21 +479,21 @@ class mainMenu(ICA_super.icaSCREENS):
             self.MRNSearch = Checkbutton(self.root, text="MRN", variable=self.var4)
             self.MRNSearch.place(x=2.5,y=235)
 
-            MRNSearchOptions=("Exact Search", "Ascending", "Descending", "Fuzy Search")
+            #MRNSearchOptions=("Exact Search", "Ascending", "Descending", "Fuzy Search")
             
-            self.MRNCombo=Combobox(self.root, values=MRNSearchOptions)
-            self.MRNCombo.place(x=110, y=235, width = 100)
+            #self.MRNCombo=Combobox(self.root, values=MRNSearchOptions)
+            #self.MRNCombo.place(x=110, y=235, width = 100)
 
 
             #Options for Immunizations Type
             self.var5 = IntVar()
-            self.ImmunTypeSearch = Checkbutton(self.root, text="Immunization", variable=self.var5)
+            self.ImmunTypeSearch = Checkbutton(self.root, text="Gender", variable=self.var5)
             self.ImmunTypeSearch.place(x=2.5,y=260)
 
-            ImmunTypeSearchOptions=("Vaccine 1", "Vaccine 2", "Vaccine 3", "Vaccine 4")
+            #ImmunTypeSearchOptions=("Vaccine 1", "Vaccine 2", "Vaccine 3", "Vaccine 4")
             
-            self.ImmunTypeCombo=Combobox(self.root, values=ImmunTypeSearchOptions)
-            self.ImmunTypeCombo.place(x=110, y=260, width = 100)
+            #self.ImmunTypeCombo=Combobox(self.root, values=ImmunTypeSearchOptions)
+            #self.ImmunTypeCombo.place(x=110, y=260, width = 100)
 
             #Search Buttons
 
@@ -495,17 +501,18 @@ class mainMenu(ICA_super.icaSCREENS):
             self.defaultQueueBUTTON.place(x=20, y = 290, width = 177.5, height = 25)
 
             self.searchforBUTTON = Button(self.root, text = "Search",bg="blue",fg="white", command=lambda: self.searchFunc())
-            self.searchforBUTTON.place(x=122.5, y = 320, width = 75, height = 32.5)
 
-            self.advancedsearchBUTTON = Button(self.root, text = "More\nOptions", command=lambda: self.togAdvancedSearch())
-            self.advancedsearchBUTTON.place(x=20, y = 320, width = 75, height = 32.5)
+            self.searchforBUTTON.place(x=20, y = 320, width = 177.5, height = 32.5)
+
+            #self.advancedsearchBUTTON = Button(self.root, text = "More\nOptions", command=lambda: self.togAdvancedSearch())
+            #self.advancedsearchBUTTON.place(x=20, y = 320, width = 75, height = 32.5)
 
 
-            self.advancedSearchFRAME = LabelFrame(self.root)
-            self.advancedSearchFRAME.place(x=0,y=370,height=230,width=225)
+            #self.advancedSearchFRAME = LabelFrame(self.root)
+            #self.advancedSearchFRAME.place(x=0,y=370,height=230,width=225)
         
             self.searchBox = 1
-            self.advancedSearch = 0
+            #self.advancedSearch = 0
         else:
             self.searchFRAME.destroy()
             self.searchTXT.destroy()
@@ -534,21 +541,40 @@ class mainMenu(ICA_super.icaSCREENS):
             # print(type(self.searchENTRY.get()))
             # PatientFirstName
             newlist = sort.fuzzySearch("PatientFirstName", self.searchENTRY.get(), "str")
-            self.updateQueue(newlist)
+            if newlist is not None:
+                self.updateQueue(newlist)
+            else:
+                messagebox.showerror(message="Invalid Input!\nNo Patient Found")
         elif self.var2.get():
-            # First Name
+            # Lirst Name
             newlist = sort.fuzzySearch("PatientLastName", self.searchENTRY.get(), "str")
-            self.updateQueue(newlist)
+            if newlist is not None:
+                self.updateQueue(newlist)
+            else:
+                messagebox.showerror(message="Invalid Input!\nNo Patient Found")
 
         elif self.var3.get():
-            # Last Name
+            # PatientDateOfBirth
             newlist = sort.fuzzySearch("PatientDateOfBirth", self.searchENTRY.get(), "date")
-            self.updateQueue(newlist)
+            if newlist is not None:
+                self.updateQueue(newlist)
+            else:
+                messagebox.showerror(title='No Patient Found',message="Invalid Input!\nuse'mmddyyyy' or 'mm/dd/yyyy'")
 
         elif self.var4.get():
             # MRN
-            newlist = sort.fuzzySearch("PatientMRN", self.searchENTRY, "int")
-            self.updateQueue(newlist)
+            newlist = sort.fuzzySearch("PatientMRN", self.searchENTRY.get(), "int")
+            if newlist is not None:
+                self.updateQueue(newlist)
+            else:
+                messagebox.showerror(title='No Patient Found',message="Invalid Input!\nEnter Integer")
+        elif self.var5.get():
+            # Gender
+            newlist = sort.fuzzySearch("PatientGender", self.searchENTRY.get()[:1], "str")
+            if newlist is not None:
+                self.updateQueue(newlist)
+            else:
+                messagebox.showerror(title='No Patient Found',message="Invalid Input!\n")
     def resetQueueToDefault(self):
         pass
 
@@ -613,7 +639,6 @@ class mainMenu(ICA_super.icaSCREENS):
 
             self.lastVisitCombo=Combobox(self.root, values=lastVisitSearchOptions)
             self.lastVisitCombo.place(x=110, y=385, width = 100)
-
 
 
             self.advancedSearch = 1
@@ -728,9 +753,7 @@ class mainMenu(ICA_super.icaSCREENS):
     def determineFilter(self,filter): # determines if filter is Ascending or descending
 
         if filter.get() == "Ascending":
-
             return True
-
         return False
 
     def filterQueue(self):
@@ -960,7 +983,7 @@ class mainMenu(ICA_super.icaSCREENS):
             currentY = 30
             if not self.user.permissions == None:
                 if self.user.permissions.viewSelfAnalytics == 1:
-                    self.myAnalytics = Button(self.root, text = "My Analytics", justify = LEFT,anchor=W)
+                    self.myAnalytics = Button(self.root, text = "My Analytics", justify = LEFT,anchor=W, command=lambda:self.drawDiagrams())
                     self.myAnalytics.place(x=self.analyticTABX,y=currentY,height=30,width=110)
                     currentY = currentY + 30
 
@@ -978,6 +1001,9 @@ class mainMenu(ICA_super.icaSCREENS):
                 if self.user.permissions.viewSystemAnalytics == 1:
                     self.systemAnalytics.destroy()
             self.analytics = 0
+    def drawDiagrams(self):
+        dataGraphics.ind(self.user.userId)
+
 
     def togHistoryTab(self):
         if self.history == 0:

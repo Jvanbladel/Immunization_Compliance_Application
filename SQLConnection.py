@@ -212,6 +212,7 @@ class SQLConnection():
             return
         sql = self.loadQuerry("Individual_Work")
         data = pd.read_sql(sql, self.conn, params={userId})
+        print(sql)
         if data.empty:
             return
         #data = data.values.tolist()
