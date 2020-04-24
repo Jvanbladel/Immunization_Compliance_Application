@@ -227,8 +227,16 @@ class SQLConnection():
         #data = data.values.tolist()
         return data
 
-    def getGuarantor(self, patientId):
-        pass
+    def getContactNotes(self, patientId):
+        if self.checkConnection() == 0:
+            return
+        sql = self.loadQuerry("Contact_Notes")
+        data = pd.read_sql(sql, self.conn, params={patientId})
+        if data.empty:
+            return
+        data = data.values.tolist()
+        #print(data)
+        return data
 
     def getInsurence(self, patientId):
         pass
