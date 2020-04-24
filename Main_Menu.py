@@ -1592,8 +1592,8 @@ class mainMenu(ICA_super.icaSCREENS):
             newLabel.place(x = 720, y = 175 + 30 * history)
             self.pHistoryList.append(newLabel)'''
 
-        self.pLastVisit = Label(self.root, text = "Last Visit: " + patientData[1], font = ("Consolas", 10))
-        self.pLastVisit.place(x = 580, y = 340)
+        #self.pLastVisit = Label(self.root, text = "Last Visit: " + patientData[1], font = ("Consolas", 10))
+        #self.pLastVisit.place(x = 580, y = 340)
         
         self.expandBUTTON = Button(self.root,text="Expand Patient",command=lambda:self.xPand(patient))
         self.expandBUTTON.place(x=700,y=365, width = 90, height = 30)
@@ -1612,9 +1612,10 @@ class mainMenu(ICA_super.icaSCREENS):
             #pstr = '{0:<12} {1:<4}'.format(vList[i][0], vList[i][1])
             #FONT has to be monospaced or it wont work
             #b = Button(self.pframe, text = pstr,anchor=W, justify=LEFT, width = 46, font = ('Consolas', 10))
-
+            #print(vList[i])
+            #print(vList[i][7], vList[i][2])
             
-            pstr = '{0:<15}{1:<8}'.format(vList[i][7], vList[i][12])
+            pstr = '{0:<15}{1:<8}'.format(vList[i][7], vList[i][2])
             #FONT has to be monospaced or it wont work
             b = Button(self.pframe, text = pstr,anchor=W, justify=LEFT, width = 46, font = ('Consolas', 10))
             b.grid(row=i)
@@ -1634,19 +1635,24 @@ class mainMenu(ICA_super.icaSCREENS):
         self.contactBUTTON = Button(self.root, text = "Contact", command=lambda: self.showContact(patient))
         self.contactBUTTON.place(x = 725, y = 100, width = 75, height = 37.5)
 
-        patientData = patient.getContact()
+        patientData = self.SQL.getDemographics(patient.patientID)
+        patientData1 = patientData.contact
+        patientData2 = patientData.demographics
         
-        self.pPhone = Label(self.root, text = "Phone: " + patientData[0][0] + "     Type: " + patientData[0][1])
-        self.pPhone.place(x = 580, y = 145)
+        self.pPhone1 = Label(self.root, text = "Home Phone: " + patientData1[0])
+        self.pPhone1.place(x = 580, y = 145)
 
-        self.pEmail = Label(self.root, text = "Email: " + patientData[1])
-        self.pEmail.place(x = 580, y = 175)
+        self.pPhone2 = Label(self.root, text = "Cell Phone: " + patientData1[1])
+        self.pPhone2.place(x = 580, y = 175)
 
-        self.pLanguage = Label(self.root, text = "Language Preference: " + patientData[2])
-        self.pLanguage.place(x = 580, y = 205)
+        self.pEmail = Label(self.root, text = "Email: " + patientData1[4])
+        self.pEmail.place(x = 580, y = 205)
 
-        self.pContactPreference = Label(self.root, text = "Contact Preference: " + patientData[3])
-        self.pContactPreference.place(x = 580, y = 235)
+        self.pLanguage = Label(self.root, text = "Language Preference: " + patientData2[10])
+        self.pLanguage.place(x = 580, y = 235)
+
+        self.pContactPreference = Label(self.root, text = "Contact Preference: " + patientData1[5])
+        self.pContactPreference.place(x = 580, y = 265)
         
         self.expandBUTTON = Button(self.root,text="Expand Patient",command=lambda:self.xPand(patient))
         self.expandBUTTON.place(x=700,y=365, width = 90, height = 30)
@@ -1682,7 +1688,7 @@ class mainMenu(ICA_super.icaSCREENS):
             for elem in self.pHistoryList:
                 elem.destroy()
             self.pheaderLabel.destroy()
-            self.pLastVisit.destroy()
+            #self.pLastVisit.destroy()
             self.pmyframe.destroy()
             self.pcanvas.destroy()
             self.pframe.destroy()
@@ -1697,8 +1703,8 @@ class mainMenu(ICA_super.icaSCREENS):
             self.infoBUTTON.destroy()
             self.medBUTTON.destroy()
             self.contactBUTTON.destroy()
-            
-            self.pPhone.destroy()
+            self.pPhone1.destroy()
+            self.pPhone2.destroy()
             self.pEmail.destroy()
             self.pLanguage.destroy()
             self.pContactPreference.destroy()

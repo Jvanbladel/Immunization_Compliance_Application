@@ -257,7 +257,7 @@ class SQLConnection():
 
 def main():
     SQL = SQLConnection()
-    demographics = SQL.getDemographics(105998)
+    demographics = SQL.getDemographics(58855)
     print (demographics)
     SQL.closeConnection()
 if __name__ == "__main__":
