@@ -1516,6 +1516,9 @@ class mainMenu(ICA_super.icaSCREENS):
 
     def showHistory(self, patient):
         self.clearPatient()
+        #print(patient)
+        historyToShow = self.SQL.getServiceDetails(patient.patientID).values.tolist()
+        #print(historyToShow)
         self.phistory = 1
 
         self.infoBUTTON = Button(self.root, text = "Summary", command=lambda: self.showSummary(patient))
@@ -1542,9 +1545,9 @@ class mainMenu(ICA_super.icaSCREENS):
         self.pcanvas.create_window((0,0),window=self.pframe,anchor='nw')
         self.pframe.bind("<Configure>", self.pmyfunction)
 
-        self.pVaccine(patientData[0])
+        self.pVaccine(historyToShow)
 
-        headerText = '{0:<10}{1:<8}{2:<10}'.format("Vaccine" , "Overdue", "Insurance")
+        headerText = '{0:<15}{1:<8}'.format("Vaccine" , "Date")
         self.pheaderLabel = Label(self.root, text = headerText, font = ("Consolas", 10))
         self.pheaderLabel.place(x = 577.5, y = 140)
 
@@ -1591,7 +1594,7 @@ class mainMenu(ICA_super.icaSCREENS):
             #b = Button(self.pframe, text = pstr,anchor=W, justify=LEFT, width = 46, font = ('Consolas', 10))
 
             
-            pstr = '{0:<12} {1:<4} {2:<10}'.format(vList[i][0], vList[i][1], vList[i][2])
+            pstr = '{0:<15}{1:<8}'.format(vList[i][7], vList[i][12])
             #FONT has to be monospaced or it wont work
             b = Button(self.pframe, text = pstr,anchor=W, justify=LEFT, width = 46, font = ('Consolas', 10))
             b.grid(row=i)
