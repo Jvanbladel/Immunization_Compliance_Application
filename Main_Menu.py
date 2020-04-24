@@ -494,7 +494,7 @@ class mainMenu(ICA_super.icaSCREENS):
             self.defaultQueueBUTTON = Button(self.root, text = "Default Work Queue", command=lambda: self.resetQueueToDefault())
             self.defaultQueueBUTTON.place(x=20, y = 290, width = 177.5, height = 25)
 
-            self.searchforBUTTON = Button(self.root, text = "Search",bg="blue",fg="white")
+            self.searchforBUTTON = Button(self.root, text = "Search",bg="blue",fg="white", command=lambda: self.searchFunc())
             self.searchforBUTTON.place(x=122.5, y = 320, width = 75, height = 32.5)
 
             self.advancedsearchBUTTON = Button(self.root, text = "More\nOptions", command=lambda: self.togAdvancedSearch())
@@ -529,6 +529,26 @@ class mainMenu(ICA_super.icaSCREENS):
                 self.togAdvancedSearch()
             self.searchBox = 0
 
+    def searchFunc(self):
+        if self.var1.get():
+            # print(type(self.searchENTRY.get()))
+            # PatientFirstName
+            newlist = sort.fuzzySearch("PatientFirstName", self.searchENTRY.get(), "str")
+            self.updateQueue(newlist)
+        elif self.var2.get():
+            # First Name
+            newlist = sort.fuzzySearch("PatientLastName", self.searchENTRY.get(), "str")
+            self.updateQueue(newlist)
+
+        elif self.var3.get():
+            # Last Name
+            newlist = sort.fuzzySearch("PatientDateOfBirth", self.searchENTRY.get(), "date")
+            self.updateQueue(newlist)
+
+        elif self.var4.get():
+            # MRN
+            newlist = sort.fuzzySearch("PatientMRN", self.searchENTRY, "int")
+            self.updateQueue(newlist)
     def resetQueueToDefault(self):
         pass
 
@@ -1456,7 +1476,7 @@ class mainMenu(ICA_super.icaSCREENS):
             return
 
         newWindow = Toplevel()
-        newWindow.title("Patient Details MRN: " + patient.MRN)
+        newWindow.title("Patient Details MRN: " + str(patient.MRN))
         patientInfo = med_INFO_SCREEN(newWindow,patient)
         self.currentPopOut += 1
 
@@ -1488,7 +1508,7 @@ class mainMenu(ICA_super.icaSCREENS):
         self.pLName = Label(self.root, text = "Last Name: " +  patientData[1])
         self.pLName.place(x = 590, y = 175)
 
-        self.pMName = Label(self.root, text = "MI: " +  patientData[2])
+        self.pMName = Label(self.root, text = "MI: " +  str(patientData[2]))
         self.pMName.place(x = 730, y = 145)
 
         self.pDOB = Label(self.root, text = "Date of Birth: " +  patientData[3])

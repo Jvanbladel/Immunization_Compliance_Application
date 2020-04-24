@@ -1,15 +1,16 @@
 Select
     Count(Outreach_Details.OutreachDetailsPatientId) As Count_OutreachDetailsPatientId,
     Outreach_Details.OutreachDetailsCreatedPrsnlId,
-    Concat(Users.UserFirstName, ' ', Users.UserLastName) As name
+    Outreach_Details.OutreachDetailsDate,
+    concate(Users.UserFirstName,' ',Users.UserLastName) As name
 From
     Outreach_Details Inner Join
     Users On Outreach_Details.OutreachDetailsCreatedPrsnlId = Users.PersonnelId
 Where
-    Outreach_Details.OutreachDetailsNotes Like '%appoint%'
+    Outreach_Details.OutreachDetailsNotes Like '%appoint%' And
+    Outreach_Details.OutreachDetailsCreatedPrsnlId = ?
 Group By
     Outreach_Details.OutreachDetailsCreatedPrsnlId,
+    Outreach_Details.OutreachDetailsDate,
     Users.UserFirstName,
     Users.UserLastName
-Order By
-    Count_OutreachDetailsPatientId

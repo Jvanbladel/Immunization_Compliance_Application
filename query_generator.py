@@ -1,5 +1,5 @@
-
 tables = 'Patient'
+
 
 def exactSearch_sql(field, input_str, input_type):
     if input_type == 'num':
@@ -8,21 +8,36 @@ def exactSearch_sql(field, input_str, input_type):
         return 'select Patient.PatientID, PatientMRN, PatientLastName, PatientFirstName, PatientDateOfBirth' + ' from ' \
                + tables + ' where WHERE cast (datediff (day, 0,  + PatientDateOfBirth) as datetime) =' + input_str
     return 'select Patient.PatientID, PatientMRN, PatientLastName, PatientFirstName, PatientDateOfBirth' + ' from ' \
-          + tables + ' where ' + field + '=\'' + input_str + '\''
+           + tables + ' where ' + field + '=\'' + input_str + '\''
 
 
 def fuzzySearch_sql(field, input_str, input_type):
-    sql = ''
-    sql += exactSearch_sql(field, input_str, input_type)
-    i = len(input_str) - 1
 
+    i = len(input_str)
+    sql = 'select p.PatientId,p.PatientMRN,p.PatientLastName,p.PatientFirstName,p.PatientMiddleInitial,\
+            p.PatientDateOfBirth,p.PatientGender,p.DeceasedStatus,Convert(VARCHAR(10),DateAdd(year, 1, Max(s.DateofService)),101) As DueDate,\
+            DateDiff(day, Max(s.DateofService), GetDate()) - 365 As Daysoverdue,p.PatientRace,p.PatientEthnicity,\
+            datediff(year, max(p.PatientDateOfBirth), getdate()) As Age\
+            From Patient p Left Outer Join\
+            ServiceDetails s On p.PatientId = s.PatientId\
+            where p.' + field + '=\'' + input_str + ' \''
     while i > 0:
-        fuzzy = 'select Patient.PatientID, PatientMRN, PatientLastName, PatientFirstName, PatientDateOfBirth  ' \
-                ' from ' + tables + ' where ' + field + ' like \'' + str(input_str[0:i]) + '%\''
-        sql = sql + ' union ' + fuzzy
+        fuzzy = ' or p.' + field + ' like \'' + str(input_str[0:i]) + '%\''
+        sql = sql + fuzzy
         i -= 1
-    return sql
 
+    return sql +' Group By\
+            p.PatientId,\
+            p.PatientMRN,\
+            p.PatientLastName,\
+            p.PatientFirstName,\
+            p.PatientMiddleInitial,\
+            p.PatientDateOfBirth,\
+            p.PatientGender,\
+            p.DeceasedStatus,\
+            p.PatientRace,\
+            p.PatientEthnicity,\
+            p.PreferredLanguage'
 
 
 def getAttribute_sql(table):

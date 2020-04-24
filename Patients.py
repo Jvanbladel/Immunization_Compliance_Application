@@ -5,15 +5,13 @@ class Demographics():
     def __init__(self, data):
         data = data[0]
         self.address = [data[0], data[1], data[2], data[3], data[4], data[5], data[6]]
-        self.demographics = [data[8], data[9], data[9], data[10], "", data[11], data[12], "", data[14], data[15], data[13], ""]
+        self.demographics = [data[8], data[9], data[10], data[11], data[12], data[13], data[14], data[20], data[16], data[17], data[15], data[19]]
         self.patientID = data[7]
-        self.contact = [data[17], "", "", data[22],"","", ""] 
+        self.contact = [data[22], data[23], data[24], data[25], data[26], data[18], data[21]]
+        self.guarantor = [data[30], data[29], data[31], data[32], data[28], data[22], data[23]]
 
-class Garantor():
-    def __init__(self, data):
-        pass
 
-class Insurence():
+class Insurance():
     def __init__(self, data):
         pass
 
@@ -61,10 +59,18 @@ class Patient():
         elif self.sex == "F":
             self.prefix = "Ms."
 
+    class ContactNotes():
+        def __init__(self, data):
+            self.notes = data[0]
+
     # adding a comment so I can push this file.
 
     def getDemographics(self, sql):
         SQL.get
+
+    def getContactNotes(self, sql):
+        SQL.get
+
     def getSummary(self):
         return [self.fName, self.lName, self.mInitial ,self.dob, self.sex, self.age, self.race, self.prefix]
 

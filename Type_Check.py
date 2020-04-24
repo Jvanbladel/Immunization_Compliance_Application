@@ -8,7 +8,7 @@ def checkSpecialCharacters(in_str):
     special = re.compile('[@_!#$%^&*()<>?/\\\|}{~: 1234567890]\'\";~`-_\+=')
     in_str = str(in_str)
 
-    return special.search(in_str) is None
+    return special.search(in_str) is not None
 
 
 def checkDate(in_str):
@@ -36,6 +36,7 @@ def checkType(in_str, tp):
     # if len(in_str) > 50:
     #     return False
     if checkSpecialCharacters(in_str):
+        print('contain sepcial char')
         return False
     if tp is 'int':
         try:
@@ -56,4 +57,5 @@ def checkType(in_str, tp):
     elif tp is 'date':
         return checkDate(in_str)
     else:
+        print(dataSize)
         return len(in_str) < dataSize
