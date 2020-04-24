@@ -1638,15 +1638,29 @@ class mainMenu(ICA_super.icaSCREENS):
         patientData = self.SQL.getDemographics(patient.patientID)
         patientData1 = patientData.contact
         patientData2 = patientData.demographics
-        
-        self.pPhone1 = Label(self.root, text = "Home Phone: " + patientData1[0])
-        self.pPhone1.place(x = 580, y = 145)
 
-        self.pPhone2 = Label(self.root, text = "Cell Phone: " + patientData1[1])
-        self.pPhone2.place(x = 580, y = 175)
+        #print(patientData)
 
-        self.pEmail = Label(self.root, text = "Email: " + patientData1[4])
-        self.pEmail.place(x = 580, y = 205)
+        if patientData1[0] != None:
+            self.pPhone1 = Label(self.root, text = "Home Phone: " + patientData1[0])
+            self.pPhone1.place(x = 580, y = 145)
+        else:
+            self.pPhone1 = Label(self.root, text = "Home Phone: No record")
+            self.pPhone1.place(x = 580, y = 145)
+
+        if patientData1[1] != None:
+            self.pPhone2 = Label(self.root, text = "Cell Phone: " + patientData1[1])
+            self.pPhone2.place(x = 580, y = 175)
+        else:
+            self.pPhone2 = Label(self.root, text = "Cell Phone: No record")
+            self.pPhone2.place(x = 580, y = 175)
+
+        if patientData1[4] != None:
+            self.pEmail = Label(self.root, text = "Email: " + patientData1[4])
+            self.pEmail.place(x = 580, y = 205)
+        else:
+            self.pEmail = Label(self.root, text = "Email: No Record")
+            self.pEmail.place(x = 580, y = 205)
 
         self.pLanguage = Label(self.root, text = "Language Preference: " + patientData2[10])
         self.pLanguage.place(x = 580, y = 235)
