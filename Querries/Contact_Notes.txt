@@ -1,0 +1,7 @@
+Select
+OutreachDetailsNotes
+From
+outreach_details
+where
+Notetype = 'ContactNotes'
+and OutreachDetailsPatientId = ?
