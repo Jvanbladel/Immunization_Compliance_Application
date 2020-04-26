@@ -404,9 +404,14 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         contactNotesLabel.place(x=550,y=5)
         contactNotesLabel.update()
 
+        formattedString = ''
+
+        for newline in self.ContactNotes:
+            formattedString += str(newline)
 
         contactNotesText = Text(self.contactINFO,width=35,height=12,padx=5)
         contactNotesText.place(x=460,y=contactNotesLabel.winfo_y() + contactNotesLabel.winfo_height() + 5)
+        contactNotesText.insert('end', formattedString)
         contactNotesText.insert('end', str(self.ContactNotes[0][0]))
         contactNotesText.configure(state=DISABLED)
         contactNotesText.update()
@@ -435,6 +440,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         #emailButton.pack()
 
         self.extensionGuarantor()
+        self.extensionInsurance()
 
     def extensionGuarantor(self): # display the Guarantor in the extension
 
@@ -493,6 +499,51 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
         #closeButton = Button(self.extensionFrame,text = "Close Guarantor Example Page", command= self.removeExtension)
         #closeButton.place(x=50,y=450)
+
+    def extensionInsurance(self):  # display the InsuranceTab in the extension
+
+        self.insuranceTab.update()
+        width = self.insuranceTab.winfo_width()
+        height = 300
+
+        # obtain information here
+
+        generalFont = ('consolas', 12)  # general font used for the labels
+
+        insuranceTabLabels = ["Insurance Name ", "Active ", "Last Visit Date", "Provider First Name", "Provider Last Name",
+                                "Provider NPI"]
+
+        staticInfo = self.demoGraphics.guarantor
+        self.checkNone(staticInfo)
+
+        self.insuranceLabels = {}  # contains labels that are connected to label text/ginfo
+
+        xPos = 5
+        yPos = 10
+        for index in range(len(insuranceTabLabels)):  # set the page up
+
+            formatText = insuranceTabLabels[index]  # guarantor labels
+            ourText = staticInfo[index]  # database values
+
+            newLabel = Label(self.insuranceTab, text=formatText, font=generalFont, bg='light blue')
+            newLabel.place(x=xPos, y=yPos)
+
+            newLabel.update()
+
+            formatWidth = newLabel.winfo_width() + 15 + newLabel.winfo_x()
+
+            InsTabINFO = Text(self.insuranceTab, width=20, height=1,
+                             font=generalFont)  # replacing dynamic width = len(ourText) with fixed width
+            InsTabINFO.insert("end", ourText)
+            InsTabINFO.configure(state=DISABLED)
+            InsTabINFO.place(x=formatWidth, y=yPos)
+
+            yPos += 50
+
+            self.insuranceLabels[formatText] = newLabel  # store our labels connected to the formattedText
+            if yPos >= height - 100:
+                xPos += 350
+                yPos = 5
 
     def label_and_Text(self,frame,labelText,labelRow,labelCol,boxText):
 
