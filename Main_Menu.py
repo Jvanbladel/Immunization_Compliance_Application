@@ -983,12 +983,12 @@ class mainMenu(ICA_super.icaSCREENS):
             currentY = 30
             if not self.user.permissions == None:
                 if self.user.permissions.viewSelfAnalytics == 1:
-                    self.myAnalytics = Button(self.root, text = "My Analytics", justify = LEFT,anchor=W, command=lambda:self.drawDiagrams())
+                    self.myAnalytics = Button(self.root, text = "My Analytics", justify = LEFT,anchor=W, command=lambda:self.drawDiagrams("I"))
                     self.myAnalytics.place(x=self.analyticTABX,y=currentY,height=30,width=110)
                     currentY = currentY + 30
 
                 if self.user.permissions.viewSystemAnalytics == 1:
-                    self.systemAnalytics = Button(self.root, text = "System Analytics", justify = LEFT,anchor=W)
+                    self.systemAnalytics = Button(self.root, text = "Group Analytics", justify = LEFT,anchor=W, command=lambda:self.drawDiagrams("G"))
                     self.systemAnalytics.place(x=self.analyticTABX,y=currentY,height=30,width=110)
                     currentY = currentY + 30
             
@@ -1001,8 +1001,11 @@ class mainMenu(ICA_super.icaSCREENS):
                 if self.user.permissions.viewSystemAnalytics == 1:
                     self.systemAnalytics.destroy()
             self.analytics = 0
-    def drawDiagrams(self):
-        dataGraphics.ind(self.user.userId)
+    def drawDiagrams(self, type):
+        if type is 'I':
+            dataGraphics.ind(self.user.userId)
+        else:
+            dataGraphics.performanceMeasurement()
 
 
     def togHistoryTab(self):
