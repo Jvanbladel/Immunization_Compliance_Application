@@ -904,7 +904,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
         # Setup for  the contact page
         self.contactPage.update()
-        Width = 800
+        Width = 850
 
         self.contactPage.configure(bg="light blue")
         generalBG = "light blue"
@@ -1102,7 +1102,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
 
         # self.demosPage,width = Width - 25, height = Height - self.patientFrame.winfo_height() - self.addressFrame.winfo_height(),padding = 5
-        self.outreachNotebook = ttk.Notebook(theFrame, width=775, height=Height-nextY,padding = 5)
+        self.outreachNotebook = ttk.Notebook(theFrame, width=Width-10, height=Height-nextY,padding = 5)
         self.emailFrame = Frame(self.outreachNotebook,width=775,height=300,bg="light blue")
         self.outreachNotebook.add(self.emailFrame, text="Email Patient")
         self.outreachNotebook.place(x=5,y=nextY)
@@ -1122,7 +1122,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
         buttonFrame = LabelFrame(emailFrame,text="Email Options",width=335,height=200,bg="light blue",
                                        highlightcolor="white",highlightthickness=2,font=('consolas',12),bd=0,labelanchor="n")
-        buttonFrame.place(x=425,y=5)
+        buttonFrame.place(x=480,y=20)
         buttonFrame.update()
 
         middleX = (buttonFrame.winfo_width() / 2) - 100
