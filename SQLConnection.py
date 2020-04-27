@@ -212,6 +212,7 @@ class SQLConnection():
             return
         sql = self.loadQuerry("Individual_Work")
         data = pd.read_sql(sql, self.conn, params={userId})
+        print(sql)
         if data.empty:
             return
         #data = data.values.tolist()
@@ -238,11 +239,27 @@ class SQLConnection():
         #print(data)
         return data
 
-    def getInsurence(self, patientId):
-        pass
+    def getInsuranceTab(self, patientId):
+        if self.checkConnection() == 0:
+            return
+        sql = self.loadQuerry("Insurance_Tab")
+        data = pd.read_sql(sql, self.conn, params={patientId})
+        if data.empty:
+            return
+        data = data.values.tolist()
+        #print(data)
+        return data
 
-    def getContact(self, patientId):
-        pass
+    def getOutreachDetails(self, patientId):
+        if self.checkConnection() == 0:
+            return
+        sql = self.loadQuerry("Outreach")
+        data = pd.read_sql(sql, self.conn, params={patientId})
+        if data.empty:
+            return
+        data = data.values.tolist()
+        #print(data)
+        return data
 
     def getAddress(self, patientId0):
         pass

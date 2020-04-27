@@ -11,9 +11,14 @@ class Demographics():
         self.guarantor = [data[30], data[29], data[31], data[32], data[28], data[22], data[23]]
 
 
-class Insurance():
+class InsuranceTab():
     def __init__(self, data):
-        pass
+        self.providerFirstName = data[0]
+        self.lastVisitDate = data[1]
+        self.insuranceActive = data[2]
+        self.insuranceName = data[3]
+        self.providerLastName = data[4]
+        self.providerNPI = data[5]
 
 class Contact():
     def __init__(self, data):
@@ -34,7 +39,6 @@ class Address():
         self.country = data[6]
         self.addressType = data[7]
         self.badAddressIndicator = data[8]
-        
 
 
 class Patient():
@@ -63,12 +67,32 @@ class Patient():
         def __init__(self, data):
             self.notes = data[0]
 
-    # adding a comment so I can push this file.
+    class OutreachDetails():
+        def __init__(self, data):
+            self.homePhone = data[0]
+            self.mobilePhone = data[1]
+            self.workPhone = data[3]
+            self.emailAddress = data[4]
+            self.preferredContact = data[4]
+            self.interpreter = data[5]
+            self.guarantorName = data[6]
+            self.guarantorRelationship = data[7]
+            self.date = data[12]
+            self.method = data[8]
+            self.outcome = data[9]
+            self.attempt = data[11]
+            self.outreachNotes = data[10]
 
     def getDemographics(self, sql):
         SQL.get
 
     def getContactNotes(self, sql):
+        SQL.get
+
+    def getInsuranceTab(self, sql):
+        SQL.get
+
+    def getOutreachDetails(self, sql):
         SQL.get
 
     def getSummary(self):
@@ -102,7 +126,7 @@ class Patient():
         #insurence object
         return None
 
-    def getGarentor(self):
+    def getGuarantor(self):
         return None
 
     def getLastService(self):

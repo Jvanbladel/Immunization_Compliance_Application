@@ -13,12 +13,14 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
     def __init__(self, window, Patient):
         super().__init__(window)
-        self.root.geometry("800x730")
+        self.root.geometry("850x730")
         self.bindKey("<Escape>",self.closeWindow)
 
         self.thisPatient = Patient
         self.demoGraphics = self.SQL.getDemographics(Patient.patientID)
         self.ContactNotes = self.SQL.getContactNotes(Patient.patientID)
+        self.InsuranceTab = self.SQL.getInsuranceTab(Patient.patientID)
+        self.OutreachDetails = self.SQL.getOutreachDetails(Patient.patientID)
         #print(self.demoGraphics.address)
         #print(self.demoGraphics.demographics)
         #print(self.demoGraphics.contact)
@@ -30,7 +32,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
 
         #setup the notebook for patient screen
-        self.patientNotebook = ttk.Notebook(self.root,width=800,height=670)
+        self.patientNotebook = ttk.Notebook(self.root,width=850,height=670)
 
 
         self.demosPage = Frame(self.patientNotebook)
@@ -120,7 +122,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         self.immunizationCanvas.configure(yscrollcommand=self.immunizationScrollbar.set)
 
         # self.immunizationFrame.pack()
-        self.immunizationFrame.place(x=0, y=0, width=800, height=800)
+        self.immunizationFrame.place(x=0, y=0, width=850, height=800)
         self.immunizationCanvas.pack(side="left", fill="both", expand=True)
         self.immunizationScrollbar.pack(side="right", fill="y")
         self.immunizationCanvas.update()
@@ -128,7 +130,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         self.immunizationCanvas.create_window((0, 0), window=self.scrollableFrame, anchor="nw")
 
         self.scrollableFrame.bind("<Configure>", lambda e: self.immunizationCanvas.configure(
-           scrollregion=self.immunizationCanvas.bbox("all"), width=800,height=800)
+           scrollregion=self.immunizationCanvas.bbox("all"), width=850,height=800)
         )
 
 
@@ -276,7 +278,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
             #display the textboxes
             newTextBox = Text(self.patientFrame,width=20,height=1)
-            newTextBox.place(x=150 + detailsPosXIncrease,y=detailsPosY)
+            newTextBox.place(x=160 + detailsPosXIncrease,y=detailsPosY)
             newTextBox.insert('end',str(staticDetails[index]))
             newTextBox.configure(state=DISABLED)
 
@@ -306,16 +308,16 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
         addedLabels[1].place(x=5,y=35)
 
-        addedLabels[2].place(x=240,y=5)
+        addedLabels[2].place(x=260,y=5)
 
-        addedLabels[3].place(x=240,y=35)
+        addedLabels[3].place(x=260,y=35)
 
-        addedLabels[4].place(x=450,y=5)
+        addedLabels[4].place(x=490,y=5)
 
-        addedLabels[5].place(x=450,y=35)
+        addedLabels[5].place(x=490,y=35)
 
         addedLabels[6].configure(font=('consolas', 12))
-        addedLabels[6].place(x=690,y=3)
+        addedLabels[6].place(x=740,y=3)
 
         yPos = 5
         for index in range(len(staticAddress)):
@@ -328,7 +330,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
                 addedText = staticAddress[index]
 
-                newText = Text(self.addressFrame, width=10,
+                newText = Text(self.addressFrame, width=8,
                                height=1)  # Replaced dynamic width=len(addedText) with fixed size
                 newText.place(x=xPos, y=yPos)
                 newText.insert('end', addedText)
@@ -544,11 +546,11 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
         generalFont = ('consolas', 12)  # general font used for the labels
 
-        insuranceTabLabels = ["Insurance Name ", "Active ", "Last Visit Date", "Provider First Name", "Provider Last Name",
-                                "Provider NPI"]
+        insuranceTabLabels = ["Provider First Name", "Last Visit Date    ", "Insurance Active   ", "Insurance Name     ", "Provider Last Name",
+                                "Provider NPI      "]
 
-        staticInfo = self.demoGraphics.guarantor
-        self.checkNone(staticInfo)
+        staticInsuranceInfo = self.InsuranceTab
+        self.checkNone(staticInsuranceInfo)
 
         self.insuranceLabels = {}  # contains labels that are connected to label text/ginfo
 
@@ -557,7 +559,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         for index in range(len(insuranceTabLabels)):  # set the page up
 
             formatText = insuranceTabLabels[index]  # guarantor labels
-            ourText = staticInfo[index]  # database values
+            ourText = staticInsuranceInfo[0][index]  # database values
 
             newLabel = Label(self.demoOtherFrame, text=formatText, font=generalFont, bg='light blue')
             newLabel.place(x=xPos, y=yPos)
@@ -576,7 +578,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
             self.insuranceLabels[formatText] = newLabel  # store our labels connected to the formattedText
             if yPos >= height - 100:
-                xPos += 350
+                xPos += 400
                 yPos = 5
 
     def label_and_Text(self,frame,labelText,labelRow,labelCol,boxText):
@@ -595,7 +597,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
                                                                    "Administered", "Service Date")
 
         self.formatLabel = Label(self.servicePage, text=formatString, font=('Consolas', 11)
-                            , relief="raised",width=800,height=2,bg="light blue")
+                            , relief="raised",width=900,height=2)
         self.formatLabel.pack()
         self.formatLabel.update()
 
@@ -604,7 +606,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         self.putFormat()
 
         self.newFrame = Frame(self.servicePage, relief=GROOVE, bd=1)
-        self.newFrame.place(x=0, width=800, y=40, height=660)
+        self.newFrame.place(x=0, width=848, y=40, height=660)
 
         self.canvas = Canvas(self.newFrame,bg="light blue")
         self.newnewFrame = Frame(self.canvas)
@@ -651,7 +653,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
             buttonINFO = self.formatService(patientINFO)
 
             self.serviceHistory = [] # holds all service
-            button = Button(self.newnewFrame, text = buttonINFO,anchor=W,justify=LEFT, width = 100, font=('Consolas', 11))
+            button = Button(self.newnewFrame, text = buttonINFO,anchor=W,justify=LEFT, width = 102, font=('Consolas', 11))
             button.grid(row=index)
             button.configure(command=lambda x=patientINFO: self.loadService(x))
             self.serviceHistory.append(button)
@@ -715,8 +717,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         generalFont = ('consolas', 12)
         generalBG = "light blue"
         theFrame = self.newnewFrame
-        theFrame.configure(width=800,height=700)
-        theFrame.update()
+        theFrame.configure(width=850,height=700)
 
 
 
@@ -920,7 +921,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
         # Setup for  the contact page
         self.contactPage.update()
-        Width = 800
+        Width = 850
 
         self.contactPage.configure(bg="light blue")
         generalBG = "light blue"
@@ -1118,7 +1119,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
 
         # self.demosPage,width = Width - 25, height = Height - self.patientFrame.winfo_height() - self.addressFrame.winfo_height(),padding = 5
-        self.outreachNotebook = ttk.Notebook(theFrame, width=775, height=Height-nextY,padding = 5)
+        self.outreachNotebook = ttk.Notebook(theFrame, width=Width-10, height=Height-nextY,padding = 5)
         self.emailFrame = Frame(self.outreachNotebook,width=775,height=300,bg="light blue")
         self.outreachNotebook.add(self.emailFrame, text="Email Patient")
         self.outreachNotebook.place(x=5,y=nextY)
@@ -1138,7 +1139,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
         buttonFrame = LabelFrame(emailFrame,text="Email Options",width=335,height=200,bg="light blue",
                                        highlightcolor="white",highlightthickness=2,font=('consolas',12),bd=0,labelanchor="n")
-        buttonFrame.place(x=425,y=5)
+        buttonFrame.place(x=480,y=20)
         buttonFrame.update()
 
         middleX = (buttonFrame.winfo_width() / 2) - 100
