@@ -1544,13 +1544,13 @@ class mainMenu(ICA_super.icaSCREENS):
         self.pDOB.place(x = 590, y = 205)
 
         self.pSex = Label(self.root, text = "Sex: " +  patientData[4])
-        self.pSex.place(x = 590, y = 235)
+        self.pSex.place(x = 590, y = 265)
 
         self.pAge = Label(self.root, text = "Age: " +  patientData[5])
-        self.pAge.place(x = 650, y = 235)
+        self.pAge.place(x = 590, y = 235)
         
         self.pRace = Label(self.root, text = "Race: " +  patientData[6])
-        self.pRace.place(x = 590, y = 265)
+        self.pRace.place(x = 590, y = 295)
 
         self.pPrefix = Label(self.root, text = "Prefix: " +  patientData[7])
         self.pPrefix.place(x = 730, y = 175)
