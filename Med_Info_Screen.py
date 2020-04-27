@@ -542,8 +542,8 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
         generalFont = ('consolas', 12)  # general font used for the labels
 
-        insuranceTabLabels = ["Provider First Name ", "Last Visit Date ", "Insurance Active", "Insurance Name", "Provider Last Name",
-                                "Provider NPI"]
+        insuranceTabLabels = ["Provider First Name", "Last Visit Date    ", "Insurance Active   ", "Insurance Name     ", "Provider Last Name",
+                                "Provider NPI      "]
 
         staticInsuranceInfo = self.InsuranceTab
         self.checkNone(staticInsuranceInfo)

@@ -13,10 +13,10 @@ class Demographics():
 
 class InsuranceTab():
     def __init__(self, data):
-        self.insuranceName = data[0]
-        self.insuranceActive = data[1]
-        self.lastVisitDate = data[2]
-        self.providerFirstName = data[3]
+        self.providerFirstName = data[0]
+        self.lastVisitDate = data[1]
+        self.insuranceActive = data[2]
+        self.insuranceName = data[3]
         self.providerLastName = data[4]
         self.providerNPI = data[5]
 
