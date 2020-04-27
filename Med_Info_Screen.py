@@ -20,6 +20,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         self.demoGraphics = self.SQL.getDemographics(Patient.patientID)
         self.ContactNotes = self.SQL.getContactNotes(Patient.patientID)
         self.InsuranceTab = self.SQL.getInsuranceTab(Patient.patientID)
+        self.OutreachDetails = self.SQL.getOutreachDetails(Patient.patientID)
         #print(self.demoGraphics.address)
         #print(self.demoGraphics.demographics)
         #print(self.demoGraphics.contact)

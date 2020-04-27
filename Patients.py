@@ -69,11 +69,19 @@ class Patient():
 
     class OutreachDetails():
         def __init__(self, data):
-            self.date = data[0]
-            self.method = data[0]
-            self.outcome = data[0]
-            self.attempt = data[0]
-            self.outreachNotes = data[0]
+            self.homePhone = data[0]
+            self.mobilePhone = data[1]
+            self.workPhone = data[3]
+            self.emailAddress = data[4]
+            self.preferredContact = data[4]
+            self.interpreter = data[5]
+            self.guarantorName = data[6]
+            self.guarantorRelationship = data[7]
+            self.date = data[12]
+            self.method = data[8]
+            self.outcome = data[9]
+            self.attempt = data[11]
+            self.outreachNotes = data[10]
 
     def getDemographics(self, sql):
         SQL.get
@@ -82,6 +90,9 @@ class Patient():
         SQL.get
 
     def getInsuranceTab(self, sql):
+        SQL.get
+
+    def getOutreachDetails(self, sql):
         SQL.get
 
     def getSummary(self):
