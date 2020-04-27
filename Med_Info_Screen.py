@@ -593,7 +593,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
                                                                    "Administered", "Service Date")
 
         self.formatLabel = Label(self.servicePage, text=formatString, font=('Consolas', 11)
-                            , relief="raised",width=850,height=2)
+                            , relief="raised",width=900,height=2)
         self.formatLabel.pack()
         self.formatLabel.update()
 
@@ -602,7 +602,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         self.putFormat()
 
         self.newFrame = Frame(self.servicePage, relief=GROOVE, bd=1)
-        self.newFrame.place(x=0, width=850, y=40, height=660)
+        self.newFrame.place(x=0, width=848, y=40, height=660)
 
         self.canvas = Canvas(self.newFrame)
         self.newnewFrame = Frame(self.canvas)
@@ -648,7 +648,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
             buttonINFO = self.formatService(patientINFO)
 
             self.serviceHistory = [] # holds all service
-            button = Button(self.newnewFrame, text = buttonINFO,anchor=W,justify=LEFT, width = 100, font=('Consolas', 11))
+            button = Button(self.newnewFrame, text = buttonINFO,anchor=W,justify=LEFT, width = 102, font=('Consolas', 11))
             button.grid(row=index)
             button.configure(command=lambda x=patientINFO: self.loadService(x))
             self.serviceHistory.append(button)
