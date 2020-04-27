@@ -198,7 +198,8 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
         for index in range(len(immunizationGroups)):
 
-            staticURL = self.switchURL[immunizationGroups[index]]
+            #staticURL = self.switchURL[immunizationGroups[index]]
+            staticURL = ""
             newFrame = self.addImmunization(self.immunizationCanvas,nextY,canvasWidth,immunizationGroups[index],
                                  datesAdministered[index],staticURL)
             newFrame.update()
@@ -947,7 +948,8 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         # Queue for textboxes here
         if(self.OutreachDetails is None):
             self.outreachDetails=[None,None,None,None,None,None,None,None]
-        self.checkNone(self.OutreachDetails)
+        else:
+            self.checkNone(self.OutreachDetails)
         staticInformation = self.OutreachDetails[0][:2]
         staticInformation.extend(self.OutreachDetails[0][4:8])
         self.checkNone(staticInformation)
@@ -1084,7 +1086,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
             newLabel.update()
             xPos = newLabel.winfo_x() + newLabel.winfo_width() + 15
 
-
+            outReachAttempt = self.SQL.getOutReachAttempt(self.thisPatient.patientID)
             if label != "Outcome" and label != "Method":
 
                 if label == "Date":
@@ -1092,6 +1094,15 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
                     newText = Text(self.outreachDetailsFrame, width=20, height=1)
                     newText.place(x=xPos, y=yPos)
                     newText.insert('end',today)
+                    newText.configure(state=DISABLED)
+                    newText.update()
+                    self.outreachWidgets.append(newText)
+                    yPos = newLabel.winfo_height() + newLabel.winfo_y()
+
+                elif label == "Attempt Number":
+                    newText = Text(self.outreachDetailsFrame, width=20, height=1)
+                    newText.place(x=xPos, y=yPos)
+                    newText.insert('end', str(outReachAttempt))
                     newText.configure(state=DISABLED)
                     newText.update()
                     self.outreachWidgets.append(newText)

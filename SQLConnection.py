@@ -324,6 +324,18 @@ class SQLConnection():
         #print(data)
         return data
 
+    def getOutReachAttempt(self,patientID): # gets the attempt number
+
+        if self.checkConnection() == 0:
+            return
+        sql = self.loadQuerry("get_outreach_attempt_number")
+        data = pd.read_sql(sql, self.conn, params={patientID})
+        if data.empty:
+            return
+        data = data.values.tolist()
+        # print(data)
+        return data[0][0]
+
     def executeQuery(self, query):
         data = pd.read_sql(query, self.conn)
         if data.empty:
