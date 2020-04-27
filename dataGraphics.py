@@ -97,12 +97,6 @@ def performanceMeasurement():
     bar1._tkcanvas.pack(side=TOP, fill=BOTH, expand=True)
     root.mainloop()
 
-    '''ypos = np.arange(len(labels))
-    plt.bar(x=range(0,len(xlab)), height=xlab)
-    plt.xticks(ypos, labels, fontsize=7)
-    for index, value in enumerate(xlab):
-        plt.text(index, value, str(value))
-    plt.show()'''
 
 
 def individualGroupByDate(userID):
@@ -126,13 +120,6 @@ def individualGroupByDate(userID):
         plt.text(index, value, str(value))
     plt.show()
 
-def overAll():
-    SQL = SQLConnection.SQLConnection()
-    data = SQL.getWorkEfficiency()
-    # print(data.OutreachDetailsDate)
-    SQL.closeConnection()
-
-    performanceMeasurement(data['Count_OutreachDetailsPatientId'],data['name'].values.tolist())
 
 #individualGroupByDate('2')
 
