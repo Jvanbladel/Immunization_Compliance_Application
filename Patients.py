@@ -39,7 +39,6 @@ class Address():
         self.country = data[6]
         self.addressType = data[7]
         self.badAddressIndicator = data[8]
-        
 
 
 class Patient():
@@ -68,7 +67,13 @@ class Patient():
         def __init__(self, data):
             self.notes = data[0]
 
-    # adding a comment so I can push this file.
+    class OutreachDetails():
+        def __init__(self, data):
+            self.date = data[0]
+            self.method = data[0]
+            self.outcome = data[0]
+            self.attempt = data[0]
+            self.outreachNotes = data[0]
 
     def getDemographics(self, sql):
         SQL.get

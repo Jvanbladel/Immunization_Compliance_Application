@@ -250,6 +250,17 @@ class SQLConnection():
         #print(data)
         return data
 
+    def getOutreachDetails(self, patientId):
+        if self.checkConnection() == 0:
+            return
+        sql = self.loadQuerry("Outreach")
+        data = pd.read_sql(sql, self.conn, params={patientId})
+        if data.empty:
+            return
+        data = data.values.tolist()
+        #print(data)
+        return data
+
     def getAddress(self, patientId0):
         pass
 
