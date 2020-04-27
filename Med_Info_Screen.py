@@ -533,8 +533,8 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
     def extensionInsurance(self):  # display the InsuranceTab in the extension
 
-        self.insuranceTab.update()
-        width = self.insuranceTab.winfo_width()
+        self.demoOtherFrame.update()
+        width = self.demoOtherFrame.winfo_width()
         height = 300
 
         # obtain information here
@@ -556,14 +556,14 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
             formatText = insuranceTabLabels[index]  # guarantor labels
             ourText = staticInfo[index]  # database values
 
-            newLabel = Label(self.insuranceTab, text=formatText, font=generalFont, bg='light blue')
+            newLabel = Label(self.demoOtherFrame, text=formatText, font=generalFont, bg='light blue')
             newLabel.place(x=xPos, y=yPos)
 
             newLabel.update()
 
             formatWidth = newLabel.winfo_width() + 15 + newLabel.winfo_x()
 
-            InsTabINFO = Text(self.insuranceTab, width=20, height=1,
+            InsTabINFO = Text(self.demoOtherFrame, width=20, height=1,
                              font=generalFont)  # replacing dynamic width = len(ourText) with fixed width
             InsTabINFO.insert("end", ourText)
             InsTabINFO.configure(state=DISABLED)
