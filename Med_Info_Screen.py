@@ -7,6 +7,7 @@ from tkinter import ttk
 import ICA_super
 import SQLConnection
 import webbrowser
+from datetime import date
 
 class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
@@ -1079,12 +1080,22 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
             if label != "Outcome" and label != "Method":
 
-                newText = Text(self.outreachDetailsFrame,width = 20,height=1)
-                newText.place(x=xPos,y=yPos)
-                newText.update()
-                self.outreachWidgets.append(newText)
+                if label == "Date":
+                    today = date.today()
+                    newText = Text(self.outreachDetailsFrame, width=20, height=1)
+                    newText.place(x=xPos, y=yPos)
+                    newText.insert('end',today)
+                    newText.configure(state=DISABLED)
+                    newText.update()
+                    self.outreachWidgets.append(newText)
+                    yPos = newLabel.winfo_height() + newLabel.winfo_y()
+                else:
+                    newText = Text(self.outreachDetailsFrame,width = 20,height=1)
+                    newText.place(x=xPos,y=yPos)
+                    newText.update()
+                    self.outreachWidgets.append(newText)
 
-                yPos = newLabel.winfo_height() + newLabel.winfo_y()
+                    yPos = newLabel.winfo_height() + newLabel.winfo_y()
 
             elif label == "Outcome":
                 outComeBox.place(x=xPos,y=yPos)
