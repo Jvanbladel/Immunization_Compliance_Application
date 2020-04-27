@@ -199,7 +199,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         for index in range(len(immunizationGroups)):
 
             #staticURL = self.switchURL[immunizationGroups[index]]
-            staticURL = ""
+            staticURL = immunizationGroups[index]
             newFrame = self.addImmunization(self.immunizationCanvas,nextY,canvasWidth,immunizationGroups[index],
                                  datesAdministered[index],staticURL)
             newFrame.update()
@@ -947,11 +947,14 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
         # Queue for textboxes here
         if(self.OutreachDetails is None):
-            self.outreachDetails=[None,None,None,None,None,None,None,None]
+            self.OutreachDetails=["","","","","","","",""]
         else:
             self.checkNone(self.OutreachDetails)
-        staticInformation = self.OutreachDetails[0][:2]
-        staticInformation.extend(self.OutreachDetails[0][4:8])
+        staticInformation = self.OutreachDetails
+        #print(staticInformation)
+        #print(self.OutreachDetails)
+        #staticInformation.extend(self.OutreachDetails[0][4:8])
+        #print(staticInformation)
         self.checkNone(staticInformation)
         patientLabels = []
         patientText = []
@@ -1471,6 +1474,10 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
     def checkNone(self,myList): # checks if any of the information being added is of None type
 
+        if myList == None:
+            return
+
+        
         for index in range(len(myList)):
 
             if myList[index] == None:
@@ -1490,7 +1497,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
         self.switchURL = { # immunization names and corresponding links are placed in here
             "Why is it important to get annual flu vaccine?": "https://www.cdc.gov/flu/prevent/keyfacts.htm",
-            "What are the benefits of flu vaccination?": "https://www.cdc.gov/flu/prevent/vaccine-benefits.htm",
+            "What are the benefits of flu vaccination": "https://www.cdc.gov/flu/prevent/vaccine-benefits.htm",
             "Influenza Vaccine FluMistQuadrivalent": "https://www.cdc.gov/vaccines/hcp/vis/vis-statements/flulive.html"
         }
 
@@ -1498,7 +1505,10 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
                                         "Influenza Vaccine quad split virus Prev Free ID Use",
                                         "Influenza Vaccine quad split virus Prev Free 0.25 ml",
                                         "Influenza Vaccine quad split virus Prev Free 0.5 ml",
-                                        "Influenza Vaccine ccIIV4 Prev Free 0.5 ml"]
+                                        "Influenza Vaccine ccIIV4 Prev Free 0.5 ml",
+                                        "Influenza Vaccine 0.5 ml",
+                                        "Influenza Vaccine 0.25 ml",
+                                        "Influenza Vaccine ccIIV4 0.5 ml"]
 
         for newInfo in influenzaPrevFreeInformation:  # adds the Prev free immunization plus their links to the page
             self.switchURL[newInfo] = "https://www.verywellhealth.com/preservative-free-flu-vaccine-770551"
@@ -1513,7 +1523,13 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
     def openWebPage(self,url): # will open the web browser from the buttom
 
-        webbrowser.open(url,new=0,autoraise=True)
+        if url in self.switchURL.keys():
+            webbrowser.open(self.switchURL[url],new=0,autoraise=True)
+        else:
+            webbrowser.open(url,new=0,autoraise=True)
+        #print(self.switchURL[url])
+        #webbrowser.open_new_tab(url)
+        
 
     def updateContactNotes(self, notes, pid):
         self.SQL.addContactNotes([notes, pid])
