@@ -1354,10 +1354,8 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
             "Influenza Vaccine FluMistQuadrivalent": "https://www.cdc.gov/vaccines/hcp/vis/vis-statements/flulive.html"
         }
 
-        influenzaPrevFreeInformation = ["Influenza Vaccine Prev Free 0.25 ml", "Influenza Vaccine Prev Free 0.5 ml",
-                                        "Influenza Vaccine quad split virus Prev Free ID Use",
-                                        "Influenza Vaccine quad split virus Prev Free 0.25 ml",
-                                        "Influenza Vaccine quad split virus Prev Free 0.5 ml",
+        influenzaPrevFreeInformation = ["Influenza Vaccine Prev Free 0.25 ml",
+                                        "Influenza Vaccine Prev Free 0.5 ml",
                                         "Influenza Vaccine ccIIV4 Prev Free 0.5 ml"]
 
         for newInfo in influenzaPrevFreeInformation:  # adds the Prev free immunization plus their links to the page
@@ -1371,7 +1369,15 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         for newInfo in influenzaInformation:  # adds the immunization info for the next batch of immunizations we are storing
             self.switchURL[newInfo] = "https://www.cdc.gov/flu/prevent/quadrivalent.htm"
 
-
+        influenzaInformation = ['Influenza Vaccine RIV4']
+        for newInfo in influenzaInformation:
+            self.switchURL[newInfo] = 'https://www.cdc.gov/flu/prevent/qa_flublok-vaccine.htm'
+        influenzaInformation = ['Influenza Vaccine FluMistQuadrivalent']
+        for newInfo in influenzaInformation:
+            self.switchURL[newInfo] = 'https://www.flumistquadrivalent.com/nasal-spray-flu-vaccine/how-does-it-work.html'
+        influenzaInformation = ['Influenza Vaccine ccIIV4 0.5 ml']
+        for newInfo in influenzaInformation:
+            self.switchURL[newInfo] = 'https://www.cdc.gov/flu/professionals/acip/summary/summary-recommendations.htm#iivs'
 
 
     def openWebPage(self,url): # will open the web browser from the buttom
