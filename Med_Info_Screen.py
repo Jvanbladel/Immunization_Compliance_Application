@@ -436,14 +436,14 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         contactNotesLabel.place(x=550,y=5)
         contactNotesLabel.update()
 
-        formattedString = ''
-
+        '''formattedString = ''
+        print(self.ContactNotes)
         for newline in self.ContactNotes:
-            formattedString += str(newline)
+            formattedString += str(newline)'''
 
         contactNotesText = Text(self.contactINFO,width=35,height=12,padx=5)
         contactNotesText.place(x=460,y=contactNotesLabel.winfo_y() + contactNotesLabel.winfo_height() + 5)
-        contactNotesText.insert('end', formattedString)
+        #contactNotesText.insert('end', formattedString)
         contactNotesText.insert('end', str(self.ContactNotes[0][0]))
         contactNotesText.configure(state=DISABLED)
         contactNotesText.update()
@@ -927,7 +927,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         self.checkNone(self.OutreachDetails)
         staticInformation = self.OutreachDetails[0][:2]
         staticInformation.extend(self.OutreachDetails[0][4:8])
-        print(staticInformation)
+        #print(staticInformation)
         patientLabels = []
         patientText = []
         self.outreachWidgets = []
@@ -938,7 +938,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
             newLabel = Label(contactFrame,text = labels[index],bg="light blue", font = ('consolas',12))
 
             newText = Text(contactFrame,width=20,height=1)
-            print(staticInformation[index])
+            #print(staticInformation[index])
             newText.insert('end',staticInformation[index])
             newText.configure(state=DISABLED)
 
