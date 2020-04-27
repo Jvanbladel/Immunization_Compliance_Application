@@ -277,7 +277,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
             #display the textboxes
             newTextBox = Text(self.patientFrame,width=20,height=1)
-            newTextBox.place(x=150 + detailsPosXIncrease,y=detailsPosY)
+            newTextBox.place(x=160 + detailsPosXIncrease,y=detailsPosY)
             newTextBox.insert('end',str(staticDetails[index]))
             newTextBox.configure(state=DISABLED)
 
@@ -307,16 +307,16 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
         addedLabels[1].place(x=5,y=35)
 
-        addedLabels[2].place(x=240,y=5)
+        addedLabels[2].place(x=260,y=5)
 
-        addedLabels[3].place(x=240,y=35)
+        addedLabels[3].place(x=260,y=35)
 
-        addedLabels[4].place(x=450,y=5)
+        addedLabels[4].place(x=490,y=5)
 
-        addedLabels[5].place(x=450,y=35)
+        addedLabels[5].place(x=490,y=35)
 
         addedLabels[6].configure(font=('consolas', 12))
-        addedLabels[6].place(x=690,y=3)
+        addedLabels[6].place(x=740,y=3)
 
         yPos = 5
         for index in range(len(staticAddress)):
@@ -329,7 +329,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
                 addedText = staticAddress[index]
 
-                newText = Text(self.addressFrame, width=10,
+                newText = Text(self.addressFrame, width=8,
                                height=1)  # Replaced dynamic width=len(addedText) with fixed size
                 newText.place(x=xPos, y=yPos)
                 newText.insert('end', addedText)
@@ -555,7 +555,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         for index in range(len(insuranceTabLabels)):  # set the page up
 
             formatText = insuranceTabLabels[index]  # guarantor labels
-            ourText = staticInsuranceInfo[index]  # database values
+            ourText = staticInsuranceInfo[0][index]  # database values
 
             newLabel = Label(self.demoOtherFrame, text=formatText, font=generalFont, bg='light blue')
             newLabel.place(x=xPos, y=yPos)
@@ -574,7 +574,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
             self.insuranceLabels[formatText] = newLabel  # store our labels connected to the formattedText
             if yPos >= height - 100:
-                xPos += 350
+                xPos += 400
                 yPos = 5
 
     def label_and_Text(self,frame,labelText,labelRow,labelCol,boxText):
