@@ -166,8 +166,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
         serviceHistory = serviceHistory.groupby(['ImmDisplayDescription'])['PatientLastVisitDate'].apply(', '.join)
         datesAdministered = serviceHistory.tolist()
-        print("169")
-        print(datesAdministered)
+
         immunizationGroups = serviceHistory.index
 
         #print(immunizationGroups)
@@ -652,7 +651,11 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
             patientINFO = [serviceID, \
                            serviceHistory.ImmDisplayDescription[index], \
                            serviceHistory.CompletionStatus[index], \
-                           serviceHistory.DateofService[index]]
+                           serviceHistory.DateofService[index],\
+                           serviceHistory.AllergicReactions[index],
+                           serviceHistory.ProviderLastName[index],
+                           serviceHistory.ProviderFirstName[index],
+                           serviceHistory.InformationSource[index]]
             buttonINFO = self.formatService(patientINFO)
 
             self.serviceHistory = [] # holds all service
@@ -716,18 +719,17 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         theFrame = self.newnewFrame
         theFrame.configure(width=850,height=700)
 
-
-
         #static data that is used during developement
-        DOS = "1/1/2000"
-        receivedImmunization = "diphtheria, tetanus toxoids, and acellular pertussis"
+        DOS = patientINFO[3]
+        receivedImmunization = patientINFO[1]
+        #print(receivedImmunization)
         immunizationABBV = "DTaP"
-        allergicReactions = "N/A"
+        allergicReactions = patientINFO[4]
 
-        xPos = 200
+        xPos = 150
         yPos = 10
         increment = 20
-        textX = 400
+        textX = 300
 
         serviceDetailsHeader = Label(theFrame,text="Service Details",width= theFrame.winfo_width(),height = 1,bg="RoyalBlue3",font=generalFont,fg="white",anchor=W)
         serviceDetailsHeader.place(x=0,y=0)
@@ -758,17 +760,17 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         immunizationLabel.update()
 
 
-        immuX = immunizationLabel.winfo_width() + immunizationLabel.winfo_x() + 5
+        immuX = immunizationLabel.winfo_width() + immunizationLabel.winfo_x()
+
 
 
         # place the immunizations received into this list
-        immuReceived = ["Influenza Vaccine Prev Free 0.25 ml", "Influenza Vaccine Prev Free 0.5 ml",
-                                        "Influenza Vaccine quad split virus Prev Free ID Use"]
+        immuReceived = receivedImmunization
 
 
-        immunizationsReceived = Combobox(theFrame,values=immuReceived)
-        immunizationsReceived.set(immuReceived[0]) # is set to the first value of the list
-
+        immunizationsReceived = Text(theFrame, width=len(immuReceived),font=generalFont, height=1 )
+        #immunizationsReceived.set(immuReceived[0]) # is set to the first value of the list
+        immunizationsReceived.insert('end',immuReceived)
         immunizationsReceived.place(x=immuX,y=yPos)
         immunizationsReceived.update()
 
@@ -777,7 +779,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         immuXtension = immunizationsReceived.winfo_width() + immunizationsReceived.winfo_x() + 10
         extendImmunizationButton = Button(theFrame,text="Information on \nSelected Immunization",
                                         command= lambda : self.immunizationINFO(immunizationsReceived.get()))
-        extendImmunizationButton.place(x=immuXtension,y=yPos)
+        extendImmunizationButton.place(x=immuXtension-150,y=yPos+40)
 
 
         yPos = immunizationLabel.winfo_y() + immunizationLabel.winfo_height() + increment
@@ -792,6 +794,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
         completionStatusText = Text(theFrame,width=15,font=generalFont,height=1)
         completionStatusText.place(x=completionX,y=yPos)
+        completionStatusText.insert('end',(patientINFO[2]))
         completionStatusText.configure(state=DISABLED)
 
 
@@ -806,6 +809,8 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
         informationSourceText = Text(theFrame,width=15,font=generalFont,height=1)
         informationSourceText.place(x=informationX,y=yPos)
+        print(patientINFO[7])
+        informationSourceText.insert('end', patientINFO[7])
         informationSourceText.configure(state=DISABLED)
 
 
@@ -820,6 +825,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
         sourceSystemText = Text(theFrame,width=15,font=generalFont,height=1)
         sourceSystemText.place(x=sourceX,y=yPos)
+        sourceSystemText.insert('end','EMR')
         sourceSystemText.configure(state=DISABLED)
 
 
@@ -843,8 +849,9 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
 
         allergicReactionsText = Text(theFrame,width=30,height=3)
-        allergicReactionsText.place(x=textX,y=yPos)
+        allergicReactionsText.place(x=textX+20,y=yPos)
         allergicReactionsText.configure(state=DISABLED)
+        allergicReactionsText.insert('end', allergicReactions)
         allergicReactionsText.update()
 
         yPos = allergicReactionsText.winfo_y() + allergicReactionsText.winfo_height() + increment
@@ -868,6 +875,8 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
         serviceProviderText = Text(theFrame,width=20,height=1,font=generalFont)
         serviceProviderText.place(x=providerX,y=yPos)
+        providerName = patientINFO[5]+', '+patientINFO[6]
+        serviceProviderText.insert('end',providerName)
         serviceProviderText.update()
 
         yPos += (serviceProviderText.winfo_height() + increment + 50)
