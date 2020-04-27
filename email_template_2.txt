@@ -1,6 +1,21 @@
 Dear ${PERSON_NAME}, 
 
-This is a a follow up message. 
+This is a follow up email.
+
+The flu can lead to fever, cough, sore throat, body aches, fatigue,
+and more. Preteens and teens should get the flu vaccine every year,
+ideally by October, but vaccination can continue through January or
+even later.
+
+Please contact our office to schedule your appointment today. When you call,
+we can discuss the vaccinations that may be needed at this visit based on your
+medical records. In the meantime, for more information you can visit
+www.cdc.gov/vaccines.
+
+Thank you and we look forward to hearing from you.
 Have a great weekend! 
 
 Yours Truly
+
+Colton Remmert, MD
+University of the Pacific Health Center
