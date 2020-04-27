@@ -152,30 +152,39 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         generalInformationButton.place(x=100, y=20)
 
         generalInformationButton2 = Button(generalInformationFrame,text= "Benefits of the vaccine",font=generalFont,
-                                           command=lambda: self.openWebPage(
-                                               "What are the benefits of flu vaccination"
-                                           ))
+                                           command=lambda: self.openWebPage("What are the benefits of flu vaccination"))
         generalInformationButton2.place(x=400,y=20)
         nextY = generalInformationFrame.winfo_height() + generalInformationFrame.winfo_y() + 5
 
 
         # add more information to the generalInformation box here if needed
+        immunizationGroups=[]
+        datesAdministered=[]
+        SQL = self.SQL
+        serviceHistory = (SQL.getServiceDetails(self.thisPatient.patientID))
+        #print(serviceHistory.ImmunizationID)
 
+        serviceHistory = serviceHistory.groupby(['ImmDisplayDescription'])['PatientLastVisitDate'].apply(', '.join)
+        datesAdministered = serviceHistory.tolist()
+        print("169")
+        print(datesAdministered)
+        immunizationGroups = serviceHistory.index
 
+        #print(immunizationGroups)
         # Queue the database here for the list of the immunization names
-        immunizationGroups = ["Influenza Vaccine Prev Free 0.25 ml", "Influenza Vaccine quad split virus 0.5 ml",
+        '''immunizationGroups = ["Influenza Vaccine Prev Free 0.25 ml", "Influenza Vaccine quad split virus 0.5 ml",
                               "Influenza Vaccine quad split virus Prev Free ID Use",
-                              "Influenza Vaccine quad split virus Prev Free 0.25 ml"]
+                              "Influenza Vaccine quad split virus Prev Free 0.25 ml"]'''
 
 
         # Queue the database for the list of dates administered here
-        datesAdministered = [["8/9/2002", "7/16/1998", "10/10/1997", "8/15/1997", "6/17/1997"],
+        '''datesAdministered = [["8/9/2002", "7/16/1998", "10/10/1997", "8/15/1997", "6/17/1997"],
                              ["3/9/1998","8/15/1997","6/17/1997"],
                              ["7/16/1998","10/10/1997", "8/15/1997", "6/17/1997"],
                              ["7/16/1998","10/10/1997", "8/15/1997", "6/17/1997"],
                              ["7/16/1998","10/10/1997", "8/15/1997", "6/17/1997"],
                              ["7/16/1998","10/10/1997", "8/15/1997", "6/17/1997"],
-                             ["7/16/1998","10/10/1997", "8/15/1997", "6/17/1997"]]
+                             ["7/16/1998","10/10/1997", "8/15/1997", "6/17/1997"]]'''
 
 
         staticURL = "www.google.com"
@@ -210,9 +219,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         immunizationName = "ImmunizationName: " + immunizationName
 
         administeredString = "Adminstered: "
-
-        for date in datesAdministered:
-            administeredString += (date + ", ")
+        administeredString = datesAdministered
 
         administeredString = administeredString.rstrip(", ")
 
@@ -437,14 +444,14 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         contactNotesLabel.place(x=550,y=5)
         contactNotesLabel.update()
 
-        formattedString = ''
-
+        '''formattedString = ''
+        print(self.ContactNotes)
         for newline in self.ContactNotes:
-            formattedString += str(newline)
+            formattedString += str(newline)'''
 
         contactNotesText = Text(self.contactINFO,width=35,height=12,padx=5)
         contactNotesText.place(x=460,y=contactNotesLabel.winfo_y() + contactNotesLabel.winfo_height() + 5)
-        contactNotesText.insert('end', formattedString)
+        #contactNotesText.insert('end', formattedString)
         contactNotesText.insert('end', str(self.ContactNotes[0][0]))
         contactNotesText.configure(state=DISABLED)
         contactNotesText.update()
@@ -928,7 +935,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         self.checkNone(self.OutreachDetails)
         staticInformation = self.OutreachDetails[0][:2]
         staticInformation.extend(self.OutreachDetails[0][4:8])
-        print(staticInformation)
+        #print(staticInformation)
         patientLabels = []
         patientText = []
         self.outreachWidgets = []
@@ -939,7 +946,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
             newLabel = Label(contactFrame,text = labels[index],bg="light blue", font = ('consolas',12))
 
             newText = Text(contactFrame,width=20,height=1)
-            print(staticInformation[index])
+            #print(staticInformation[index])
             newText.insert('end',staticInformation[index])
             newText.configure(state=DISABLED)
 
@@ -1350,7 +1357,8 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         influenzaPrevFreeInformation = ["Influenza Vaccine Prev Free 0.25 ml", "Influenza Vaccine Prev Free 0.5 ml",
                                         "Influenza Vaccine quad split virus Prev Free ID Use",
                                         "Influenza Vaccine quad split virus Prev Free 0.25 ml",
-                                        "Influenza Vaccine quad split virus Prev Free 0.5 ml"]
+                                        "Influenza Vaccine quad split virus Prev Free 0.5 ml",
+                                        "Influenza Vaccine ccIIV4 Prev Free 0.5 ml"]
 
         for newInfo in influenzaPrevFreeInformation:  # adds the Prev free immunization plus their links to the page
             self.switchURL[newInfo] = "https://www.verywellhealth.com/preservative-free-flu-vaccine-770551"

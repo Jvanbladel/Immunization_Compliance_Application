@@ -4,6 +4,7 @@ import Patients
 import Users
 import query_generator
 import Type_Check
+import datetime
 
 
 
@@ -157,29 +158,55 @@ class SQLConnection():
         self.conn.execute(sql,params)
         self.conn.commit()
 
-    def editPermission(self, oldPermission, newPermission):
+    def addPermission(self, permission):
         if self.checkConnection() == 0:
             return
-        sql = self.loadQuerry("permissions/edit_permission")
+        sql = self.loadQuerry("permissions/add_permission")
 
-        params=(newPermission.name,
-                newPermission.description,
-                newPermission.importData,
-                newPermission.exportData,
-                newPermission.viewHistoryOfSelf,
-                newPermission.viewHistoryOfEntireSystem,
-                newPermission.viewSelfAnalytics,
-                newPermission.viewSystemAnalytics,
-                newPermission.createAlerts,
-                newPermission.setPermissions,
-                newPermission.serachEntireDatabase,
-                newPermission.printFiles,
-                newPermission.outReach,
-                newPermission.approveUsers,
-                newPermission.setSystemOptions,
-                newPermission.consoleCommands,
-                newPermission.numberOfPatientsOpen,
-                newPermission.goalNumberOfOutReaches, oldPermission.name)
+        params=(permission.name,
+                permission.description,
+                permission.importData,
+                permission.exportData,
+                permission.viewHistoryOfSelf,
+                permission.viewHistoryOfEntireSystem,
+                permission.viewSelfAnalytics,
+                permission.viewSystemAnalytics,
+                permission.createAlerts,
+                permission.setPermissions,
+                permission.serachEntireDatabase,
+                permission.printFiles,
+                permission.outReach,
+                permission.approveUsers,
+                permission.setSystemOptions,
+                permission.consoleCommands,
+                permission.numberOfPatientsOpen,
+                permission.goalNumberOfOutReaches)
+        
+        self.conn.execute(sql,params)
+        self.conn.commit()
+
+    def addUser(self, newUser):
+        if self.checkConnection() == 0:
+            return
+        sql = self.loadQuerry("get_users")
+        data = pd.read_sql(sql, self.conn)
+        data = data.values.tolist()[0][0]
+        #print(data)
+        
+        sql = self.loadQuerry("add_user")
+
+        params=(data, #personalID
+                newUser[0], #first name
+                newUser[1], #last name
+                newUser[3], #hashed user Name
+                newUser[4], #hashed password
+                "Y",        #Active ID
+                "User",     #Role
+                newUser[2], #email
+                datetime.datetime.now(),
+                data,
+                datetime.datetime.now(),
+                data) #update ID
 
         self.conn.execute(sql,params)
         self.conn.commit()
@@ -239,6 +266,30 @@ class SQLConnection():
         #print(data)
         return data
 
+    def addContactNotes(self, notes):
+        if self.checkConnection() == 0:
+            return
+        sql = self.loadQuerry("get_contact_notes_id")
+        data = pd.read_sql(sql, self.conn)
+        data = data.values.tolist()[0][0]
+        print(data)
+        
+        sql = self.loadQuerry("update_contact_notes")
+
+        params=(data, #OutreachDetailsId
+                datetime.datetime.now(), #OutreachDetailCreatedDtTm
+                "1", #OutreachDetailsCreatedPrsnlId
+                datetime.datetime.now(), #OutreachDetailsDate
+                "Contact Notes", #Notetype
+                "", #OutreachDetailsMethod
+                "", #OutreachDetailsOutcome
+                notes[0], #OutreachDetailsNotes
+                "",  #OutreachDetailsAttemptNumber
+                notes[1])#OutreachDetailsPatientId
+
+        self.conn.execute(sql,params)
+        self.conn.commit()
+
     def getInsuranceTab(self, patientId):
         if self.checkConnection() == 0:
             return
@@ -249,6 +300,7 @@ class SQLConnection():
         data = data.values.tolist()
         #print(data)
         return data
+
 
     def getOutreachDetails(self, patientId):
         if self.checkConnection() == 0:
@@ -282,8 +334,7 @@ class SQLConnection():
 
 def main():
     SQL = SQLConnection()
-    demographics = SQL.getDemographics(58855)
-    print (demographics)
+    SQL.addContactNotes(["Test", 2])
     SQL.closeConnection()
 if __name__ == "__main__":
     main()
