@@ -127,7 +127,12 @@ class loginScreen(icaSCREENS):
                     messagebox.showwarning("Missing Field", "Missing field:\n" + info)
                     return
 
+                if info == "Username: " or info == "Password: ":
+                    thisINFO = Hash.main(thisINFO)
                 accountINFO.append(thisINFO)
+
+            
+            self.SQL.addUser(accountINFO)
 
             messagebox.showinfo("account sent", "Sent to admin for approval")
             self.destroyPopOut()

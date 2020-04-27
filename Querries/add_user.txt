@@ -1,0 +1,2 @@
+INSERT INTO Users(Users.PersonnelId, Users.UserFirstName, Users.UserLastName, Users.UserName, Users.Password, Users.ActiveInd, Users.Role, Users.Email, Users.CreatedDtTm, Users.CreatedPrsnlId, Users.UpdateDtTm, Users.UpdatePrsnlId)
+VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
