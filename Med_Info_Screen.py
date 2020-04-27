@@ -725,6 +725,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         #print(receivedImmunization)
         immunizationABBV = "DTaP"
         allergicReactions = patientINFO[4]
+        print(allergicReactions)
 
         xPos = 150
         yPos = 10
@@ -733,7 +734,6 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
         serviceDetailsHeader = Label(theFrame,text="Service Details",width= theFrame.winfo_width(),height = 1,bg="RoyalBlue3",font=generalFont,fg="white",anchor=W)
         serviceDetailsHeader.place(x=0,y=0)
-        serviceDetailsHeader
         serviceDetailsHeader.update()
 
 
@@ -772,6 +772,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         #immunizationsReceived.set(immuReceived[0]) # is set to the first value of the list
         immunizationsReceived.insert('end',immuReceived)
         immunizationsReceived.place(x=immuX,y=yPos)
+        immunizationsReceived.configure(state=DISABLED)
         immunizationsReceived.update()
 
 
@@ -792,7 +793,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
         completionX = completionStatusLabel.winfo_x() + completionStatusLabel.winfo_width() + 5
 
-        completionStatusText = Text(theFrame,width=15,font=generalFont,height=1)
+        completionStatusText = Text(theFrame,width=len(patientINFO[2]),font=generalFont,height=1)
         completionStatusText.place(x=completionX,y=yPos)
         completionStatusText.insert('end',(patientINFO[2]))
         completionStatusText.configure(state=DISABLED)
@@ -809,7 +810,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
         informationSourceText = Text(theFrame,width=15,font=generalFont,height=1)
         informationSourceText.place(x=informationX,y=yPos)
-        print(patientINFO[7])
+        #print(patientINFO[7])
         informationSourceText.insert('end', patientINFO[7])
         informationSourceText.configure(state=DISABLED)
 
@@ -849,9 +850,9 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
 
         allergicReactionsText = Text(theFrame,width=30,height=3)
-        allergicReactionsText.place(x=textX+20,y=yPos)
-        allergicReactionsText.configure(state=DISABLED)
+        allergicReactionsText.place(x=textX+30,y=yPos)
         allergicReactionsText.insert('end', allergicReactions)
+        allergicReactionsText.configure(state=DISABLED)
         allergicReactionsText.update()
 
         yPos = allergicReactionsText.winfo_y() + allergicReactionsText.winfo_height() + increment
@@ -877,6 +878,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         serviceProviderText.place(x=providerX,y=yPos)
         providerName = patientINFO[5]+', '+patientINFO[6]
         serviceProviderText.insert('end',providerName)
+        serviceProviderText.configure(state=DISABLED)
         serviceProviderText.update()
 
         yPos += (serviceProviderText.winfo_height() + increment + 50)
@@ -1387,6 +1389,9 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         influenzaInformation = ['Influenza Vaccine ccIIV4 0.5 ml']
         for newInfo in influenzaInformation:
             self.switchURL[newInfo] = 'https://www.cdc.gov/flu/professionals/acip/summary/summary-recommendations.htm#iivs'
+        influenzaInformation = ["Influenza Vaccine 0.5 ml","Influenza Vaccine 0.25 ml"]
+        for newInfo in influenzaInformation:
+            self.switchURL[newInfo] = 'https://www.cdc.gov/flu/about/qa/vaxadmin.htm'
 
 
     def openWebPage(self,url): # will open the web browser from the buttom
