@@ -13,7 +13,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
     def __init__(self, window, Patient):
         super().__init__(window)
-        self.root.geometry("800x730")
+        self.root.geometry("850x730")
         self.bindKey("<Escape>",self.closeWindow)
 
         self.thisPatient = Patient
@@ -30,7 +30,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
 
         #setup the notebook for patient screen
-        self.patientNotebook = ttk.Notebook(self.root,width=800,height=670)
+        self.patientNotebook = ttk.Notebook(self.root,width=850,height=670)
 
 
         self.demosPage = Frame(self.patientNotebook)
@@ -120,7 +120,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         self.immunizationCanvas.configure(yscrollcommand=self.immunizationScrollbar.set)
 
         # self.immunizationFrame.pack()
-        self.immunizationFrame.place(x=0, y=0, width=800, height=800)
+        self.immunizationFrame.place(x=0, y=0, width=850, height=800)
         self.immunizationCanvas.pack(side="left", fill="both", expand=True)
         self.immunizationScrollbar.pack(side="right", fill="y")
         self.immunizationCanvas.update()
@@ -128,7 +128,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         self.immunizationCanvas.create_window((0, 0), window=self.scrollableFrame, anchor="nw")
 
         self.scrollableFrame.bind("<Configure>", lambda e: self.immunizationCanvas.configure(
-           scrollregion=self.immunizationCanvas.bbox("all"), width=800,height=800)
+           scrollregion=self.immunizationCanvas.bbox("all"), width=850,height=800)
         )
 
 
@@ -592,7 +592,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
                                                                    "Administered", "Service Date")
 
         self.formatLabel = Label(self.servicePage, text=formatString, font=('Consolas', 11)
-                            , relief="raised",width=800,height=2)
+                            , relief="raised",width=850,height=2)
         self.formatLabel.pack()
         self.formatLabel.update()
 
@@ -601,7 +601,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         self.putFormat()
 
         self.newFrame = Frame(self.servicePage, relief=GROOVE, bd=1)
-        self.newFrame.place(x=0, width=800, y=40, height=660)
+        self.newFrame.place(x=0, width=850, y=40, height=660)
 
         self.canvas = Canvas(self.newFrame)
         self.newnewFrame = Frame(self.canvas)
@@ -705,7 +705,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         generalFont = ('consolas', 12)
         generalBG = "light blue"
         theFrame = self.newnewFrame
-        theFrame.configure(width=800,height=700)
+        theFrame.configure(width=850,height=700)
 
 
 
