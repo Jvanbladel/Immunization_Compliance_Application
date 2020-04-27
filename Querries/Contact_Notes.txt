@@ -1,7 +1,8 @@
-Select
-OutreachDetailsNotes
+Select top 1
+    Outreach_Details.OutreachDetailsNotes
 From
-outreach_details
-where
-Notetype = 'ContactNotes'
-and OutreachDetailsPatientId = ?
+    Outreach_Details
+Where
+    Outreach_Details.OutreachDetailsPatientId = ?
+Order By
+    Outreach_Details.OutreachDetailsId Desc

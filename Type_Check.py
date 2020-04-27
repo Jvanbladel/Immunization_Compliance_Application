@@ -38,7 +38,7 @@ def checkType(in_str, tp):
     if checkSpecialCharacters(in_str):
         print('contain sepcial char')
         return False
-    if tp is 'int':
+    if tp == 'int':
         try:
             print(in_str)
             val = int(in_str)
@@ -47,7 +47,7 @@ def checkType(in_str, tp):
         except ValueError:
             print("No.. input is not an integer. It's a string")
             return False
-    elif tp is 'float':
+    elif tp == 'float':
         try:
             val = float(in_str)
             print("Input is a float  number. Number = ", val)
@@ -55,7 +55,7 @@ def checkType(in_str, tp):
         except ValueError:
             print("No.. input is not a float. It's a string")
             return False
-    elif tp is 'date':
+    elif tp == 'date':
         return checkDate(in_str)
     else:
         print(dataSize)

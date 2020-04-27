@@ -7,16 +7,18 @@ from tkinter import ttk
 import ICA_super
 import SQLConnection
 import webbrowser
+from datetime import date
 
 class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
 
-    def __init__(self, window, Patient):
+    def __init__(self, window, Patient, user):
         super().__init__(window)
         self.root.geometry("850x730")
         self.bindKey("<Escape>",self.closeWindow)
 
         self.thisPatient = Patient
+        self.user = user
         self.demoGraphics = self.SQL.getDemographics(Patient.patientID)
         self.ContactNotes = self.SQL.getContactNotes(Patient.patientID)
         self.InsuranceTab = self.SQL.getInsuranceTab(Patient.patientID)
@@ -166,7 +168,8 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
         serviceHistory = serviceHistory.groupby(['ImmDisplayDescription'])['PatientLastVisitDate'].apply(', '.join)
         datesAdministered = serviceHistory.tolist()
-
+        print("169")
+        print(datesAdministered)
         immunizationGroups = serviceHistory.index
 
         #print(immunizationGroups)
@@ -195,7 +198,8 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
         for index in range(len(immunizationGroups)):
 
-            staticURL = self.switchURL[immunizationGroups[index]]
+            #staticURL = self.switchURL[immunizationGroups[index]]
+            staticURL = ""
             newFrame = self.addImmunization(self.immunizationCanvas,nextY,canvasWidth,immunizationGroups[index],
                                  datesAdministered[index],staticURL)
             newFrame.update()
@@ -449,6 +453,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
             formattedString += str(newline)'''
 
         contactNotesText = Text(self.contactINFO,width=35,height=12,padx=5)
+        #contactNotesText.configure(state=DISABLED)
         contactNotesText.place(x=460,y=contactNotesLabel.winfo_y() + contactNotesLabel.winfo_height() + 5)
         #contactNotesText.insert('end', formattedString)
         contactNotesText.insert('end', str(self.ContactNotes[0][0]))
@@ -458,7 +463,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         updateButtonX = contactNotesLabel.winfo_x()
         updateButtonY = contactNotesText.winfo_y() + contactNotesText.winfo_height() + 5
 
-        updateButton = Button(self.contactINFO, text = "Update Contact Notes", font=('consolas' ,10))
+        updateButton = Button(self.contactINFO, text = "Update Contact Notes", font=('consolas' ,10), command=lambda : self.updateContactNotes(contactNotesText.get("1.0",END), self.thisPatient.patientID))
         updateButton.place(x=updateButtonX, y=updateButtonY)
 
 
@@ -611,7 +616,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         self.newFrame = Frame(self.servicePage, relief=GROOVE, bd=1)
         self.newFrame.place(x=0, width=848, y=40, height=660)
 
-        self.canvas = Canvas(self.newFrame)
+        self.canvas = Canvas(self.newFrame,bg="light blue")
         self.newnewFrame = Frame(self.canvas)
         self.myScrollBar = Scrollbar(self.newFrame, orient="vertical", command=self.canvas.yview)
         self.canvas.configure(yscrollcommand=self.myScrollBar.set)
@@ -643,6 +648,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
             self.myScrollBar.pack(side="right", fill="y")
 
 
+
         for index in range(len(serviceHistory)): # This is where we would queue the database for information. Probably modify to only do once
             # print((serviceHistory.ServiceDetailsId))
             serviceID = str(serviceHistory.ServiceDetailsId[index])
@@ -670,11 +676,11 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         #{0: < 20}{1: < 35}{2: < 20}{3: < 15}
 
         if len(patientService[1]) > 30:
-            immunizationString = patientService[1][0:30] + "..."
+            immunizationString = patientService[1][0:30] + ".."
         else:
             immunizationString = patientService[1]
 
-        formatString = '{0:<5}{1:<15}{2:<40}{3:<20}{4:<15}'.format("",patientService[0],immunizationString,patientService[2],patientService[3])
+        formatString = '{0:<9}{1:<13}{2:<40}{3:<20}{4:<15}'.format("",patientService[0],immunizationString,patientService[2],patientService[3])
 
         return formatString
 
@@ -708,7 +714,13 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
         #does basic setup for the service screen
         self.hideServiceHistory()
-        self.formatLabel.configure(text="Showing details for Service #" + patientINFO[0],font=('consolas',12))
+
+        # resets the header
+        self.formatLabel.destroy()
+        self.formatLabel = Label(self.servicePage,text="Showing details for Service #" + patientINFO[0],font=('Consolas', 11)
+              , relief="raised", width=800, height=2)
+        self.formatLabel.pack()
+
         self.myScrollBar.pack_forget()
         self.canvas.yview_moveto(0)
 
@@ -718,6 +730,8 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         generalBG = "light blue"
         theFrame = self.newnewFrame
         theFrame.configure(width=850,height=700)
+
+
 
         #static data that is used during developement
         DOS = patientINFO[3]
@@ -734,19 +748,21 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
         serviceDetailsHeader = Label(theFrame,text="Service Details",width= theFrame.winfo_width(),height = 1,bg="RoyalBlue3",font=generalFont,fg="white",anchor=W)
         serviceDetailsHeader.place(x=0,y=0)
+        serviceDetailsHeader
         serviceDetailsHeader.update()
 
+        serviceFrame = LabelFrame(theFrame,text = "Service Details",width=830,height=610,bg="light blue",
+                                       highlightcolor="white",highlightthickness=2,font=('consolas',12),bd=0,labelanchor="n")
+        serviceFrame.place(x=5,y=5)
+        serviceFrame.update()
 
         yPos = serviceDetailsHeader.winfo_height() + serviceDetailsHeader.winfo_y() + increment
 
-
-        serviceDateLabel = Label(theFrame,text="Date of Service",bg=generalBG,font=generalFont)
+        serviceDateLabel = Label(serviceFrame,text="Date of Service",bg=generalBG,font=generalFont)
         serviceDateLabel.place(x=xPos,y=yPos)
         serviceDateLabel.update()
 
-
-
-        serviceDateText = Text(theFrame,width=len(DOS),height = 1,font=generalFont)
+        serviceDateText = Text(serviceFrame,width=len(DOS),height = 1,font=generalFont)
         serviceDateText.place(x=textX,y=yPos)
         serviceDateText.insert('end',DOS)
         serviceDateText.configure(state=DISABLED)
@@ -754,7 +770,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         yPos = serviceDateLabel.winfo_height() + serviceDateLabel.winfo_y() + increment
 
 
-        immunizationLabel = Label(theFrame,text="Immunizations Received",bg=generalBG,font=generalFont)
+        immunizationLabel = Label(serviceFrame,text="Immunizations Received",bg=generalBG,font=generalFont)
         immunizationLabel.place(x=xPos,y=yPos)
         immunizationLabel.winfo_toplevel()
         immunizationLabel.update()
@@ -778,7 +794,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
 
         immuXtension = immunizationsReceived.winfo_width() + immunizationsReceived.winfo_x() + 10
-        extendImmunizationButton = Button(theFrame,text="Information on \nSelected Immunization",
+        extendImmunizationButton = Button(serviceFrame,text="Information on \nSelected Immunization",
                                         command= lambda : self.immunizationINFO(immunizationsReceived.get()))
         extendImmunizationButton.place(x=immuXtension-150,y=yPos+40)
 
@@ -786,7 +802,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         yPos = immunizationLabel.winfo_y() + immunizationLabel.winfo_height() + increment
 
 
-        completionStatusLabel = Label(theFrame,text="Completion Status",bg=generalBG,font=generalFont)
+        completionStatusLabel = Label(serviceFrame,text="Completion Status",bg=generalBG,font=generalFont)
         completionStatusLabel.place(x=xPos,y=yPos)
         completionStatusLabel.update()
 
@@ -794,6 +810,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         completionX = completionStatusLabel.winfo_x() + completionStatusLabel.winfo_width() + 5
 
         completionStatusText = Text(theFrame,width=len(patientINFO[2]),font=generalFont,height=1)
+
         completionStatusText.place(x=completionX,y=yPos)
         completionStatusText.insert('end',(patientINFO[2]))
         completionStatusText.configure(state=DISABLED)
@@ -802,13 +819,13 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         yPos = completionStatusLabel.winfo_y() + completionStatusLabel.winfo_height() + increment
 
 
-        informationSourceLabel = Label(theFrame,text="Information Source",bg=generalBG,font=generalFont)
+        informationSourceLabel = Label(serviceFrame,text="Information Source",bg=generalBG,font=generalFont)
         informationSourceLabel.place(x=xPos,y=yPos)
         informationSourceLabel.update()
 
         informationX = informationSourceLabel.winfo_width() + informationSourceLabel.winfo_x() + 5
 
-        informationSourceText = Text(theFrame,width=15,font=generalFont,height=1)
+        informationSourceText = Text(serviceFrame,width=15,font=generalFont,height=1)
         informationSourceText.place(x=informationX,y=yPos)
         #print(patientINFO[7])
         informationSourceText.insert('end', patientINFO[7])
@@ -817,14 +834,14 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
         yPos = informationSourceLabel.winfo_y() + informationSourceLabel.winfo_height() + increment
 
-        sourceSystemLabel = Label(theFrame,text="Source System",bg=generalBG,font=generalFont)
+        sourceSystemLabel = Label(serviceFrame,text="Source System",bg=generalBG,font=generalFont)
         sourceSystemLabel.place(x=xPos,y=yPos)
         sourceSystemLabel.update()
 
         sourceX = sourceSystemLabel.winfo_x() + sourceSystemLabel.winfo_width() + 5
 
 
-        sourceSystemText = Text(theFrame,width=15,font=generalFont,height=1)
+        sourceSystemText = Text(serviceFrame,width=15,font=generalFont,height=1)
         sourceSystemText.place(x=sourceX,y=yPos)
         sourceSystemText.insert('end','EMR')
         sourceSystemText.configure(state=DISABLED)
@@ -834,16 +851,18 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
         yPos = sourceSystemLabel.winfo_y() + sourceSystemLabel.winfo_height() + increment
 
-
-        reactionsHeader = Label(theFrame, text="Reactions", width=theFrame.winfo_width(), height=1,
+        '''
+        reactionsHeader = Label(serviceFrame, text="Reactions", width=theFrame.winfo_width(), height=1,
                                      bg="RoyalBlue3", font=generalFont, fg="white", anchor=W)
 
         reactionsHeader.place(x=0,y=yPos + 30)
         reactionsHeader.update()
-
+    
         yPos = reactionsHeader.winfo_height() + reactionsHeader.winfo_y() + increment
+        '''
 
-        allergicReactionsLabel = Label(theFrame,text="Allergic Reactions",bg=generalBG,font=generalFont)
+
+        allergicReactionsLabel = Label(serviceFrame,text="Allergic Reactions",bg=generalBG,font=generalFont)
         allergicReactionsLabel.place(x=xPos,y=yPos)
         allergicReactionsLabel.update()
 
@@ -857,8 +876,8 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
         yPos = allergicReactionsText.winfo_y() + allergicReactionsText.winfo_height() + increment
 
-
-        serviceProviderHeader = Label(theFrame,text="Service Provider",bg="RoyalBlue3",fg="white",
+        '''
+        serviceProviderHeader = Label(serviceFrame,text="Service Provider",bg="RoyalBlue3",fg="white",
                                       font=generalFont,anchor=W,
                                       width=theFrame.winfo_width(),height=1)
         serviceProviderHeader.place(x=0,y=yPos)
@@ -866,25 +885,27 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
 
         yPos = serviceProviderHeader.winfo_height() + serviceProviderHeader.winfo_y() + increment
+        '''
 
-        serviceProviderLabel = Label(theFrame,text="Provider Name",bg=generalBG,font=generalFont)
+
+        serviceProviderLabel = Label(serviceFrame,text="Provider Name",bg=generalBG,font=generalFont)
         serviceProviderLabel.place(x=xPos,y=yPos)
         serviceDateLabel.update()
 
         providerX = serviceDateLabel.winfo_x() + serviceDateLabel.winfo_width() + 10
 
 
-        serviceProviderText = Text(theFrame,width=20,height=1,font=generalFont)
+        serviceProviderText = Text(serviceFrame,width=20,height=1,font=generalFont)
         serviceProviderText.place(x=providerX,y=yPos)
         providerName = patientINFO[5]+', '+patientINFO[6]
         serviceProviderText.insert('end',providerName)
         serviceProviderText.configure(state=DISABLED)
         serviceProviderText.update()
 
-        yPos += (serviceProviderText.winfo_height() + increment + 50)
+        yPos += (serviceProviderText.winfo_height() + increment + 25)
 
 
-        returnButton = Button(theFrame,text="Back to Service History",bg="RoyalBlue3",fg="white",font=generalFont,
+        returnButton = Button(serviceFrame,text="Back to Service History",bg="RoyalBlue3",fg="white",font=generalFont,
                               command=self.displayServiceHistory)
         returnButton.place(x=xPos,y=yPos)
 
@@ -946,12 +967,17 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         self.checkNone(self.OutreachDetails)
         staticInformation = self.OutreachDetails[0][:2]
         staticInformation.extend(self.OutreachDetails[0][4:8])
-        #print(staticInformation)
+        self.checkNone(staticInformation)
         patientLabels = []
         patientText = []
         self.outreachWidgets = []
 
         for index in range(len(labels)):
+
+            insertText = staticInformation[index]
+
+            if insertText == None:
+                insertText = ""
 
             #create new label for the frame
             newLabel = Label(contactFrame,text = labels[index],bg="light blue", font = ('consolas',12))
@@ -1047,53 +1073,79 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
         # label frame for outreach details
 
-        outreachDetailsFrame = LabelFrame(theFrame, text="Outreach Details", width=Width - 10, height=250,
+        self.outreachDetailsFrame = LabelFrame(theFrame, text="Outreach Details", width=Width - 10, height=250,
                                        bg="light blue",
                                        highlightcolor="white", highlightthickness=2, font=('consolas', 12), bd=0,
                                        labelanchor="n")
-        outreachDetailsFrame.place(x=5,y=nextFrameY)
-        outreachDetailsFrame.update()
+        self.outreachDetailsFrame.place(x=5,y=nextFrameY)
+        self.outreachDetailsFrame.update()
 
-        Width = outreachDetailsFrame.winfo_width()
-        Height = outreachDetailsFrame.winfo_height()
+        Width = self.outreachDetailsFrame.winfo_width()
+        Height = self.outreachDetailsFrame.winfo_height()
 
         detailsLabels = ["Date", "Method", "Outcome","Attempt Number"]
 
 
         outcomeLabels = ["Answered", "Missed Call", "Hung Up","Will Call Back","Wrong Number", "Attempt Again Later","Awaiting response"]
-
-        outComeBox = Combobox(outreachDetailsFrame, values=outcomeLabels)
+        methodLabels = ["Email", "Phone", "Letter"]
+        outComeBox = Combobox(self.outreachDetailsFrame, values=outcomeLabels)
+        methodBox = Combobox(self.outreachDetailsFrame,values=methodLabels)
 
 
         xPos = 5
         yPos = 5
         for label in detailsLabels:
 
-            newLabel = Label(outreachDetailsFrame,text=label,font=generalFont,bg=generalBG)
+            newLabel = Label(self.outreachDetailsFrame,text=label,font=generalFont,bg=generalBG)
             newLabel.place(x=xPos,y=yPos)
             newLabel.update()
             xPos = newLabel.winfo_x() + newLabel.winfo_width() + 15
-            #self.outreachWidgets.append(newLabel)
 
-            if label != "Outcome":
+            outReachAttempt = self.SQL.getOutReachAttempt(self.thisPatient.patientID)
+            if label != "Outcome" and label != "Method":
 
-                newText = Text(outreachDetailsFrame,width = 20,height=1)
-                newText.place(x=xPos,y=yPos)
-                newText.update()
-                self.outreachWidgets.append(newText)
+                if label == "Date":
+                    today = date.today()
+                    newText = Text(self.outreachDetailsFrame, width=20, height=1)
+                    newText.place(x=xPos, y=yPos)
+                    newText.insert('end',today)
+                    newText.configure(state=DISABLED)
+                    newText.update()
+                    self.outreachWidgets.append(newText)
+                    yPos = newLabel.winfo_height() + newLabel.winfo_y()
 
-                yPos = newLabel.winfo_height() + newLabel.winfo_y()
+                elif label == "Attempt Number":
+                    newText = Text(self.outreachDetailsFrame, width=20, height=1)
+                    newText.place(x=xPos, y=yPos)
+                    newText.insert('end', str(outReachAttempt))
+                    newText.configure(state=DISABLED)
+                    newText.update()
+                    self.outreachWidgets.append(newText)
+                    yPos = newLabel.winfo_height() + newLabel.winfo_y()
+                else:
+                    newText = Text(self.outreachDetailsFrame,width = 20,height=1)
+                    newText.place(x=xPos,y=yPos)
+                    newText.update()
+                    self.outreachWidgets.append(newText)
 
-            else:
+                    yPos = newLabel.winfo_height() + newLabel.winfo_y()
+
+            elif label == "Outcome":
                 outComeBox.place(x=xPos,y=yPos)
                 outComeBox.update()
                 self.outreachWidgets.append(outComeBox)
                 yPos = newLabel.winfo_height() + newLabel.winfo_y()
 
+            elif label == "Method":
+                methodBox.place(x=xPos,y=yPos)
+                methodBox.update()
+                self.outreachWidgets.append(methodBox)
+                yPos = newLabel.winfo_height() + newLabel.winfo_y()
+
             xPos = 5
 
 
-        outReachNotesLabel = Label(outreachDetailsFrame,text = "Outreach Notes",bg=generalBG,font=generalFont)
+        outReachNotesLabel = Label(self.outreachDetailsFrame,text = "Outreach Notes",bg=generalBG,font=generalFont)
         outReachNotesLabel.place(x=550,y=0)
         outReachNotesLabel.update()
 
@@ -1101,7 +1153,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         outReachNotesX = outReachNotesLabel.winfo_x()
         outReachNotesY = outReachNotesLabel.winfo_y() + 8
 
-        outReachNotesText = Text(outreachDetailsFrame,width=30,height=8)
+        outReachNotesText = Text(self.outreachDetailsFrame,width=32,height=8)
         outReachNotesText.place(x=outReachNotesX-50,y=outReachNotesY)
         outReachNotesText.update()
         self.outreachWidgets.append(outReachNotesText)
@@ -1110,16 +1162,16 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         previousAttemptsX = outReachNotesText.winfo_x()
         previousAttemptsY = 180
 
-        previousAttempts = Button(outreachDetailsFrame,text="Previous Attempts",font=('consolas',10),command=self.showAttempts)
+        previousAttempts = Button(self.outreachDetailsFrame,text="Previous Attempts",font=('consolas',10),command=self.showAttempts)
         previousAttempts.place(x=previousAttemptsX,y=previousAttemptsY)
         previousAttempts.update()
-        outreachDetailsFrame.update()
+        self.outreachDetailsFrame.update()
 
-        nextY = outreachDetailsFrame.winfo_y() + outreachDetailsFrame.winfo_height() + 5
+        nextY = self.outreachDetailsFrame.winfo_y() + self.outreachDetailsFrame.winfo_height() + 5
         nextX = previousAttempts.winfo_x() + previousAttempts.winfo_width() + 15
 
 
-        updateButton = Button(outreachDetailsFrame, text="Submit Outreach", font=('consolas', 10),
+        updateButton = Button(self.outreachDetailsFrame, text="Submit Outreach", font=('consolas', 10),
                               command=self.appendOutreach)
         updateButton.place(x=nextX, y=previousAttemptsY)
 
@@ -1167,6 +1219,59 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         clearEmail = Button(buttonFrame, text="Clear Email", command=self.clearEmailEntry)
         clearEmail.place(x=nextX, y=startingY + 75)
 
+    def showOutreachAttempt(self,thisAttempt = None):
+
+        for widget in self.outreachDetailsFrame.winfo_children():
+            widget.destroy() # clear the attempt buttons
+
+
+        attemptNumber = 1 # would get the attempt number from the list information
+        self.outreachDetailsFrame.configure(text="Attempt #" + str(attemptNumber))
+
+        if thisAttempt == None:
+            thisAttempt = ["","","","",""] # empty spots to hold the strings
+
+        generalBG = "light blue"
+        generalFont = ('consolas', 14)
+        detailsLabels = ["Date", "Method", "Outcome", "Attempt Number"]
+
+        xPos = 5
+        yPos = 5
+        currentIndex = 0
+        for index in range(len(detailsLabels)):
+
+            newLabel = Label(self.outreachDetailsFrame, text=detailsLabels[index], font=generalFont, bg=generalBG)
+            newLabel.place(x=xPos, y=yPos)
+            newLabel.update()
+            xPos = newLabel.winfo_x() + newLabel.winfo_width() + 15
+
+
+            newText = Text(self.outreachDetailsFrame, width=20, height=1)
+            newText.place(x=xPos, y=yPos)
+            newText.insert(END,thisAttempt[index])
+            newText.configure(state=DISABLED)
+            newText.update()
+            self.outreachWidgets.append(newText)
+            yPos = newLabel.winfo_height() + newLabel.winfo_y()
+            xPos = 5
+            currentIndex = index
+
+        outReachNotesLabel = Label(self.outreachDetailsFrame, text="Outreach Notes", bg=generalBG, font=generalFont)
+        outReachNotesLabel.place(x=550, y=0)
+        outReachNotesLabel.update()
+
+        outReachNotesX = outReachNotesLabel.winfo_x()
+        outReachNotesY = outReachNotesLabel.winfo_y() + 8
+
+        outReachNotesText = Text(self.outreachDetailsFrame, width=32, height=8)
+        outReachNotesText.insert(END,thisAttempt[currentIndex])
+        outReachNotesText.configure(state=DISABLED)
+        outReachNotesText.place(x=outReachNotesX - 50, y=outReachNotesY)
+        outReachNotesText.update()
+
+        goBackButton = Button(self.outreachDetailsFrame, text="Create New Attempt", command=self.resetOutReachPage)
+        goBackButton.place(x=600, y=185)
+
     def appendOutreach(self):
         '''
         Widgets are placed in order of:
@@ -1178,19 +1283,52 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
         for widget in self.outreachWidgets: # will retrieve all data and put into new list
 
-            newList.append(widget.get("1.0",END)) # obtains all the text from widget
+            if type(widget) == type(Text()):
 
+                currentString = widget.get("1.0",END)
+                print(currentString)
+                newList.append(currentString) # obtains all the text from widget
+            else:
+                currentString = widget.get()
+                newList.append(currentString)
 
+        outreachList = [self.user.userId, "OutreachDetails", newList[1], newList[2], newList[4], self.thisPatient.patientID]
+        self.SQL.addOutreach(outreachList)
         # script to update database goes here
+        # newList will contain all the information to append
 
     def showAttempts(self):
-        pass
-        #queue the DB here
+
+        generalFont = ('consolas', 14)
+        xPos = 400
+        yPos = 25
+        for widget in self.outreachDetailsFrame.winfo_children():
+            widget.destroy()
+
+        self.outreachDetailsFrame.configure(text="Previous Attempts")
+
+        # this would be the queue from the database
+        attempts = [["","","","","",""]] # this would be a 2D array of info that can be populated back into the frame
 
 
-        attempts = []
+        attemptIndex = 0 # temp for now to show index
+        for attempt in attempts:
+            newButton = Button(self.outreachDetailsFrame,text="Attempt#" + str(attemptIndex),font=generalFont,
+                               command=lambda : self.showOutreachAttempt(attempt))
+            newButton.place(x=xPos,y=yPos)
+            yPos += 50
 
-        #for attempt in attempts:
+
+        goBackButton = Button(self.outreachDetailsFrame,text="Go Back",command=self.resetOutReachPage)
+        goBackButton.place(x=700,y=600)
+
+
+    def resetOutReachPage(self):
+
+        for widget in self.contactPage.winfo_children():
+            widget.destroy() # clears the entire outreach page
+
+        self.showOutReach() # re populate the entire page
 
 
     def getPatientHistory(self):
@@ -1397,3 +1535,6 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
     def openWebPage(self,url): # will open the web browser from the buttom
 
         webbrowser.open(url,new=0,autoraise=True)
+
+    def updateContactNotes(self, notes, pid):
+        self.SQL.addContactNotes([notes, pid])

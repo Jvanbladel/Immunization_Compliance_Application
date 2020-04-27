@@ -331,7 +331,10 @@ class mainMenu(ICA_super.icaSCREENS):
     def submitOutReachAttempt(self, patient):
         if self.user.permissions.outReach == 0:
             return
-        print("Out Reach", patient.fName)
+        outreach_data = [self.user.userId, "OutreachDetails", "phone", self.callOptions.get(), self.NotesTextArea.get("1.0","end"), patient.patientID]
+        print(outreach_data)
+        self.SQL.addOutreach(outreach_data)
+        #print("Out Reach", patient.fName)
 
         #clear patient from queue
 
@@ -430,8 +433,8 @@ class mainMenu(ICA_super.icaSCREENS):
             self.searchENTRY = Entry(self.root)
             self.searchENTRY.place(x=50,y=120,width=160)
 
-            self.closeSearch = Button(self.root, command=lambda: self.togExpandQueue())
-            self.closeSearch.place(x= 211, y=102.5, width = 10, height = 10)
+            #self.closeSearch = Button(self.root, command=lambda: self.togExpandQueue())
+            #self.closeSearch.place(x= 211, y=102.5, width = 10, height = 10)
 
             #Options for first Name
             self.var1 = IntVar()
@@ -908,7 +911,7 @@ class mainMenu(ICA_super.icaSCREENS):
             self.pdf = Button(self.root, text = ".PDF", justify = LEFT,anchor=W)
             self.pdf.place(x=100,y=30,height=30,width=50)
 
-            self.txt = Button(self.root, text = ".TXT", justify = LEFT,anchor=W)
+            self.txt = Button(self.root, text = ".TXT", justify = LEFT,anchor=W,command=self.exportTXT)
             self.txt.place(x=100,y=60,height=30,width=50)
 
             self.cvs = Button(self.root, text = ".CVS", justify = LEFT,anchor=W)
@@ -1506,7 +1509,7 @@ class mainMenu(ICA_super.icaSCREENS):
 
         newWindow = Toplevel()
         newWindow.title("Patient Details MRN: " + str(patient.MRN))
-        patientInfo = med_INFO_SCREEN(newWindow,patient)
+        patientInfo = med_INFO_SCREEN(newWindow,patient, self.user)
         self.currentPopOut += 1
 
         #closeButton = Button(newWindow,text="Go Back",command= lambda:self.destroyPopOut(newWindow))
@@ -1831,8 +1834,8 @@ class mainMenu(ICA_super.icaSCREENS):
             self.headLABEL = Label(self.root, anchor= W, justify = LEFT, text = self.headerLabels, font = ("Consolas", 10))
             self.headLABEL.place(x=2.5, y=102.5,height=20, width = 570)
 
-            self.minimizeButton = Button(self.root, command=lambda: self.togExpandQueue())
-            self.minimizeButton.place(x= 560, y=102.5, width = 10, height = 10)
+            #self.minimizeButton = Button(self.root, command=lambda: self.togExpandQueue())
+            #self.minimizeButton.place(x= 560, y=102.5, width = 10, height = 10)
 
             self.largeQueue = 0
             self.addToQueue(self.frame, self.queue)
@@ -1916,3 +1919,59 @@ class mainMenu(ICA_super.icaSCREENS):
             self.root.after_cancel(self.clockUpdater) # prevents exception error on logout
             self.clockUpdater = None
             self.swapTO(Login_Screen.loginScreen,None)
+
+
+
+    def exportTXT(self): # export the data to a TXT file
+
+        newFILE = open("ICAexport.txt", "w+")
+
+        # modify to whatever is holding the patients in the frame
+        for patient in self.queue:
+            appendString = "Patient#" + str(patient.patientID) + " ["
+
+            appendString += str(patient.patientID) + ","
+            appendString += str(patient.MRN) + ","
+            appendString += str(patient.lName) + ","
+            appendString += str(patient.fName) + ","
+            appendString += str(patient.mInitial) + ","
+            appendString += str(patient.dob) + ","
+            appendString += str(patient.sex) + ","
+            appendString += str(patient.patientDead) + ","
+            appendString += str(patient.dueDate) + ","
+            appendString += str(patient.race) + ","
+            appendString += str(patient.ethnicity) + ","
+            appendString += str(patient.age) + ","
+            appendString += "]\n"
+
+            newFILE.write(appendString)
+
+        newFILE.close()
+
+
+    def exportJSON(self): # export the data to a JSON file
+
+        newFILE = open("ICAcsv.csv","w+")
+
+        # modify to what ever is holding the list of patients currently in the frame
+        for patient in self.frame:
+
+            appendString = ""
+
+            appendString += str(patient.patientID) + ","
+            appendString += str(patient.MRN) + ","
+            appendString += str(patient.lName) + ","
+            appendString += str(patient.fName) + ","
+            appendString += str(patient.mInitial) + ","
+            appendString += str(patient.dob) + ","
+            appendString += str(patient.sex) + ","
+            appendString += str(patient.patientDead) + ","
+            appendString += str(patient.dueDate) + ","
+            appendString += str(patient.race) + ","
+            appendString += str(patient.ethnicity) + ","
+            appendString += str(patient.age) + ","
+
+
+            newFILE.write(appendString)
+
+        newFILE.close()
