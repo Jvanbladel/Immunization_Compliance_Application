@@ -11,9 +11,14 @@ class Demographics():
         self.guarantor = [data[30], data[29], data[31], data[32], data[28], data[22], data[23]]
 
 
-class Insurance():
+class InsuranceTab():
     def __init__(self, data):
-        pass
+        self.insuranceName = data[0]
+        self.insuranceActive = data[1]
+        self.lastVisitDate = data[2]
+        self.providerFirstName = data[3]
+        self.providerLastName = data[4]
+        self.providerNPI = data[5]
 
 class Contact():
     def __init__(self, data):
@@ -71,6 +76,9 @@ class Patient():
     def getContactNotes(self, sql):
         SQL.get
 
+    def getInsuranceTab(self, sql):
+        SQL.get
+
     def getSummary(self):
         return [self.fName, self.lName, self.mInitial ,self.dob, self.sex, self.age, self.race, self.prefix]
 
@@ -102,7 +110,7 @@ class Patient():
         #insurence object
         return None
 
-    def getGarentor(self):
+    def getGuarantor(self):
         return None
 
     def getLastService(self):
