@@ -1,9 +1,22 @@
 Select
-Outreach_Details.OutreachDetailsMethod,
-Outreach_Details.OutreachDetailsOutcome,
-Outreach_Details.OutreachDetailsNotes,
-Outreach_Details.OutreachDetailsAttemptNumber,
-Outreach_Details.OutreachDetailsDate
+p.Home_PhoneNumber,
+p.MobileNumber,
+p.WorkNumber,
+p.EmailAddress,
+s.PreferredCommMode,
+s.InterpreterRequired,
+CONCAT(g.GuarantorFirstName, g.GuarantorLastName) as GuarantorName,
+r.PatientGuarantorType,
+d.OutreachDetailsMethod,
+d.OutreachDetailsOutcome,
+d.OutreachDetailsNotes,
+d.OutreachDetailsAttemptNumber,
+d.OutreachDetailsDate
 From
-Outreach_Details  
-where Outreach_Details.OutreachDetailsPatientId = ?
+Outreach_Details d
+inner join Phone p on d.OutreachDetailsPatientId = p.PatientId
+inner join Patient s on d.OutreachDetailsPatientId = s.PatientId
+left outer join ResponsibleParty r on d.OutreachDetailsPatientId = r.PatientId
+left outer join Guarantor g on r.GuarantorId = g.GuarantorId
+where d.Notetype = 'OutreachDetails'
+	and d.OutreachDetailsPatientId = ?
