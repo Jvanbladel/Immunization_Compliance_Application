@@ -331,7 +331,10 @@ class mainMenu(ICA_super.icaSCREENS):
     def submitOutReachAttempt(self, patient):
         if self.user.permissions.outReach == 0:
             return
-        print("Out Reach", patient.fName)
+        outreach_data = [self.user.userId, "OutreachDetails", "phone", self.callOptions.get(), self.NotesTextArea.get("1.0","end"), patient.patientID]
+        print(outreach_data)
+        self.SQL.addOutreach(outreach_data)
+        #print("Out Reach", patient.fName)
 
         #clear patient from queue
 
@@ -430,8 +433,8 @@ class mainMenu(ICA_super.icaSCREENS):
             self.searchENTRY = Entry(self.root)
             self.searchENTRY.place(x=50,y=120,width=160)
 
-            self.closeSearch = Button(self.root, command=lambda: self.togExpandQueue())
-            self.closeSearch.place(x= 211, y=102.5, width = 10, height = 10)
+            #self.closeSearch = Button(self.root, command=lambda: self.togExpandQueue())
+            #self.closeSearch.place(x= 211, y=102.5, width = 10, height = 10)
 
             #Options for first Name
             self.var1 = IntVar()
@@ -1506,7 +1509,7 @@ class mainMenu(ICA_super.icaSCREENS):
 
         newWindow = Toplevel()
         newWindow.title("Patient Details MRN: " + str(patient.MRN))
-        patientInfo = med_INFO_SCREEN(newWindow,patient)
+        patientInfo = med_INFO_SCREEN(newWindow,patient, self.user)
         self.currentPopOut += 1
 
         #closeButton = Button(newWindow,text="Go Back",command= lambda:self.destroyPopOut(newWindow))
@@ -1544,13 +1547,13 @@ class mainMenu(ICA_super.icaSCREENS):
         self.pDOB.place(x = 590, y = 205)
 
         self.pSex = Label(self.root, text = "Sex: " +  patientData[4])
-        self.pSex.place(x = 590, y = 235)
+        self.pSex.place(x = 590, y = 265)
 
         self.pAge = Label(self.root, text = "Age: " +  patientData[5])
-        self.pAge.place(x = 650, y = 235)
+        self.pAge.place(x = 590, y = 235)
         
         self.pRace = Label(self.root, text = "Race: " +  patientData[6])
-        self.pRace.place(x = 590, y = 265)
+        self.pRace.place(x = 590, y = 295)
 
         self.pPrefix = Label(self.root, text = "Prefix: " +  patientData[7])
         self.pPrefix.place(x = 730, y = 175)
@@ -1831,8 +1834,8 @@ class mainMenu(ICA_super.icaSCREENS):
             self.headLABEL = Label(self.root, anchor= W, justify = LEFT, text = self.headerLabels, font = ("Consolas", 10))
             self.headLABEL.place(x=2.5, y=102.5,height=20, width = 570)
 
-            self.minimizeButton = Button(self.root, command=lambda: self.togExpandQueue())
-            self.minimizeButton.place(x= 560, y=102.5, width = 10, height = 10)
+            #self.minimizeButton = Button(self.root, command=lambda: self.togExpandQueue())
+            #self.minimizeButton.place(x= 560, y=102.5, width = 10, height = 10)
 
             self.largeQueue = 0
             self.addToQueue(self.frame, self.queue)

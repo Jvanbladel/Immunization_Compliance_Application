@@ -1,0 +1,5 @@
+Select
+    (Max(Outreach_Details.OutreachDetailsId) + 1) As Max_OutreachDetailsId,
+    
+From
+    Outreach_Details

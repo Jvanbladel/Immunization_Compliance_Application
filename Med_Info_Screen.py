@@ -12,16 +12,18 @@ from datetime import date
 class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
 
-    def __init__(self, window, Patient):
+    def __init__(self, window, Patient, user):
         super().__init__(window)
         self.root.geometry("850x730")
         self.bindKey("<Escape>",self.closeWindow)
 
         self.thisPatient = Patient
+        self.user = user
         self.demoGraphics = self.SQL.getDemographics(Patient.patientID)
         self.ContactNotes = self.SQL.getContactNotes(Patient.patientID)
         self.InsuranceTab = self.SQL.getInsuranceTab(Patient.patientID)
         self.OutreachDetails = self.SQL.getOutreachDetails(Patient.patientID)
+        self.ImmunizationEducation = self.SQL.getImmunizationEducation(Patient.patientID)
         #print(self.demoGraphics.address)
         #print(self.demoGraphics.demographics)
         #print(self.demoGraphics.contact)
@@ -152,30 +154,39 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         generalInformationButton.place(x=100, y=20)
 
         generalInformationButton2 = Button(generalInformationFrame,text= "Benefits of the vaccine",font=generalFont,
-                                           command=lambda: self.openWebPage(
-                                               "What are the benefits of flu vaccination"
-                                           ))
+                                           command=lambda: self.openWebPage("What are the benefits of flu vaccination"))
         generalInformationButton2.place(x=400,y=20)
         nextY = generalInformationFrame.winfo_height() + generalInformationFrame.winfo_y() + 5
 
 
         # add more information to the generalInformation box here if needed
+        immunizationGroups=[]
+        datesAdministered=[]
+        SQL = self.SQL
+        serviceHistory = (SQL.getServiceDetails(self.thisPatient.patientID))
+        #print(serviceHistory.ImmunizationID)
 
+        serviceHistory = serviceHistory.groupby(['ImmDisplayDescription'])['PatientLastVisitDate'].apply(', '.join)
+        datesAdministered = serviceHistory.tolist()
+        #print("169")
+        #print(datesAdministered)
+        immunizationGroups = serviceHistory.index
 
+        #print(immunizationGroups)
         # Queue the database here for the list of the immunization names
-        immunizationGroups = ["Influenza Vaccine Prev Free 0.25 ml", "Influenza Vaccine quad split virus 0.5 ml",
+        '''immunizationGroups = ["Influenza Vaccine Prev Free 0.25 ml", "Influenza Vaccine quad split virus 0.5 ml",
                               "Influenza Vaccine quad split virus Prev Free ID Use",
-                              "Influenza Vaccine quad split virus Prev Free 0.25 ml"]
+                              "Influenza Vaccine quad split virus Prev Free 0.25 ml"]'''
 
 
         # Queue the database for the list of dates administered here
-        datesAdministered = [["8/9/2002", "7/16/1998", "10/10/1997", "8/15/1997", "6/17/1997"],
+        '''datesAdministered = [["8/9/2002", "7/16/1998", "10/10/1997", "8/15/1997", "6/17/1997"],
                              ["3/9/1998","8/15/1997","6/17/1997"],
                              ["7/16/1998","10/10/1997", "8/15/1997", "6/17/1997"],
                              ["7/16/1998","10/10/1997", "8/15/1997", "6/17/1997"],
                              ["7/16/1998","10/10/1997", "8/15/1997", "6/17/1997"],
                              ["7/16/1998","10/10/1997", "8/15/1997", "6/17/1997"],
-                             ["7/16/1998","10/10/1997", "8/15/1997", "6/17/1997"]]
+                             ["7/16/1998","10/10/1997", "8/15/1997", "6/17/1997"]]'''
 
 
         staticURL = "www.google.com"
@@ -210,9 +221,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         immunizationName = "ImmunizationName: " + immunizationName
 
         administeredString = "Adminstered: "
-
-        for date in datesAdministered:
-            administeredString += (date + ", ")
+        administeredString = datesAdministered
 
         administeredString = administeredString.rstrip(", ")
 
@@ -437,25 +446,22 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         contactNotesLabel.place(x=550,y=5)
         contactNotesLabel.update()
 
-        formattedString = ""
-
+        '''formattedString = ''
+        print(self.ContactNotes)
         for newline in self.ContactNotes:
-            formattedString += str(newline)
-
-
-        formattedString = formattedString.strip("[]\'\"")
-
-
+            formattedString += str(newline)'''
         contactNotesText = Text(self.contactINFO,width=35,height=12,padx=5)
+        #contactNotesText.configure(state=DISABLED)
         contactNotesText.place(x=460,y=contactNotesLabel.winfo_y() + contactNotesLabel.winfo_height() + 5)
-        contactNotesText.insert('end', formattedString)
-
+        #contactNotesText.insert('end', formattedString)
+        contactNotesText.insert('end', str(self.ContactNotes[0][0]))
+        #contactNotesText.configure(state=DISABLED)
         contactNotesText.update()
 
         updateButtonX = contactNotesLabel.winfo_x()
         updateButtonY = contactNotesText.winfo_y() + contactNotesText.winfo_height() + 5
 
-        updateButton = Button(self.contactINFO, text = "Update Contact Notes", font=('consolas' ,10))
+        updateButton = Button(self.contactINFO, text = "Update Contact Notes", font=('consolas' ,10), command=lambda : self.updateContactNotes(contactNotesText.get("1.0",END), self.thisPatient.patientID))
         updateButton.place(x=updateButtonX, y=updateButtonY)
 
 
@@ -944,7 +950,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         self.checkNone(self.OutreachDetails)
         staticInformation = self.OutreachDetails[0][:2]
         staticInformation.extend(self.OutreachDetails[0][4:8])
-        print(staticInformation)
+        self.checkNone(staticInformation)
         patientLabels = []
         patientText = []
         self.outreachWidgets = []
@@ -960,7 +966,8 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
             newLabel = Label(contactFrame,text = labels[index],bg="light blue", font = ('consolas',12))
 
             newText = Text(contactFrame,width=20,height=1)
-            newText.insert('end',insertText)
+            #print(staticInformation[index])
+            newText.insert('end',staticInformation[index])
             newText.configure(state=DISABLED)
 
             patientLabels.append(newLabel)
@@ -1250,7 +1257,6 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
         for widget in self.outreachWidgets: # will retrieve all data and put into new list
 
-
             if type(widget) == type(Text()):
 
                 currentString = widget.get("1.0",END)
@@ -1260,7 +1266,8 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
                 currentString = widget.get()
                 newList.append(currentString)
 
-
+        outreachList = [self.user.userId, "OutreachDetails", newList[1], newList[2], newList[4], self.thisPatient.patientID]
+        self.SQL.addOutreach(outreachList)
         # script to update database goes here
         # newList will contain all the information to append
 
@@ -1479,7 +1486,8 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         influenzaPrevFreeInformation = ["Influenza Vaccine Prev Free 0.25 ml", "Influenza Vaccine Prev Free 0.5 ml",
                                         "Influenza Vaccine quad split virus Prev Free ID Use",
                                         "Influenza Vaccine quad split virus Prev Free 0.25 ml",
-                                        "Influenza Vaccine quad split virus Prev Free 0.5 ml"]
+                                        "Influenza Vaccine quad split virus Prev Free 0.5 ml",
+                                        "Influenza Vaccine ccIIV4 Prev Free 0.5 ml"]
 
         for newInfo in influenzaPrevFreeInformation:  # adds the Prev free immunization plus their links to the page
             self.switchURL[newInfo] = "https://www.verywellhealth.com/preservative-free-flu-vaccine-770551"
@@ -1498,3 +1506,6 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
     def openWebPage(self,url): # will open the web browser from the buttom
 
         webbrowser.open(url,new=0,autoraise=True)
+
+    def updateContactNotes(self, notes, pid):
+        self.SQL.addContactNotes([notes, pid])

@@ -1,0 +1,4 @@
+Select
+(Max(Users.PersonnelId) + 1) As Max_PersonnelId
+From
+Users

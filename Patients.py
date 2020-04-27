@@ -83,6 +83,11 @@ class Patient():
             self.attempt = data[11]
             self.outreachNotes = data[10]
 
+    class ImmunizationEducation():
+        def __init__(self, data):
+            self.immNameLong = data[0]
+            self.dateOfService = data[1]
+
     def getDemographics(self, sql):
         SQL.get
 
@@ -93,6 +98,9 @@ class Patient():
         SQL.get
 
     def getOutreachDetails(self, sql):
+        SQL.get
+
+    def getImmunizationEducation(self, sql):
         SQL.get
 
     def getSummary(self):
