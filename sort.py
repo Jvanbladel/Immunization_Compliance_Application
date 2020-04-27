@@ -37,9 +37,9 @@ def fuzzySearch(field, input_str, input_type):
         return
     SQLConn = SQLConnection.SQLConnection()
     query = query_generator.fuzzySearch_sql(field, input_str, input_type)
-
     df = pd.read_sql(query, SQLConn.conn)
-    if df.empty:
+    print(len(df.index))
+    if len(df.index) == 0:
         SQLConn.closeConnection()
         return
     plist = []

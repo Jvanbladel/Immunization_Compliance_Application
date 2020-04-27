@@ -1,0 +1,14 @@
+select
+m.ProviderFirstName,
+r.PatientLastVisitDate,
+i.ActiveInd,
+i.InsuranceName,
+m.ProviderLastName,
+m.ProviderNPI
+From
+PatientInsurance p
+inner join Insurance i on p.InsuranceId = i.InsuranceId
+left outer join ProviderRelationship r on p.PatientId = r.PatientId
+left outer join Provider m on r.ProviderId = m.ProviderId
+where
+p.PatientId = ?

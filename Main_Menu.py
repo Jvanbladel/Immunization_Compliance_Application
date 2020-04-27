@@ -1,9 +1,14 @@
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+
 import ICA_super
 from tkinter import *
 from tkinter import messagebox
 from tkinter.ttk import Combobox
 from PIL import ImageTk,Image
 import datetime
+
+import dataGraphics
+from dataGraphics import *
 import math
 from Patients import *
 from Med_Info_Screen import *
@@ -11,13 +16,14 @@ import Login_Screen
 import sort
 from Users import *
 
+
 class mainMenu(ICA_super.icaSCREENS):
 
     def __init__(self,window, user):
         self.user = user
         super().__init__(window)
         #setUpWindow
-        self.root.geometry("800x600")
+        self.root.geometry("875x600")
         menu = Menu(self.root)
         self.root.title("Immunization Compliance Application " + self.versionNumber)
 
@@ -31,9 +37,9 @@ class mainMenu(ICA_super.icaSCREENS):
 
         #Set Up  Top Bar
         self.notificationFRAME = LabelFrame(self.root)
-        self.notificationFRAME.place(x=0,y=0,height=100,width=800)
+        self.notificationFRAME.place(x=0,y=0,height=100,width=875)
         barFRAME = LabelFrame(self.root)
-        barFRAME.place(x=0,y=0,height=30,width=800)
+        barFRAME.place(x=0,y=0,height=30,width=875)
 
         #Add Name/date to top bar
         self.userName = self.user.userFirstName + " " + self.user.userLastName
@@ -41,7 +47,7 @@ class mainMenu(ICA_super.icaSCREENS):
         current_time = now.strftime("%I:%M %p")
         userInfo = self.userName + " " + str(current_time)
         self.userFRAME = Label(self.root,text=userInfo,anchor=E, justify=RIGHT)
-        self.userFRAME.place(x=572.5,y=2.5,height=25,width=225)
+        self.userFRAME.place(x=572.5,y=2.5,height=25,width=300)
 
         #Add tabs to top bar
         self.setUpTabs()
@@ -84,14 +90,14 @@ class mainMenu(ICA_super.icaSCREENS):
 
         #SetUpSummary Frame
         self.infoDisplayFRAME = LabelFrame(self.root)
-        self.infoDisplayFRAME.place(x=575,y=100,height=500,width=225)
+        self.infoDisplayFRAME.place(x=575,y=100,height=500,width=300)
         self.summary = 0
         self.contact = 0
         self.phistory = 0
 
         #setupOutReach
         self.reportingFRAME = LabelFrame(self.root)
-        self.reportingFRAME.place(x=575,y=400,height=200,width=225)
+        self.reportingFRAME.place(x=575,y=400,height=200,width=300)
         self.outreach = 0
 
         self.mainMenuSCREEN  = 1
@@ -296,17 +302,17 @@ class mainMenu(ICA_super.icaSCREENS):
         
             contactOptions=("Answered", "Missed Call", "Hung Up", "Will Call Back", "No Number on File", "Wrong Number", "Attempt Again Later")
             self.callOptions=Combobox(self.root, values=contactOptions)
-            self.callOptions.place(x=655,y=430, width = 130)
+            self.callOptions.place(x=655,y=430, width = 178)
 
             self.NotesTextArea = Text()
             self.NotesScrollBar = Scrollbar(self.root)
             self.NotesScrollBar.config(command=self.NotesTextArea.yview)
             self.NotesTextArea.config(yscrollcommand=self.NotesScrollBar.set)
-            self.NotesScrollBar.place(x=772.5,y=475, height = 90, width = 20)
-            self.NotesTextArea.place(x=582.5,y=475, height = 90, width = 190)
+            self.NotesScrollBar.place(x=845.5,y=475, height = 90, width = 20)
+            self.NotesTextArea.place(x=582.5,y=475, height = 90, width = 250)
 
             self.submittOutReach = Button(self.root, text = "Submit",command=lambda: self.submitOutReachAttempt(patient))
-            self.submittOutReach.place(x= 745, y=567.5)
+            self.submittOutReach.place(x= 750, y=567.5, width=83)
             self.outreach = 1
 
         else:
@@ -416,7 +422,7 @@ class mainMenu(ICA_super.icaSCREENS):
     def toggleSearchBox(self):
         if self.searchBox == 0:
             self.searchFRAME = LabelFrame(self.root)
-            self.searchFRAME.place(x=0,y=100,height=500,width=225)
+            self.searchFRAME.place(x=0,y=100,height=500,width=300)
     
             self.searchTXT = Label(self.root, text = "Search: ")
             self.searchTXT.place(x=2.5,y=120)
@@ -432,20 +438,20 @@ class mainMenu(ICA_super.icaSCREENS):
             self.FnameSearch = Checkbutton(self.root, text="First Name", variable=self.var1)
             self.FnameSearch.place(x=2.5,y=160)
 
-            fNameSearchOptions=("Exact Search", "Ascending", "Descending", "Fuzy Search")
+            #fNameSearchOptions=("Exact Search", "Ascending", "Descending", "Fuzy Search")
             
-            self.fNameCombo=Combobox(self.root, values=fNameSearchOptions)
-            self.fNameCombo.place(x=110, y=160, width = 100)
+            #self.fNameCombo=Combobox(self.root, values=fNameSearchOptions)
+            #self.fNameCombo.place(x=110, y=160, width = 100)
 
             #Options for last Name
             self.var2 = IntVar()
             self.LnameSearch = Checkbutton(self.root, text="Last Name", variable=self.var2)
             self.LnameSearch.place(x=2.5,y=185)
 
-            lNameSearchOptions=("Exact Search", "Ascending", "Descending", "Fuzy Search")
+            #lNameSearchOptions=("Exact Search", "Ascending", "Descending", "Fuzy Search")
             
-            self.LnameCombo=Combobox(self.root, values=lNameSearchOptions)
-            self.LnameCombo.place(x=110, y=185, width = 100)
+            #self.LnameCombo=Combobox(self.root, values=lNameSearchOptions)
+            #self.LnameCombo.place(x=110, y=185, width = 100)
 
 
             #Options for DOB Search
@@ -453,10 +459,10 @@ class mainMenu(ICA_super.icaSCREENS):
             self.DOBSearch = Checkbutton(self.root, text="Date of Birth", variable=self.var3)
             self.DOBSearch.place(x=2.5,y=210)
 
-            DOBOptions=("Exact Search", "Ascending", "Descending")
+            #DOBOptions=("Exact Search", "Ascending", "Descending")
             
-            self.DOBCombo=Combobox(self.root, values=DOBOptions)
-            self.DOBCombo.place(x=110, y=210, width = 100)
+            #self.DOBCombo=Combobox(self.root, values=DOBOptions)
+            #self.DOBCombo.place(x=110, y=210, width = 100)
             
             #Options for Due Date
             #self.var3 = IntVar()
@@ -473,21 +479,21 @@ class mainMenu(ICA_super.icaSCREENS):
             self.MRNSearch = Checkbutton(self.root, text="MRN", variable=self.var4)
             self.MRNSearch.place(x=2.5,y=235)
 
-            MRNSearchOptions=("Exact Search", "Ascending", "Descending", "Fuzy Search")
+            #MRNSearchOptions=("Exact Search", "Ascending", "Descending", "Fuzy Search")
             
-            self.MRNCombo=Combobox(self.root, values=MRNSearchOptions)
-            self.MRNCombo.place(x=110, y=235, width = 100)
+            #self.MRNCombo=Combobox(self.root, values=MRNSearchOptions)
+            #self.MRNCombo.place(x=110, y=235, width = 100)
 
 
             #Options for Immunizations Type
             self.var5 = IntVar()
-            self.ImmunTypeSearch = Checkbutton(self.root, text="Immunization", variable=self.var5)
+            self.ImmunTypeSearch = Checkbutton(self.root, text="Gender", variable=self.var5)
             self.ImmunTypeSearch.place(x=2.5,y=260)
 
-            ImmunTypeSearchOptions=("Vaccine 1", "Vaccine 2", "Vaccine 3", "Vaccine 4")
+            #ImmunTypeSearchOptions=("Vaccine 1", "Vaccine 2", "Vaccine 3", "Vaccine 4")
             
-            self.ImmunTypeCombo=Combobox(self.root, values=ImmunTypeSearchOptions)
-            self.ImmunTypeCombo.place(x=110, y=260, width = 100)
+            #self.ImmunTypeCombo=Combobox(self.root, values=ImmunTypeSearchOptions)
+            #self.ImmunTypeCombo.place(x=110, y=260, width = 100)
 
             #Search Buttons
 
@@ -495,17 +501,18 @@ class mainMenu(ICA_super.icaSCREENS):
             self.defaultQueueBUTTON.place(x=20, y = 290, width = 177.5, height = 25)
 
             self.searchforBUTTON = Button(self.root, text = "Search",bg="blue",fg="white", command=lambda: self.searchFunc())
-            self.searchforBUTTON.place(x=122.5, y = 320, width = 75, height = 32.5)
 
-            self.advancedsearchBUTTON = Button(self.root, text = "More\nOptions", command=lambda: self.togAdvancedSearch())
-            self.advancedsearchBUTTON.place(x=20, y = 320, width = 75, height = 32.5)
+            self.searchforBUTTON.place(x=20, y = 320, width = 177.5, height = 32.5)
+
+            #self.advancedsearchBUTTON = Button(self.root, text = "More\nOptions", command=lambda: self.togAdvancedSearch())
+            #self.advancedsearchBUTTON.place(x=20, y = 320, width = 75, height = 32.5)
 
 
-            self.advancedSearchFRAME = LabelFrame(self.root)
-            self.advancedSearchFRAME.place(x=0,y=370,height=230,width=225)
+            #self.advancedSearchFRAME = LabelFrame(self.root)
+            #self.advancedSearchFRAME.place(x=0,y=370,height=230,width=225)
         
             self.searchBox = 1
-            self.advancedSearch = 0
+            #self.advancedSearch = 0
         else:
             self.searchFRAME.destroy()
             self.searchTXT.destroy()
@@ -534,21 +541,40 @@ class mainMenu(ICA_super.icaSCREENS):
             # print(type(self.searchENTRY.get()))
             # PatientFirstName
             newlist = sort.fuzzySearch("PatientFirstName", self.searchENTRY.get(), "str")
-            self.updateQueue(newlist)
+            if newlist is not None:
+                self.updateQueue(newlist)
+            else:
+                messagebox.showerror(message="Invalid Input!\nNo Patient Found")
         elif self.var2.get():
-            # First Name
+            # Lirst Name
             newlist = sort.fuzzySearch("PatientLastName", self.searchENTRY.get(), "str")
-            self.updateQueue(newlist)
+            if newlist is not None:
+                self.updateQueue(newlist)
+            else:
+                messagebox.showerror(message="Invalid Input!\nNo Patient Found")
 
         elif self.var3.get():
-            # Last Name
+            # PatientDateOfBirth
             newlist = sort.fuzzySearch("PatientDateOfBirth", self.searchENTRY.get(), "date")
-            self.updateQueue(newlist)
+            if newlist is not None:
+                self.updateQueue(newlist)
+            else:
+                messagebox.showerror(title='No Patient Found',message="Invalid Input!\nuse'mmddyyyy' or 'mm/dd/yyyy'")
 
         elif self.var4.get():
             # MRN
-            newlist = sort.fuzzySearch("PatientMRN", self.searchENTRY, "int")
-            self.updateQueue(newlist)
+            newlist = sort.fuzzySearch("PatientMRN", self.searchENTRY.get(), "int")
+            if newlist is not None:
+                self.updateQueue(newlist)
+            else:
+                messagebox.showerror(title='No Patient Found',message="Invalid Input!\nEnter Integer")
+        elif self.var5.get():
+            # Gender
+            newlist = sort.fuzzySearch("PatientGender", self.searchENTRY.get()[:1], "str")
+            if newlist is not None:
+                self.updateQueue(newlist)
+            else:
+                messagebox.showerror(title='No Patient Found',message="Invalid Input!\n")
     def resetQueueToDefault(self):
         pass
 
@@ -613,7 +639,6 @@ class mainMenu(ICA_super.icaSCREENS):
 
             self.lastVisitCombo=Combobox(self.root, values=lastVisitSearchOptions)
             self.lastVisitCombo.place(x=110, y=385, width = 100)
-
 
 
             self.advancedSearch = 1
@@ -728,9 +753,7 @@ class mainMenu(ICA_super.icaSCREENS):
     def determineFilter(self,filter): # determines if filter is Ascending or descending
 
         if filter.get() == "Ascending":
-
             return True
-
         return False
 
     def filterQueue(self):
@@ -960,12 +983,12 @@ class mainMenu(ICA_super.icaSCREENS):
             currentY = 30
             if not self.user.permissions == None:
                 if self.user.permissions.viewSelfAnalytics == 1:
-                    self.myAnalytics = Button(self.root, text = "My Analytics", justify = LEFT,anchor=W)
+                    self.myAnalytics = Button(self.root, text = "My Analytics", justify = LEFT,anchor=W, command=lambda:self.drawDiagrams("I"))
                     self.myAnalytics.place(x=self.analyticTABX,y=currentY,height=30,width=110)
                     currentY = currentY + 30
 
                 if self.user.permissions.viewSystemAnalytics == 1:
-                    self.systemAnalytics = Button(self.root, text = "System Analytics", justify = LEFT,anchor=W)
+                    self.systemAnalytics = Button(self.root, text = "Group Analytics", justify = LEFT,anchor=W, command=lambda:self.drawDiagrams("G"))
                     self.systemAnalytics.place(x=self.analyticTABX,y=currentY,height=30,width=110)
                     currentY = currentY + 30
             
@@ -978,6 +1001,12 @@ class mainMenu(ICA_super.icaSCREENS):
                 if self.user.permissions.viewSystemAnalytics == 1:
                     self.systemAnalytics.destroy()
             self.analytics = 0
+    def drawDiagrams(self, type):
+        if type is 'I':
+            dataGraphics.ind(self.user.userId)
+        else:
+            dataGraphics.performanceMeasurement()
+
 
     def togHistoryTab(self):
         if self.history == 0:
@@ -1491,13 +1520,13 @@ class mainMenu(ICA_super.icaSCREENS):
         self.summary = 1
 
         self.infoBUTTON = Button(self.root, text = "Summary", command=lambda: self.showSummary(patient))
-        self.infoBUTTON.place(x = 575, y = 100, width = 75, height = 37.5)
+        self.infoBUTTON.place(x = 574, y = 100, width = 100, height = 37.5)
 
         self.medBUTTON = Button(self.root, text = "Medical\nHistory", command=lambda: self.showHistory(patient))
-        self.medBUTTON.place(x = 650, y = 100, width = 75, height = 37.5)
+        self.medBUTTON.place(x = 674, y = 100, width = 100, height = 37.5)
 
         self.contactBUTTON = Button(self.root, text = "Contact", command=lambda: self.showContact(patient))
-        self.contactBUTTON.place(x = 725, y = 100, width = 75, height = 37.5)
+        self.contactBUTTON.place(x = 774, y = 100, width = 100, height = 37.5)
 
         patientData = patient.getSummary()
         
@@ -1515,13 +1544,13 @@ class mainMenu(ICA_super.icaSCREENS):
         self.pDOB.place(x = 590, y = 205)
 
         self.pSex = Label(self.root, text = "Sex: " +  patientData[4])
-        self.pSex.place(x = 590, y = 235)
+        self.pSex.place(x = 590, y = 265)
 
         self.pAge = Label(self.root, text = "Age: " +  patientData[5])
-        self.pAge.place(x = 650, y = 235)
+        self.pAge.place(x = 590, y = 235)
         
         self.pRace = Label(self.root, text = "Race: " +  patientData[6])
-        self.pRace.place(x = 590, y = 265)
+        self.pRace.place(x = 590, y = 295)
 
         self.pPrefix = Label(self.root, text = "Prefix: " +  patientData[7])
         self.pPrefix.place(x = 730, y = 175)
@@ -1529,10 +1558,10 @@ class mainMenu(ICA_super.icaSCREENS):
 
 
         self.expandBUTTON = Button(self.root,text="Expand Patient",command=lambda:self.xPand(patient))
-        self.expandBUTTON.place(x=700,y=365, width = 90, height = 30)
+        self.expandBUTTON.place(x=750,y=365, width = 120, height = 30)
 
         self.outreachBUTTON = Button(self.root,text="Outreach", command=lambda: self.toggleOutReach(patient))
-        self.outreachBUTTON.place(x=585,y=365, width = 90, height = 30)
+        self.outreachBUTTON.place(x=585,y=365, width = 120, height = 30)
 
     def showHistory(self, patient):
         self.clearPatient()
@@ -1542,20 +1571,20 @@ class mainMenu(ICA_super.icaSCREENS):
         self.phistory = 1
 
         self.infoBUTTON = Button(self.root, text = "Summary", command=lambda: self.showSummary(patient))
-        self.infoBUTTON.place(x = 575, y = 100, width = 75, height = 37.5)
+        self.infoBUTTON.place(x = 575, y = 100, width = 100, height = 37.5)
 
         self.medBUTTON = Button(self.root, text = "Medical\nHistory", command=lambda: self.showHistory(patient))
-        self.medBUTTON.place(x = 650, y = 100, width = 75, height = 37.5)
+        self.medBUTTON.place(x = 675, y = 100, width = 100, height = 37.5)
 
         self.contactBUTTON = Button(self.root, text = "Contact", command=lambda: self.showContact(patient))
-        self.contactBUTTON.place(x = 725, y = 100, width = 75, height = 37.5)
+        self.contactBUTTON.place(x = 775, y = 100, width = 100, height = 37.5)
 
         patientData = patient.getHistory()
 
         self.pHistoryList = []
 
         self.pmyframe=Frame(self.root,relief=GROOVE,width=50,height=100,bd=1)
-        self.pmyframe.place(x=575,y=165,height=170,width=222.5)
+        self.pmyframe.place(x=575,y=165,height=170,width=300)
         self.pcanvas=Canvas(self.pmyframe)
         self.pframe=Frame(self.pcanvas)
         self.pmyscrollbar=Scrollbar(self.pmyframe, orient="vertical",command=self.pcanvas.yview)
@@ -1596,13 +1625,13 @@ class mainMenu(ICA_super.icaSCREENS):
         #self.pLastVisit.place(x = 580, y = 340)
         
         self.expandBUTTON = Button(self.root,text="Expand Patient",command=lambda:self.xPand(patient))
-        self.expandBUTTON.place(x=700,y=365, width = 90, height = 30)
+        self.expandBUTTON.place(x=750,y=365, width = 120, height = 30)
 
         self.outreachBUTTON = Button(self.root,text="Outreach", command=lambda: self.toggleOutReach(patient))
-        self.outreachBUTTON.place(x=585,y=365, width = 90, height = 30)
+        self.outreachBUTTON.place(x=585,y=365, width = 120, height = 30)
 
     def pmyfunction(self,event):
-            self.pcanvas.configure(scrollregion=self.pcanvas.bbox("all"),width=222.5,height=170)
+            self.pcanvas.configure(scrollregion=self.pcanvas.bbox("all"),width=300,height=170)
 
 
     def pVaccine(self, vList):
@@ -1627,13 +1656,13 @@ class mainMenu(ICA_super.icaSCREENS):
         self.contact = 1
 
         self.infoBUTTON = Button(self.root, text = "Summary", command=lambda: self.showSummary(patient))
-        self.infoBUTTON.place(x = 575, y = 100, width = 75, height = 37.5)
+        self.infoBUTTON.place(x = 575, y = 100, width = 100, height = 37.5)
 
         self.medBUTTON = Button(self.root, text = "Medical\nHistory", command=lambda: self.showHistory(patient))
-        self.medBUTTON.place(x = 650, y = 100, width = 75, height = 37.5)
+        self.medBUTTON.place(x = 675, y = 100, width = 100, height = 37.5)
 
         self.contactBUTTON = Button(self.root, text = "Contact", command=lambda: self.showContact(patient))
-        self.contactBUTTON.place(x = 725, y = 100, width = 75, height = 37.5)
+        self.contactBUTTON.place(x = 775, y = 100, width = 100, height = 37.5)
 
         patientData = self.SQL.getDemographics(patient.patientID)
         patientData1 = patientData.contact
@@ -1669,10 +1698,10 @@ class mainMenu(ICA_super.icaSCREENS):
         self.pContactPreference.place(x = 580, y = 265)
         
         self.expandBUTTON = Button(self.root,text="Expand Patient",command=lambda:self.xPand(patient))
-        self.expandBUTTON.place(x=700,y=365, width = 90, height = 30)
+        self.expandBUTTON.place(x=750,y=365, width = 120, height = 30)
 
         self.outreachBUTTON = Button(self.root,text="Outreach", command=lambda: self.toggleOutReach(patient))
-        self.outreachBUTTON.place(x=585,y=365, width = 90, height = 30)  
+        self.outreachBUTTON.place(x=585,y=365, width = 120, height = 30)
         
 
     def clearPatient(self):

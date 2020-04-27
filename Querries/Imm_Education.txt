@@ -1,0 +1,7 @@
+select
+i.ImmDisplayDescription,
+s.DateofService
+from
+ServiceDetails s
+inner join Immunization i on s.ImmunizationId = i.ImmunizationID
+where s.PatientId = ?
