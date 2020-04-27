@@ -19,6 +19,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         self.thisPatient = Patient
         self.demoGraphics = self.SQL.getDemographics(Patient.patientID)
         self.ContactNotes = self.SQL.getContactNotes(Patient.patientID)
+        self.InsuranceTab = self.SQL.getInsuranceTab(Patient.patientID)
         #print(self.demoGraphics.address)
         #print(self.demoGraphics.demographics)
         #print(self.demoGraphics.contact)
@@ -541,11 +542,11 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
         generalFont = ('consolas', 12)  # general font used for the labels
 
-        insuranceTabLabels = ["Insurance Name ", "Active ", "Last Visit Date", "Provider First Name", "Provider Last Name",
+        insuranceTabLabels = ["Provider First Name ", "Last Visit Date ", "Insurance Active", "Insurance Name", "Provider Last Name",
                                 "Provider NPI"]
 
-        staticInfo = self.demoGraphics.guarantor
-        self.checkNone(staticInfo)
+        staticInsuranceInfo = self.InsuranceTab
+        self.checkNone(staticInsuranceInfo)
 
         self.insuranceLabels = {}  # contains labels that are connected to label text/ginfo
 
@@ -554,7 +555,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         for index in range(len(insuranceTabLabels)):  # set the page up
 
             formatText = insuranceTabLabels[index]  # guarantor labels
-            ourText = staticInfo[index]  # database values
+            ourText = staticInsuranceInfo[index]  # database values
 
             newLabel = Label(self.demoOtherFrame, text=formatText, font=generalFont, bg='light blue')
             newLabel.place(x=xPos, y=yPos)
