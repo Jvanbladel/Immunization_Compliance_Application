@@ -1,8 +1,8 @@
 select
-i.InsuranceName,
-i.ActiveInd,
-r.PatientLastVisitDate,
 m.ProviderFirstName,
+r.PatientLastVisitDate,
+i.ActiveInd,
+i.InsuranceName,
 m.ProviderLastName,
 m.ProviderNPI
 From
