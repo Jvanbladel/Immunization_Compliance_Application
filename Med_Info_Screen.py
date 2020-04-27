@@ -435,15 +435,18 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         contactNotesLabel.place(x=550,y=5)
         contactNotesLabel.update()
 
-        formattedString = ''
+        formattedString = ""
 
         for newline in self.ContactNotes:
             formattedString += str(newline)
 
+
+        formattedString = formattedString.strip("[]\'\"")
+
+
         contactNotesText = Text(self.contactINFO,width=35,height=12,padx=5)
         contactNotesText.place(x=460,y=contactNotesLabel.winfo_y() + contactNotesLabel.winfo_height() + 5)
         contactNotesText.insert('end', formattedString)
-        contactNotesText.insert('end', str(self.ContactNotes[0][0]))
         contactNotesText.configure(state=DISABLED)
         contactNotesText.update()
 
@@ -592,7 +595,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
                                                                    "Administered", "Service Date")
 
         self.formatLabel = Label(self.servicePage, text=formatString, font=('Consolas', 11)
-                            , relief="raised",width=800,height=2)
+                            , relief="raised",width=800,height=2,bg="light blue")
         self.formatLabel.pack()
         self.formatLabel.update()
 
@@ -603,7 +606,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         self.newFrame = Frame(self.servicePage, relief=GROOVE, bd=1)
         self.newFrame.place(x=0, width=800, y=40, height=660)
 
-        self.canvas = Canvas(self.newFrame)
+        self.canvas = Canvas(self.newFrame,bg="light blue")
         self.newnewFrame = Frame(self.canvas)
         self.myScrollBar = Scrollbar(self.newFrame, orient="vertical", command=self.canvas.yview)
         self.canvas.configure(yscrollcommand=self.myScrollBar.set)
@@ -633,6 +636,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
             self.putFormat()
             self.formatLabel.pack()
             self.myScrollBar.pack(side="right", fill="y")
+
 
 
         for index in range(len(serviceHistory)): # This is where we would queue the database for information. Probably modify to only do once
@@ -696,7 +700,13 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
         #does basic setup for the service screen
         self.hideServiceHistory()
-        self.formatLabel.configure(text="Showing details for Service #" + patientINFO[0],font=('consolas',12))
+
+        # resets the header
+        self.formatLabel.destroy()
+        self.formatLabel = Label(self.servicePage,text="Showing details for Service #" + patientINFO[0],font=('Consolas', 11)
+              , relief="raised", width=800, height=2)
+        self.formatLabel.pack()
+
         self.myScrollBar.pack_forget()
         self.canvas.yview_moveto(0)
 
@@ -706,6 +716,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         generalBG = "light blue"
         theFrame = self.newnewFrame
         theFrame.configure(width=800,height=700)
+        theFrame.update()
 
 
 
@@ -720,22 +731,24 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         increment = 20
         textX = 400
 
+        '''
         serviceDetailsHeader = Label(theFrame,text="Service Details",width= theFrame.winfo_width(),height = 1,bg="RoyalBlue3",font=generalFont,fg="white",anchor=W)
         serviceDetailsHeader.place(x=0,y=0)
         serviceDetailsHeader
         serviceDetailsHeader.update()
+        '''
+
+        serviceFrame = LabelFrame(theFrame,text = "Service Details",width=790,height=600,bg="light blue",
+                                       highlightcolor="white",highlightthickness=2,font=('consolas',12),bd=0,labelanchor="n")
+        serviceFrame.place(x=5,y=5)
+        serviceFrame.update()
 
 
-        yPos = serviceDetailsHeader.winfo_height() + serviceDetailsHeader.winfo_y() + increment
-
-
-        serviceDateLabel = Label(theFrame,text="Date of Service",bg=generalBG,font=generalFont)
+        serviceDateLabel = Label(serviceFrame,text="Date of Service",bg=generalBG,font=generalFont)
         serviceDateLabel.place(x=xPos,y=yPos)
         serviceDateLabel.update()
 
-
-
-        serviceDateText = Text(theFrame,width=len(DOS),height = 1,font=generalFont)
+        serviceDateText = Text(serviceFrame,width=len(DOS),height = 1,font=generalFont)
         serviceDateText.place(x=textX,y=yPos)
         serviceDateText.insert('end',DOS)
         serviceDateText.configure(state=DISABLED)
@@ -743,7 +756,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         yPos = serviceDateLabel.winfo_height() + serviceDateLabel.winfo_y() + increment
 
 
-        immunizationLabel = Label(theFrame,text="Immunizations Received",bg=generalBG,font=generalFont)
+        immunizationLabel = Label(serviceFrame,text="Immunizations Received",bg=generalBG,font=generalFont)
         immunizationLabel.place(x=xPos,y=yPos)
         immunizationLabel.winfo_toplevel()
         immunizationLabel.update()
@@ -757,7 +770,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
                                         "Influenza Vaccine quad split virus Prev Free ID Use"]
 
 
-        immunizationsReceived = Combobox(theFrame,values=immuReceived)
+        immunizationsReceived = Combobox(serviceFrame,values=immuReceived)
         immunizationsReceived.set(immuReceived[0]) # is set to the first value of the list
 
         immunizationsReceived.place(x=immuX,y=yPos)
@@ -766,7 +779,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
 
         immuXtension = immunizationsReceived.winfo_width() + immunizationsReceived.winfo_x() + 10
-        extendImmunizationButton = Button(theFrame,text="Information on \nSelected Immunization",
+        extendImmunizationButton = Button(serviceFrame,text="Information on \nSelected Immunization",
                                         command= lambda : self.immunizationINFO(immunizationsReceived.get()))
         extendImmunizationButton.place(x=immuXtension,y=yPos)
 
@@ -774,14 +787,14 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         yPos = immunizationLabel.winfo_y() + immunizationLabel.winfo_height() + increment
 
 
-        completionStatusLabel = Label(theFrame,text="Completion Status",bg=generalBG,font=generalFont)
+        completionStatusLabel = Label(serviceFrame,text="Completion Status",bg=generalBG,font=generalFont)
         completionStatusLabel.place(x=xPos,y=yPos)
         completionStatusLabel.update()
 
 
         completionX = completionStatusLabel.winfo_x() + completionStatusLabel.winfo_width() + 5
 
-        completionStatusText = Text(theFrame,width=15,font=generalFont,height=1)
+        completionStatusText = Text(serviceFrame,width=15,font=generalFont,height=1)
         completionStatusText.place(x=completionX,y=yPos)
         completionStatusText.configure(state=DISABLED)
 
@@ -789,27 +802,27 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         yPos = completionStatusLabel.winfo_y() + completionStatusLabel.winfo_height() + increment
 
 
-        informationSourceLabel = Label(theFrame,text="Information Source",bg=generalBG,font=generalFont)
+        informationSourceLabel = Label(serviceFrame,text="Information Source",bg=generalBG,font=generalFont)
         informationSourceLabel.place(x=xPos,y=yPos)
         informationSourceLabel.update()
 
         informationX = informationSourceLabel.winfo_width() + informationSourceLabel.winfo_x() + 5
 
-        informationSourceText = Text(theFrame,width=15,font=generalFont,height=1)
+        informationSourceText = Text(serviceFrame,width=15,font=generalFont,height=1)
         informationSourceText.place(x=informationX,y=yPos)
         informationSourceText.configure(state=DISABLED)
 
 
         yPos = informationSourceLabel.winfo_y() + informationSourceLabel.winfo_height() + increment
 
-        sourceSystemLabel = Label(theFrame,text="Source System",bg=generalBG,font=generalFont)
+        sourceSystemLabel = Label(serviceFrame,text="Source System",bg=generalBG,font=generalFont)
         sourceSystemLabel.place(x=xPos,y=yPos)
         sourceSystemLabel.update()
 
         sourceX = sourceSystemLabel.winfo_x() + sourceSystemLabel.winfo_width() + 5
 
 
-        sourceSystemText = Text(theFrame,width=15,font=generalFont,height=1)
+        sourceSystemText = Text(serviceFrame,width=15,font=generalFont,height=1)
         sourceSystemText.place(x=sourceX,y=yPos)
         sourceSystemText.configure(state=DISABLED)
 
@@ -818,30 +831,32 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
         yPos = sourceSystemLabel.winfo_y() + sourceSystemLabel.winfo_height() + increment
 
-
-        reactionsHeader = Label(theFrame, text="Reactions", width=theFrame.winfo_width(), height=1,
+        '''
+        reactionsHeader = Label(serviceFrame, text="Reactions", width=theFrame.winfo_width(), height=1,
                                      bg="RoyalBlue3", font=generalFont, fg="white", anchor=W)
 
         reactionsHeader.place(x=0,y=yPos + 30)
         reactionsHeader.update()
-
+    
         yPos = reactionsHeader.winfo_height() + reactionsHeader.winfo_y() + increment
+        '''
 
-        allergicReactionsLabel = Label(theFrame,text="Allergic Reactions",bg=generalBG,font=generalFont)
+
+        allergicReactionsLabel = Label(serviceFrame,text="Allergic Reactions",bg=generalBG,font=generalFont)
         allergicReactionsLabel.place(x=xPos,y=yPos)
         allergicReactionsLabel.update()
 
 
 
-        allergicReactionsText = Text(theFrame,width=30,height=3)
+        allergicReactionsText = Text(serviceFrame,width=30,height=3)
         allergicReactionsText.place(x=textX,y=yPos)
         allergicReactionsText.configure(state=DISABLED)
         allergicReactionsText.update()
 
         yPos = allergicReactionsText.winfo_y() + allergicReactionsText.winfo_height() + increment
 
-
-        serviceProviderHeader = Label(theFrame,text="Service Provider",bg="RoyalBlue3",fg="white",
+        '''
+        serviceProviderHeader = Label(serviceFrame,text="Service Provider",bg="RoyalBlue3",fg="white",
                                       font=generalFont,anchor=W,
                                       width=theFrame.winfo_width(),height=1)
         serviceProviderHeader.place(x=0,y=yPos)
@@ -849,22 +864,24 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
 
         yPos = serviceProviderHeader.winfo_height() + serviceProviderHeader.winfo_y() + increment
+        '''
 
-        serviceProviderLabel = Label(theFrame,text="Provider Name",bg=generalBG,font=generalFont)
+
+        serviceProviderLabel = Label(serviceFrame,text="Provider Name",bg=generalBG,font=generalFont)
         serviceProviderLabel.place(x=xPos,y=yPos)
         serviceDateLabel.update()
 
         providerX = serviceDateLabel.winfo_x() + serviceDateLabel.winfo_width() + 10
 
 
-        serviceProviderText = Text(theFrame,width=20,height=1,font=generalFont)
+        serviceProviderText = Text(serviceFrame,width=20,height=1,font=generalFont)
         serviceProviderText.place(x=providerX,y=yPos)
         serviceProviderText.update()
 
-        yPos += (serviceProviderText.winfo_height() + increment + 50)
+        yPos += (serviceProviderText.winfo_height() + increment + 25)
 
 
-        returnButton = Button(theFrame,text="Back to Service History",bg="RoyalBlue3",fg="white",font=generalFont,
+        returnButton = Button(serviceFrame,text="Back to Service History",bg="RoyalBlue3",fg="white",font=generalFont,
                               command=self.displayServiceHistory)
         returnButton.place(x=xPos,y=yPos)
 
@@ -1076,7 +1093,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         outReachNotesX = outReachNotesLabel.winfo_x()
         outReachNotesY = outReachNotesLabel.winfo_y() + 8
 
-        outReachNotesText = Text(outreachDetailsFrame,width=30,height=8)
+        outReachNotesText = Text(outreachDetailsFrame,width=32,height=8)
         outReachNotesText.place(x=outReachNotesX-50,y=outReachNotesY)
         outReachNotesText.update()
         self.outreachWidgets.append(outReachNotesText)
@@ -1153,15 +1170,23 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
         for widget in self.outreachWidgets: # will retrieve all data and put into new list
 
-            newList.append(widget.get("1.0",END)) # obtains all the text from widget
+
+            if type(widget) == type(Text()):
+
+                currentString = widget.get("1.0",END)
+                print(currentString)
+                newList.append(currentString) # obtains all the text from widget
+            else:
+                currentString = widget.get()
+                newList.append(currentString)
 
 
         # script to update database goes here
+        # newList will contain all the information to append
 
     def showAttempts(self):
         pass
         #queue the DB here
-
 
         attempts = []
 
@@ -1284,10 +1309,16 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
         self.headlineExists()
 
+        patientGender = str(self.thisPatient.sex)
+        patientAge = str(self.thisPatient.age)
+        patientDOB = str(self.thisPatient.dob)
+        patientMRN = str(self.thisPatient.MRN)
+
+
         # format; FULL Name, Gender, Age <years> DOB, MRN
-        self.patientLabelText = '{0:<30}{1:<17}{2:<10}{3:<15}{4:<10}'.format("PATIENT:" + self.patientFULL,
-                                                                             "GENDER: Female", "AGE:50 ",
-                                                                             "DOB:3/21/2013", "MRN:30")
+        self.patientLabelText = '{0:<30}{1:<14}{2:<8}{3:<17}{4:<10}'.format("PATIENT:" + self.patientFULL,
+                                                                             "GENDER:" + patientGender, "AGE:" + patientAge,
+                                                                             "DOB:" + patientDOB, "MRN:" + patientMRN)
 
         self.patientLabel = Label(self.headlineFrame, text=self.patientLabelText, font=('Consolas', 14),
                                   bg="RoyalBlue3", fg="white")

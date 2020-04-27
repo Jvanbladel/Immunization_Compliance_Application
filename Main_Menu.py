@@ -885,7 +885,7 @@ class mainMenu(ICA_super.icaSCREENS):
             self.pdf = Button(self.root, text = ".PDF", justify = LEFT,anchor=W)
             self.pdf.place(x=100,y=30,height=30,width=50)
 
-            self.txt = Button(self.root, text = ".TXT", justify = LEFT,anchor=W)
+            self.txt = Button(self.root, text = ".TXT", justify = LEFT,anchor=W,command=self.exportTXT)
             self.txt.place(x=100,y=60,height=30,width=50)
 
             self.cvs = Button(self.root, text = ".CVS", justify = LEFT,anchor=W)
@@ -1887,3 +1887,59 @@ class mainMenu(ICA_super.icaSCREENS):
             self.root.after_cancel(self.clockUpdater) # prevents exception error on logout
             self.clockUpdater = None
             self.swapTO(Login_Screen.loginScreen,None)
+
+
+
+    def exportTXT(self): # export the data to a TXT file
+
+        newFILE = open("ICAexport.txt", "w+")
+
+        # modify to whatever is holding the patients in the frame
+        for patient in self.queue:
+            appendString = "Patient#" + str(patient.patientID) + " ["
+
+            appendString += str(patient.patientID) + ","
+            appendString += str(patient.MRN) + ","
+            appendString += str(patient.lName) + ","
+            appendString += str(patient.fName) + ","
+            appendString += str(patient.mInitial) + ","
+            appendString += str(patient.dob) + ","
+            appendString += str(patient.sex) + ","
+            appendString += str(patient.patientDead) + ","
+            appendString += str(patient.dueDate) + ","
+            appendString += str(patient.race) + ","
+            appendString += str(patient.ethnicity) + ","
+            appendString += str(patient.age) + ","
+            appendString += "]\n"
+
+            newFILE.write(appendString)
+
+        newFILE.close()
+
+
+    def exportJSON(self): # export the data to a JSON file
+
+        newFILE = open("ICAcsv.csv","w+")
+
+        # modify to what ever is holding the list of patients currently in the frame
+        for patient in self.frame:
+
+            appendString = ""
+
+            appendString += str(patient.patientID) + ","
+            appendString += str(patient.MRN) + ","
+            appendString += str(patient.lName) + ","
+            appendString += str(patient.fName) + ","
+            appendString += str(patient.mInitial) + ","
+            appendString += str(patient.dob) + ","
+            appendString += str(patient.sex) + ","
+            appendString += str(patient.patientDead) + ","
+            appendString += str(patient.dueDate) + ","
+            appendString += str(patient.race) + ","
+            appendString += str(patient.ethnicity) + ","
+            appendString += str(patient.age) + ","
+
+
+            newFILE.write(appendString)
+
+        newFILE.close()
