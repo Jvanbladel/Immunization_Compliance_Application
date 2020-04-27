@@ -272,7 +272,7 @@ class SQLConnection():
         sql = self.loadQuerry("get_contact_notes_id")
         data = pd.read_sql(sql, self.conn)
         data = data.values.tolist()[0][0]
-        print(data)
+        #print(data)
         
         sql = self.loadQuerry("update_contact_notes")
 
@@ -332,9 +332,38 @@ class SQLConnection():
         else:
             return data
 
+    def addOutreach(self, outreach):
+        if self.checkConnection() == 0:
+            return
+        sql = self.loadQuerry("get_outreach_id")
+        data1 = pd.read_sql(sql, self.conn)
+        data1 = data1.values.tolist()[0][0]
+        #print(data)
+
+        sql = self.loadQuerry("get_outreach_attempt_number")
+        data2 = pd.read_sql(sql, self.conn,params={outreach[5]})
+        data2 = data2.values.tolist()[0][0]
+        
+        sql = self.loadQuerry("add_outreach")
+
+        params=(data1,                       #OutreachDetailsId
+                datetime.datetime.now(),     #OutreachDetailsCreatedDtTm
+                outreach[0],                 #OutreachDetailsCreatedPrsnlId
+                datetime.datetime.now(),     #OutreachDetailsDate
+                outreach[1],                 #Notetype
+                outreach[2],                 #OutreachDetailsMethod
+                outreach[3],                 #OutreachDetailsOutcome
+                outreach[4],                 #OutreachDetailsNotes
+                data2,                       #OutreachDetailsAttemptNumber
+                outreach[5]                  #OutreachDetailsPatientId
+            )
+
+        self.conn.execute(sql,params)
+        self.conn.commit()
+
 def main():
     SQL = SQLConnection()
-    SQL.addContactNotes(["Test", 2])
+    #SQL.addContactNotes(["Test", 2])
     SQL.closeConnection()
 if __name__ == "__main__":
     main()

@@ -1,0 +1,6 @@
+Select
+    (max(Outreach_Details.OutreachDetailsAttemptNumber) + 1) as max_attempts
+From
+    Outreach_Details
+Where
+    Outreach_Details.OutreachDetailsPatientId = ?

@@ -1,0 +1,2 @@
+INSERT INTO Outreach_Details(Outreach_Details.OutreachDetailsId, Outreach_Details.OutreachDetailsCreatedDtTm, Outreach_Details.OutreachDetailsCreatedPrsnlId, Outreach_Details.OutreachDetailsDate, Outreach_Details.Notetype, Outreach_Details.OutreachDetailsMethod, Outreach_Details.OutreachDetailsOutcome, Outreach_Details.OutreachDetailsNotes, Outreach_Details.OutreachDetailsAttemptNumber, Outreach_Details.OutreachDetailsPatientId)
+VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)

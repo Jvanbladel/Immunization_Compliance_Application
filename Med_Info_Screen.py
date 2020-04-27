@@ -11,12 +11,13 @@ import webbrowser
 class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
 
-    def __init__(self, window, Patient):
+    def __init__(self, window, Patient, user):
         super().__init__(window)
         self.root.geometry("850x730")
         self.bindKey("<Escape>",self.closeWindow)
 
         self.thisPatient = Patient
+        self.user = user
         self.demoGraphics = self.SQL.getDemographics(Patient.patientID)
         self.ContactNotes = self.SQL.getContactNotes(Patient.patientID)
         self.InsuranceTab = self.SQL.getInsuranceTab(Patient.patientID)
@@ -166,8 +167,8 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
         serviceHistory = serviceHistory.groupby(['ImmDisplayDescription'])['PatientLastVisitDate'].apply(', '.join)
         datesAdministered = serviceHistory.tolist()
-        print("169")
-        print(datesAdministered)
+        #print("169")
+        #print(datesAdministered)
         immunizationGroups = serviceHistory.index
 
         #print(immunizationGroups)
@@ -448,18 +449,18 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         print(self.ContactNotes)
         for newline in self.ContactNotes:
             formattedString += str(newline)'''
-
         contactNotesText = Text(self.contactINFO,width=35,height=12,padx=5)
+        #contactNotesText.configure(state=DISABLED)
         contactNotesText.place(x=460,y=contactNotesLabel.winfo_y() + contactNotesLabel.winfo_height() + 5)
         #contactNotesText.insert('end', formattedString)
         contactNotesText.insert('end', str(self.ContactNotes[0][0]))
-        contactNotesText.configure(state=DISABLED)
+        #contactNotesText.configure(state=DISABLED)
         contactNotesText.update()
 
         updateButtonX = contactNotesLabel.winfo_x()
         updateButtonY = contactNotesText.winfo_y() + contactNotesText.winfo_height() + 5
 
-        updateButton = Button(self.contactINFO, text = "Update Contact Notes", font=('consolas' ,10))
+        updateButton = Button(self.contactINFO, text = "Update Contact Notes", font=('consolas' ,10), command=lambda : self.updateContactNotes(contactNotesText.get("1.0",END), self.thisPatient.patientID))
         updateButton.place(x=updateButtonX, y=updateButtonY)
 
 
@@ -935,7 +936,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         self.checkNone(self.OutreachDetails)
         staticInformation = self.OutreachDetails[0][:2]
         staticInformation.extend(self.OutreachDetails[0][4:8])
-        #print(staticInformation)
+        self.checkNone(staticInformation)
         patientLabels = []
         patientText = []
         self.outreachWidgets = []
@@ -1167,9 +1168,17 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
         for widget in self.outreachWidgets: # will retrieve all data and put into new list
 
-            newList.append(widget.get("1.0",END)) # obtains all the text from widget
+            if type(widget) == type(Text()):
 
+                currentString = widget.get("1.0",END)
+                print(currentString)
+                newList.append(currentString) # obtains all the text from widget
+            else:
+                currentString = widget.get()
+                newList.append(currentString)
 
+        outreachList = [self.user.userId, "OutreachDetails", newList[1], newList[2], newList[4], self.thisPatient.patientID]
+        self.SQL.addOutreach(outreachList)
         # script to update database goes here
 
     def showAttempts(self):
@@ -1377,3 +1386,6 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
     def openWebPage(self,url): # will open the web browser from the buttom
 
         webbrowser.open(url,new=0,autoraise=True)
+
+    def updateContactNotes(self, notes, pid):
+        self.SQL.addContactNotes([notes, pid])
