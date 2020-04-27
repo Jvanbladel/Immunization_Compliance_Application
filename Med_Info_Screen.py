@@ -303,7 +303,6 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
             addedLabels.append(newLabel)
 
 
-
         addedLabels[0].place(x=5,y=5)
 
         addedLabels[1].place(x=5,y=35)
@@ -935,12 +934,16 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
                                             highlightcolor="white",highlightthickness=2,bd=0)
         contactFrame.place(x=5,y=5)
 
-        labels = ["Home Phone","Mobile Phone","Work Phone","Email Address","Preferred Contact","Interpreter",
+        labels = ["Home Phone","Mobile Phone","Preferred Contact","Interpreter",
                   "Guarantor Name","Guarantor Relationship"]
 
         # Queue for textboxes here
-        staticInformation = ["123-456-789","213-432-9789","321-897-1231","c_remmert@u.pacific.edu","Email", "None", "Angela Ayala","Classmate"]
-
+        if(self.OutreachDetails is None):
+            self.outreachDetails=[None,None,None,None,None,None,None,None]
+        self.checkNone(self.OutreachDetails)
+        staticInformation = self.OutreachDetails[0][:2]
+        staticInformation.extend(self.OutreachDetails[0][4:8])
+        print(staticInformation)
         patientLabels = []
         patientText = []
         self.outreachWidgets = []
@@ -950,7 +953,8 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
             #create new label for the frame
             newLabel = Label(contactFrame,text = labels[index],bg="light blue", font = ('consolas',12))
 
-            newText = Text(contactFrame,width=len(staticInformation[index]),height=1)
+            newText = Text(contactFrame,width=20,height=1)
+            print(staticInformation[index])
             newText.insert('end',staticInformation[index])
             newText.configure(state=DISABLED)
 
@@ -967,7 +971,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         # will refactor into a for loop later
         patientLabels[index].place(x=startingX,y=startingY)
         patientLabels[index].update()
-        nextX = patientLabels[index].winfo_x() + patientLabels[index].winfo_width() + 10
+        nextX = patientLabels[index].winfo_x() + patientLabels[index].winfo_width() + 3
 
         patientText[index].place(x=nextX,y=startingY)
         startingY = patientLabels[index].winfo_y() + patientLabels[index].winfo_height() + 20
@@ -976,7 +980,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
         patientLabels[index].place(x=startingX, y=startingY)
         patientLabels[index].update()
-        nextX = patientLabels[index].winfo_x() + patientLabels[index].winfo_width() + 10
+        nextX = patientLabels[index].winfo_x() + patientLabels[index].winfo_width() + 3
 
         patientText[index].place(x=nextX, y=startingY)
         startingY = patientLabels[index].winfo_y() + patientLabels[index].winfo_height() + 20
@@ -988,7 +992,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
         patientText[index].place(x=nextX, y=startingY)
         startingY = 5
-        startingX = 250
+        startingX = 400
         index += 1
 
         patientLabels[index].place(x=startingX, y=startingY)
@@ -1018,7 +1022,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         startingX = 475
         index += 1
 
-        patientLabels[index].place(x=startingX, y=startingY)
+        '''patientLabels[index].place(x=startingX, y=startingY)
         patientLabels[index].update()
         nextX = patientLabels[index].winfo_x() + patientLabels[index].winfo_width() + 10
 
@@ -1032,7 +1036,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
         patientText[index].place(x=nextX, y=startingY)
         startingY = patientLabels[index].winfo_y() + patientLabels[index].winfo_height() + 20
-        index += 1
+        index += 1'''
 
         contactFrame.update()
         nextFrameY = contactFrame.winfo_y() + contactFrame.winfo_height() + 5
