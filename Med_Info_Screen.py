@@ -739,7 +739,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         serviceDetailsHeader.update()
         '''
 
-        serviceFrame = LabelFrame(theFrame,text = "Service Details",width=790,height=600,bg="light blue",
+        serviceFrame = LabelFrame(theFrame,text = "Service Details",width=830,height=610,bg="light blue",
                                        highlightcolor="white",highlightthickness=2,font=('consolas',12),bd=0,labelanchor="n")
         serviceFrame.place(x=5,y=5)
         serviceFrame.update()
@@ -1317,7 +1317,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
 
         # format; FULL Name, Gender, Age <years> DOB, MRN
-        self.patientLabelText = '{0:<30}{1:<14}{2:<8}{3:<17}{4:<10}'.format("PATIENT:" + self.patientFULL,
+        self.patientLabelText = '{0:<30}{1:<17}{2:<10}{3:<17}{4:<10}'.format("PATIENT:" + self.patientFULL,
                                                                              "GENDER:" + patientGender, "AGE:" + patientAge,
                                                                              "DOB:" + patientDOB, "MRN:" + patientMRN)
 
