@@ -1511,9 +1511,6 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         for newInfo in influenzaInformation:  # adds the immunization info for the next batch of immunizations we are storing
             self.switchURL[newInfo] = "https://www.cdc.gov/flu/prevent/quadrivalent.htm"
 
-
-
-
     def openWebPage(self,url): # will open the web browser from the buttom
 
         webbrowser.open(url,new=0,autoraise=True)
