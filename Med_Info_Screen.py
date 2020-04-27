@@ -6,6 +6,7 @@ from Patients import *
 from tkinter import ttk
 import ICA_super
 import SQLConnection
+import webbrowser
 
 class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
@@ -96,9 +97,11 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
     def showImmunizationHistory(self):
 
-        immunizationGroups = ["Polio", "DTap/Td","HIB", "MMR", "HepB","Varicella",
-                              "HepA","Pneumococcal","Infuenza","Meningococcal","Rotavirusz"]
 
+        self.generateImmunizationLinks() # generates the links needed for the immunizations
+
+
+        # setup for the page
         theFrame = self.immunizationHistory
         theFrame.update()
         theFrame.configure(bg="light blue")
@@ -111,35 +114,58 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         self.immunizationFrame.configure(bg="light blue")
         self.immunizationCanvas = Canvas(self.immunizationFrame)
         self.immunizationCanvas.configure(bg="light blue")
+        self.scrollableFrame = Frame(self.immunizationCanvas)
         self.immunizationScrollbar = Scrollbar(self.immunizationFrame,orient="vertical"
                                                ,command=self.immunizationCanvas.yview)
-        self.scrollableFrame = Frame(self.immunizationCanvas)
-
-        self.scrollableFrame.bind("<Configure>", lambda e: self.immunizationCanvas.configure(
-           scrollregion=self.immunizationCanvas.bbox("all"), width=500,height=500)
-        )
-
-        self.immunizationCanvas.create_window((0,0), window=self.scrollableFrame,anchor="nw")
         self.immunizationCanvas.configure(yscrollcommand=self.immunizationScrollbar.set)
 
-
-
-        header = Label(theFrame,text="List of immunizations we have on file for " + self.patientFULL,
-                       font=generalFont)
-        header.place(x=0,y=0)
-        header.update()
-
         # self.immunizationFrame.pack()
-        self.immunizationFrame.place(x=0, y=header.winfo_height(), width=800, height=800)
+        self.immunizationFrame.place(x=0, y=0, width=800, height=800)
         self.immunizationCanvas.pack(side="left", fill="both", expand=True)
         self.immunizationScrollbar.pack(side="right", fill="y")
         self.immunizationCanvas.update()
 
-        immunizationNames = ["DTap (Diphtheria, Tetanus, acellular Pertussis)",
-                             "HBV (Hepatitis B", "HIB HbOC (Haemophilus influenzae b)",
-                             "HBV (Hepatitis B", "HIB HbOC (Haemophilus influenzae b)",
-                             "HBV (Hepatitis B", "HIB HbOC (Haemophilus influenzae b)"]
+        self.immunizationCanvas.create_window((0, 0), window=self.scrollableFrame, anchor="nw")
 
+        self.scrollableFrame.bind("<Configure>", lambda e: self.immunizationCanvas.configure(
+           scrollregion=self.immunizationCanvas.bbox("all"), width=800,height=800)
+        )
+
+
+
+        # default box that is placed in every immunization history page
+        generalInformationFrame = LabelFrame(self.immunizationCanvas, text="General information about the flu vaccine"
+                                             , width=self.immunizationCanvas.winfo_width() - 10, height=100, bg="light blue",
+                                             highlightcolor="white", highlightthickness=2,
+                                             font=('consolas', 12), bd=0, labelanchor="n")
+
+        generalInformationFrame.place(x=5, y=5)
+        generalInformationFrame.update()
+
+        generalInformationButton = Button(generalInformationFrame, text="Why to get Vaccinated",
+                                          font=generalFont,
+                                          command=lambda: self.openWebPage(
+                                              "Why is it important to get annual flu vaccine?"))
+        generalInformationButton.place(x=100, y=20)
+
+        generalInformationButton2 = Button(generalInformationFrame,text= "Benefits of the vaccine",font=generalFont,
+                                           command=lambda: self.openWebPage(
+                                               "What are the benefits of flu vaccination"
+                                           ))
+        generalInformationButton2.place(x=400,y=20)
+        nextY = generalInformationFrame.winfo_height() + generalInformationFrame.winfo_y() + 5
+
+
+        # add more information to the generalInformation box here if needed
+
+
+        # Queue the database here for the list of the immunization names
+        immunizationGroups = ["Influenza Vaccine Prev Free 0.25 ml", "Influenza Vaccine quad split virus 0.5 ml",
+                              "Influenza Vaccine quad split virus Prev Free ID Use",
+                              "Influenza Vaccine quad split virus Prev Free 0.25 ml"]
+
+
+        # Queue the database for the list of dates administered here
         datesAdministered = [["8/9/2002", "7/16/1998", "10/10/1997", "8/15/1997", "6/17/1997"],
                              ["3/9/1998","8/15/1997","6/17/1997"],
                              ["7/16/1998","10/10/1997", "8/15/1997", "6/17/1997"],
@@ -148,14 +174,19 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
                              ["7/16/1998","10/10/1997", "8/15/1997", "6/17/1997"],
                              ["7/16/1998","10/10/1997", "8/15/1997", "6/17/1997"]]
 
-        nextY = 5
+
+        staticURL = "www.google.com"
+
+
+        #nextY = 5
         addedFrames = []
         canvasWidth = self.immunizationCanvas.winfo_width()
 
-        for index in range(len(immunizationNames)):
+        for index in range(len(immunizationGroups)):
 
-            newFrame = self.addImmunization(self.immunizationCanvas,nextY,canvasWidth,immunizationNames[index],
-                                 datesAdministered[index])
+            staticURL = self.switchURL[immunizationGroups[index]]
+            newFrame = self.addImmunization(self.immunizationCanvas,nextY,canvasWidth,immunizationGroups[index],
+                                 datesAdministered[index],staticURL)
             newFrame.update()
 
             addedFrames.append(newFrame)
@@ -163,14 +194,15 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
             nextY = newFrame.winfo_height() + newFrame.winfo_y() + 10
 
 
-    def addImmunization(self,theFrame,startingY,canvasWidth,immunizationName,datesAdministered):
+    def addImmunization(self,theFrame,startingY,canvasWidth,immunizationName,datesAdministered,url):
 
         generalFont = ('consolas',12)
         generalBG = "light blue"
 
-        newImmunization = LabelFrame(theFrame,bg="light blue",width=canvasWidth - 10,height=150,highlightcolor="white",highlightthickness=2,bd=0)
+        newImmunization = LabelFrame(theFrame,bg="light blue",width=canvasWidth - 10,height=150,
+                                     highlightcolor="white",highlightthickness=2,bd=0)
         newImmunization.place(x=5, y=startingY)
-        #newImmunization.pack()
+
 
         immunizationName = "ImmunizationName: " + immunizationName
 
@@ -194,7 +226,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         nextY = administeredLabel.winfo_height() + administeredLabel.winfo_y() + 30
 
 
-        learnMoreButton = Button(newImmunization, text="Learn more", font=generalFont)
+        learnMoreButton = Button(newImmunization, text="Learn more", font=generalFont,command=lambda: self.openWebPage(url))
         learnMoreButton.place(x=5,y=nextY)
 
 
@@ -313,6 +345,8 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
             addedText = staticAddress[index]
 
+            addedText = str(addedText)
+            newText = Text(self.addressFrame,width=len(addedText),height=1)
             newText = Text(self.addressFrame,width=18,height=1)#Replaced dynamic width=len(addedText) with fixed size
             newText.place(x=xPos,y=yPos)
             newText.insert('end',addedText)
@@ -339,9 +373,6 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         self.demoOtherFrame = Frame(self.demosNoteBook)
         self.demoOtherFrame.config(bg="light blue")
         self.demosNoteBook.add(self.demoOtherFrame, text=" Insurance ")
-
-
-
 
         #contact information displayed below here
 
@@ -502,8 +533,8 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
     def extensionInsurance(self):  # display the InsuranceTab in the extension
 
-        self.insuranceTab.update()
-        width = self.insuranceTab.winfo_width()
+        self.demoOtherFrame.update()
+        width = self.demoOtherFrame.winfo_width()
         height = 300
 
         # obtain information here
@@ -525,14 +556,14 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
             formatText = insuranceTabLabels[index]  # guarantor labels
             ourText = staticInfo[index]  # database values
 
-            newLabel = Label(self.insuranceTab, text=formatText, font=generalFont, bg='light blue')
+            newLabel = Label(self.demoOtherFrame, text=formatText, font=generalFont, bg='light blue')
             newLabel.place(x=xPos, y=yPos)
 
             newLabel.update()
 
             formatWidth = newLabel.winfo_width() + 15 + newLabel.winfo_x()
 
-            InsTabINFO = Text(self.insuranceTab, width=20, height=1,
+            InsTabINFO = Text(self.demoOtherFrame, width=20, height=1,
                              font=generalFont)  # replacing dynamic width = len(ourText) with fixed width
             InsTabINFO.insert("end", ourText)
             InsTabINFO.configure(state=DISABLED)
@@ -558,7 +589,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
     def putFormat(self):
 
         formatString = '{0:<20}{1:<35}{2:<20}{3:<15}'.format("Service ID", "Immunization",
-                                                                   "Administered?", "Service Date")
+                                                                   "Administered", "Service Date")
 
         self.formatLabel = Label(self.servicePage, text=formatString, font=('Consolas', 11)
                             , relief="raised",width=800,height=2)
@@ -659,6 +690,8 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
         self.formatService(patientService)
 
+
+
     def loadService(self,patientINFO): # will display specific service in expansion window
 
         #does basic setup for the service screen
@@ -719,20 +752,22 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         immuX = immunizationLabel.winfo_width() + immunizationLabel.winfo_x() + 5
 
 
-        immuReceived = StringVar(theFrame)
-        immuReceived.set("DTaP")
+        # place the immunizations received into this list
+        immuReceived = ["Influenza Vaccine Prev Free 0.25 ml", "Influenza Vaccine Prev Free 0.5 ml",
+                                        "Influenza Vaccine quad split virus Prev Free ID Use"]
 
 
-        immunizationsReceived = Combobox(theFrame,values=["DTaP","Flu","HIV"])
-        immunizationsReceived.set("DtaP")
-        #immunizationsReceived = OptionMenu(theFrame,immuReceived,'Flu',"HIV")
+        immunizationsReceived = Combobox(theFrame,values=immuReceived)
+        immunizationsReceived.set(immuReceived[0]) # is set to the first value of the list
+
         immunizationsReceived.place(x=immuX,y=yPos)
         immunizationsReceived.update()
 
 
+
         immuXtension = immunizationsReceived.winfo_width() + immunizationsReceived.winfo_x() + 10
         extendImmunizationButton = Button(theFrame,text="Information on \nSelected Immunization",
-                                        command=self.extensionImmunization)
+                                        command= lambda : self.immunizationINFO(immunizationsReceived.get()))
         extendImmunizationButton.place(x=immuXtension,y=yPos)
 
 
@@ -833,6 +868,22 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
                               command=self.displayServiceHistory)
         returnButton.place(x=xPos,y=yPos)
 
+    def immunizationINFO(self,immunization): # will display the webpage for the immunization
+
+        # kinda brute force but it works
+        immunization = immunization.strip("{")
+        immunization = immunization.strip("}")
+
+        try:
+            url = self.switchURL[immunization]
+            self.openWebPage(url)
+
+        except KeyError:
+            messagebox.showerror("Error 404", "The select immunization\nwas not found...")
+            print(immunization + "was not found in our information sources")
+
+
+
     def extensionImmunization(self): # pass detailed immunization information here and place on extension window
 
         self.addExtension()
@@ -855,6 +906,8 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         Width = 800
 
         self.contactPage.configure(bg="light blue")
+        generalBG = "light blue"
+        generalFont = ('consolas',14)
 
 
         # initialized vars
@@ -872,6 +925,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
         patientLabels = []
         patientText = []
+        self.outreachWidgets = []
 
         for index in range(len(labels)):
 
@@ -966,8 +1020,6 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         nextFrameY = contactFrame.winfo_y() + contactFrame.winfo_height() + 5
 
 
-
-
         # label frame for outreach details
 
         outreachDetailsFrame = LabelFrame(theFrame, text="Outreach Details", width=Width - 10, height=250,
@@ -975,10 +1027,145 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
                                        highlightcolor="white", highlightthickness=2, font=('consolas', 12), bd=0,
                                        labelanchor="n")
         outreachDetailsFrame.place(x=5,y=nextFrameY)
+        outreachDetailsFrame.update()
+
+        Width = outreachDetailsFrame.winfo_width()
+        Height = outreachDetailsFrame.winfo_height()
 
         detailsLabels = ["Date", "Method", "Outcome","Attempt Number"]
 
-        outcomeLabels = ["Answered", "Missed Call", "Hung Up","Will Call Back","Wrong Number", "Attempt Again Later"]
+
+        outcomeLabels = ["Answered", "Missed Call", "Hung Up","Will Call Back","Wrong Number", "Attempt Again Later","Awaiting response"]
+
+        outComeBox = Combobox(outreachDetailsFrame, values=outcomeLabels)
+
+
+        xPos = 5
+        yPos = 5
+        for label in detailsLabels:
+
+            newLabel = Label(outreachDetailsFrame,text=label,font=generalFont,bg=generalBG)
+            newLabel.place(x=xPos,y=yPos)
+            newLabel.update()
+            xPos = newLabel.winfo_x() + newLabel.winfo_width() + 15
+            #self.outreachWidgets.append(newLabel)
+
+            if label != "Outcome":
+
+                newText = Text(outreachDetailsFrame,width = 20,height=1)
+                newText.place(x=xPos,y=yPos)
+                newText.update()
+                self.outreachWidgets.append(newText)
+
+                yPos = newLabel.winfo_height() + newLabel.winfo_y()
+
+            else:
+                outComeBox.place(x=xPos,y=yPos)
+                outComeBox.update()
+                self.outreachWidgets.append(outComeBox)
+                yPos = newLabel.winfo_height() + newLabel.winfo_y()
+
+            xPos = 5
+
+
+        outReachNotesLabel = Label(outreachDetailsFrame,text = "Outreach Notes",bg=generalBG,font=generalFont)
+        outReachNotesLabel.place(x=550,y=0)
+        outReachNotesLabel.update()
+
+
+        outReachNotesX = outReachNotesLabel.winfo_x()
+        outReachNotesY = outReachNotesLabel.winfo_y() + 8
+
+        outReachNotesText = Text(outreachDetailsFrame,width=30,height=8)
+        outReachNotesText.place(x=outReachNotesX-50,y=outReachNotesY)
+        outReachNotesText.update()
+        self.outreachWidgets.append(outReachNotesText)
+
+
+        previousAttemptsX = outReachNotesText.winfo_x()
+        previousAttemptsY = 180
+
+        previousAttempts = Button(outreachDetailsFrame,text="Previous Attempts",font=('consolas',10),command=self.showAttempts)
+        previousAttempts.place(x=previousAttemptsX,y=previousAttemptsY)
+        previousAttempts.update()
+        outreachDetailsFrame.update()
+
+        nextY = outreachDetailsFrame.winfo_y() + outreachDetailsFrame.winfo_height() + 5
+        nextX = previousAttempts.winfo_x() + previousAttempts.winfo_width() + 15
+
+
+        updateButton = Button(outreachDetailsFrame, text="Submit Outreach", font=('consolas', 10),
+                              command=self.appendOutreach)
+        updateButton.place(x=nextX, y=previousAttemptsY)
+
+
+
+        # self.demosPage,width = Width - 25, height = Height - self.patientFrame.winfo_height() - self.addressFrame.winfo_height(),padding = 5
+        self.outreachNotebook = ttk.Notebook(theFrame, width=775, height=Height-nextY,padding = 5)
+        self.emailFrame = Frame(self.outreachNotebook,width=775,height=300,bg="light blue")
+        self.outreachNotebook.add(self.emailFrame, text="Email Patient")
+        self.outreachNotebook.place(x=5,y=nextY)
+
+        emailFrame = self.emailFrame # pointer to easily reference the frame
+
+        sendEmailLabel = Label(emailFrame,text = "Sending email to: " + self.patientFULL, font=generalFont,bg=generalBG)
+        sendEmailLabel.place(x=5,y=5)
+        sendEmailLabel.update()
+    
+        emailY = sendEmailLabel.winfo_y() + sendEmailLabel.winfo_height() + 5
+
+        self.emailText = Text(emailFrame,width = 50,height=10)
+        self.emailText.place(x=5,y=emailY)
+
+        startingY = 30
+
+        buttonFrame = LabelFrame(emailFrame,text="Email Options",width=335,height=200,bg="light blue",
+                                       highlightcolor="white",highlightthickness=2,font=('consolas',12),bd=0,labelanchor="n")
+        buttonFrame.place(x=425,y=5)
+        buttonFrame.update()
+
+        middleX = (buttonFrame.winfo_width() / 2) - 100
+
+
+        template1 = Button(buttonFrame, text="Load\n Template 1", command=lambda: self.loadTemplate(1))
+        template1.place(x=middleX, y=startingY)
+        template1.update()
+
+        nextX = template1.winfo_width() + template1.winfo_x() + 50
+
+        template2 = Button(buttonFrame, text="Load\n Template 2", command=lambda: self.loadTemplate(2))
+        template2.place(x=nextX, y=startingY)
+
+        sendEmail = Button(buttonFrame, text="Send Email!", command=self.sendEmail)
+        sendEmail.place(x=middleX, y=startingY + 75)
+
+        clearEmail = Button(buttonFrame, text="Clear Email", command=self.clearEmailEntry)
+        clearEmail.place(x=nextX, y=startingY + 75)
+
+    def appendOutreach(self):
+        '''
+        Widgets are placed in order of:
+        Date, Method, Outcome, Attempt Number, Outreach Notes
+        These are all text widgets so getting info from them is just using the .get() function
+        '''
+
+        newList = []
+
+        for widget in self.outreachWidgets: # will retrieve all data and put into new list
+
+            newList.append(widget.get("1.0",END)) # obtains all the text from widget
+
+
+        # script to update database goes here
+
+    def showAttempts(self):
+        pass
+        #queue the DB here
+
+
+        attempts = []
+
+        #for attempt in attempts:
 
 
     def getPatientHistory(self):
@@ -1136,5 +1323,42 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
                 myList[index] = ""
 
 
+    def addImmunizationLink(self,immunizationName,url): # append an immunization along with the link to the dictionary
+
+        self.switchURL[immunizationName] = url
+
+    def generateImmunizationLinks(self): # Default immunization names/ corresponding links are placed here
 
 
+        #We could also populate the referenced links in the database if we wanted as well
+
+
+
+        self.switchURL = { # immunization names and corresponding links are placed in here
+            "Why is it important to get annual flu vaccine?": "https://www.cdc.gov/flu/prevent/keyfacts.htm",
+            "What are the benefits of flu vaccination?": "https://www.cdc.gov/flu/prevent/vaccine-benefits.htm",
+            "Influenza Vaccine FluMistQuadrivalent": "https://www.cdc.gov/vaccines/hcp/vis/vis-statements/flulive.html"
+        }
+
+        influenzaPrevFreeInformation = ["Influenza Vaccine Prev Free 0.25 ml", "Influenza Vaccine Prev Free 0.5 ml",
+                                        "Influenza Vaccine quad split virus Prev Free ID Use",
+                                        "Influenza Vaccine quad split virus Prev Free 0.25 ml",
+                                        "Influenza Vaccine quad split virus Prev Free 0.5 ml"]
+
+        for newInfo in influenzaPrevFreeInformation:  # adds the Prev free immunization plus their links to the page
+            self.switchURL[newInfo] = "https://www.verywellhealth.com/preservative-free-flu-vaccine-770551"
+
+        influenzaInformation = ["Influenza Vaccine quad split virus 0.5 ml",
+                                "Influenza Vaccine quad split virus Prev Free ID Use",
+                                "Influenza Vaccine quad split virus Prev Free 0.25 ml",
+                                "Influenza Vaccine quad split virus Prev Free 0.5 ml"]
+
+        for newInfo in influenzaInformation:  # adds the immunization info for the next batch of immunizations we are storing
+            self.switchURL[newInfo] = "https://www.cdc.gov/flu/prevent/quadrivalent.htm"
+
+
+
+
+    def openWebPage(self,url): # will open the web browser from the buttom
+
+        webbrowser.open(url,new=0,autoraise=True)
