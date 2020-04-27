@@ -168,8 +168,8 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
         serviceHistory = serviceHistory.groupby(['ImmDisplayDescription'])['PatientLastVisitDate'].apply(', '.join)
         datesAdministered = serviceHistory.tolist()
-        print("169")
-        print(datesAdministered)
+        #print("169")
+        #print(datesAdministered)
         immunizationGroups = serviceHistory.index
 
         #print(immunizationGroups)
@@ -746,17 +746,19 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         increment = 20
         textX = 300
 
+        '''
         serviceDetailsHeader = Label(theFrame,text="Service Details",width= theFrame.winfo_width(),height = 1,bg="RoyalBlue3",font=generalFont,fg="white",anchor=W)
         serviceDetailsHeader.place(x=0,y=0)
         serviceDetailsHeader
         serviceDetailsHeader.update()
+        '''
 
         serviceFrame = LabelFrame(theFrame,text = "Service Details",width=830,height=610,bg="light blue",
                                        highlightcolor="white",highlightthickness=2,font=('consolas',12),bd=0,labelanchor="n")
         serviceFrame.place(x=5,y=5)
         serviceFrame.update()
 
-        yPos = serviceDetailsHeader.winfo_height() + serviceDetailsHeader.winfo_y() + increment
+        #yPos = serviceDetailsHeader.winfo_height() + serviceDetailsHeader.winfo_y() + increment
 
         serviceDateLabel = Label(serviceFrame,text="Date of Service",bg=generalBG,font=generalFont)
         serviceDateLabel.place(x=xPos,y=yPos)
@@ -897,9 +899,6 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
         serviceProviderText = Text(serviceFrame,width=20,height=1,font=generalFont)
         serviceProviderText.place(x=providerX,y=yPos)
-        providerName = patientINFO[5]+', '+patientINFO[6]
-        serviceProviderText.insert('end',providerName)
-        serviceProviderText.configure(state=DISABLED)
         serviceProviderText.update()
 
         yPos += (serviceProviderText.winfo_height() + increment + 25)
@@ -963,8 +962,15 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
         # Queue for textboxes here
         if(self.OutreachDetails is None):
-            self.outreachDetails=[None,None,None,None,None,None,None,None]
-        self.checkNone(self.OutreachDetails)
+            self.OutreachDetails=["","","","","","","",""]
+        else:
+            self.checkNone(self.OutreachDetails)
+        staticInformation = self.OutreachDetails
+        #print(staticInformation)
+        #print(self.OutreachDetails)
+        #staticInformation.extend(self.OutreachDetails[0][4:8])
+        #print(staticInformation)
+
         staticInformation = self.OutreachDetails[0][:2]
         staticInformation.extend(self.OutreachDetails[0][4:8])
         self.checkNone(staticInformation)
@@ -1447,10 +1453,16 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
         self.headlineExists()
 
+        patientGender = str(self.thisPatient.sex)
+        patientAge = str(self.thisPatient.age)
+        patientDOB = str(self.thisPatient.dob)
+        patientMRN = str(self.thisPatient.MRN)
+
+
         # format; FULL Name, Gender, Age <years> DOB, MRN
-        self.patientLabelText = '{0:<30}{1:<17}{2:<10}{3:<15}{4:<10}'.format("PATIENT:" + self.patientFULL,
-                                                                             "GENDER: Female", "AGE:50 ",
-                                                                             "DOB:3/21/2013", "MRN:30")
+        self.patientLabelText = '{0:<30}{1:<17}{2:<10}{3:<17}{4:<10}'.format("PATIENT:" + self.patientFULL,
+                                                                             "GENDER:" + patientGender, "AGE:" + patientAge,
+                                                                             "DOB:" + patientDOB, "MRN:" + patientMRN)
 
         self.patientLabel = Label(self.headlineFrame, text=self.patientLabelText, font=('Consolas', 14),
                                   bg="RoyalBlue3", fg="white")
@@ -1480,6 +1492,10 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
     def checkNone(self,myList): # checks if any of the information being added is of None type
 
+        if myList == None:
+            return
+
+
         for index in range(len(myList)):
 
             if myList[index] == None:
@@ -1499,7 +1515,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
         self.switchURL = { # immunization names and corresponding links are placed in here
             "Why is it important to get annual flu vaccine?": "https://www.cdc.gov/flu/prevent/keyfacts.htm",
-            "What are the benefits of flu vaccination?": "https://www.cdc.gov/flu/prevent/vaccine-benefits.htm",
+            "What are the benefits of flu vaccination": "https://www.cdc.gov/flu/prevent/vaccine-benefits.htm",
             "Influenza Vaccine FluMistQuadrivalent": "https://www.cdc.gov/vaccines/hcp/vis/vis-statements/flulive.html"
         }
 
@@ -1534,7 +1550,13 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
     def openWebPage(self,url): # will open the web browser from the buttom
 
-        webbrowser.open(url,new=0,autoraise=True)
+        if url in self.switchURL.keys():
+            webbrowser.open(self.switchURL[url],new=0,autoraise=True)
+        else:
+            webbrowser.open(url,new=0,autoraise=True)
+        #print(self.switchURL[url])
+        #webbrowser.open_new_tab(url)
+
 
     def updateContactNotes(self, notes, pid):
         self.SQL.addContactNotes([notes, pid])

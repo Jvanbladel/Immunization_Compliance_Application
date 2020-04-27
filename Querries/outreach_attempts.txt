@@ -1,0 +1,10 @@
+Select
+Outreach_Details.OutreachDetailsCreatedDtTm,
+Outreach_Details.OutreachDetailsMethod,
+Outreach_Details.OutreachDetailsOutcome,
+Outreach_Details.OutreachDetailsAttemptNumber,
+Outreach_Details.OutreachDetailsNotes
+From
+Outreach_Details
+Where
+Outreach_Details.OutreachDetailsPatientId = ?

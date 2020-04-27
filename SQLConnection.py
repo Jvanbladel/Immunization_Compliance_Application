@@ -305,18 +305,21 @@ class SQLConnection():
     def getOutreachDetails(self, patientId):
         if self.checkConnection() == 0:
             return
-        sql = self.loadQuerry("Outreach")
+        sql = self.loadQuerry("Outreach2")
         data = pd.read_sql(sql, self.conn, params={patientId})
         if data.empty:
             return
         data = data.values.tolist()
         #print(data)
-        return data
+        output = [data[0][0], data[0][1], data[0][4], data[0][5], data[0][6] + " " + data[0][7], data[0][8]]
+
+        print(output)
+        return output
 
     def getImmunizationEducation(self, patientId):
         if self.checkConnection() == 0:
             return
-        sql = self.loadQuerry("Outreach")
+        sql = self.loadQuerry("Imm_Education")
         data = pd.read_sql(sql, self.conn, params={patientId})
         if data.empty:
             return
@@ -373,9 +376,22 @@ class SQLConnection():
         self.conn.execute(sql,params)
         self.conn.commit()
 
+
+    def getOutReachAttempts(self,patientID): # gets the attempt number
+
+        if self.checkConnection() == 0:
+            return
+        sql = self.loadQuerry("outreach_attempts")
+        data = pd.read_sql(sql, self.conn, params={patientID})
+        if data.empty:
+            return
+        data = data.values.tolist()
+        #print(data)
+        return data
+
 def main():
     SQL = SQLConnection()
-    #SQL.addContactNotes(["Test", 2])
+    #SQL.getOutReachAttempts(400949)
     SQL.closeConnection()
 if __name__ == "__main__":
     main()
