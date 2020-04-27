@@ -1520,13 +1520,13 @@ class mainMenu(ICA_super.icaSCREENS):
         self.summary = 1
 
         self.infoBUTTON = Button(self.root, text = "Summary", command=lambda: self.showSummary(patient))
-        self.infoBUTTON.place(x = 575, y = 100, width = 100, height = 37.5)
+        self.infoBUTTON.place(x = 574, y = 100, width = 100, height = 37.5)
 
         self.medBUTTON = Button(self.root, text = "Medical\nHistory", command=lambda: self.showHistory(patient))
-        self.medBUTTON.place(x = 675, y = 100, width = 100, height = 37.5)
+        self.medBUTTON.place(x = 674, y = 100, width = 100, height = 37.5)
 
         self.contactBUTTON = Button(self.root, text = "Contact", command=lambda: self.showContact(patient))
-        self.contactBUTTON.place(x = 775, y = 100, width = 100, height = 37.5)
+        self.contactBUTTON.place(x = 774, y = 100, width = 100, height = 37.5)
 
         patientData = patient.getSummary()
         
