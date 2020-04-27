@@ -1,17 +1,26 @@
 Hello ${PERSON_NAME},
 
-Now is the time to get a flu vaccine! In the U.S., millions of people get sick, hundreds of thousands are
-hospitalized, and thousands or tens of thousands of people die from flu every year. Every flu season is
-different, and flu vaccine can vary in how well it works, but receiving a flu vaccine every year offers the
-best available protection against flu and has been shown to reduce illnesses, hospitalizations, and deaths
-in children.
+Now is the time to get a flu vaccine! In the U.S.,
+millions of people get sick, hundreds of thousands
+are hospitalized, and thousands or tens of
+thousands of people die from flu every year.
 
-The Centers for Disease Control and Prevention (CDC) recommends that everyone ages 6 months and
+Every flu season is different, and flu vaccine can
+vary in how well it works, but receiving a flu
+vaccine every year offers the best available
+protection against flu and has been shown to
+reduce illnesses, hospitalizations, and deaths in
+children.
+
+The Centers for Disease Control and Prevention
+(CDC) recommends that everyone ages 6 months and
 older receive a flu vaccine every year.
 
-Some people who get a flu vaccine may still get flu, but remember that vaccination may make illness
-milder if you do get sick. Schedule your flu vaccine appointment today or call our office at 209-946-2285
-if you have any questions.
+Some people who get a flu vaccine may still get
+flu, but remember that vaccination may make
+illness milder if you do get sick. Schedule your
+flu vaccine appointment today or call our office
+at 209-946-2285 if you have any questions.
 
 Sincerely,
 
