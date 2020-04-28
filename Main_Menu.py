@@ -15,7 +15,8 @@ from Med_Info_Screen import *
 import Login_Screen
 import sort
 from Users import *
-
+from tkdocviewer import *
+import os
 
 class mainMenu(ICA_super.icaSCREENS):
 
@@ -963,10 +964,10 @@ class mainMenu(ICA_super.icaSCREENS):
             self.helpFRAME = LabelFrame(self.root)
             self.helpFRAME.place(x=50,y=30,height=60,width=110)
 
-            self.guide= Button(self.root, text = "Guide", justify = LEFT,anchor=W)
+            self.guide= Button(self.root, text = "Guide", justify = LEFT,anchor=W,command=self.showGuide)
             self.guide.place(x=50,y=30,height=30,width=110)
             
-            self.aboutUs= Button(self.root, text = "About US", justify = LEFT,anchor=W)
+            self.aboutUs= Button(self.root, text = "About US", justify = LEFT,anchor=W,command=self.showAbout)
             self.aboutUs.place(x=50,y=60,height=30,width=110)
             
             self.help = 1
@@ -1976,7 +1977,10 @@ class mainMenu(ICA_super.icaSCREENS):
 
         newFILE.close()
 
-    def showGuide(self): # will clear the page and show the PDF guide
+    def showGuide(self): # will pop open the show guide page
 
-        
+        os.startfile(r"C:\Users\Colto\PycharmProjects\Immunization_Compliance_Application\sources\Getting_Started_Guide.pdf")
 
+    def showAbout(self): # will pop open the about us page
+
+        os.startfile(r"C:\Users\Colto\PycharmProjects\Immunization_Compliance_Application\sources\about_us.pdf")
