@@ -580,6 +580,7 @@ class mainMenu(ICA_super.icaSCREENS):
             else:
                 messagebox.showerror(title='No Patient Found',message="Invalid Input!\n")
     def resetQueueToDefault(self):
+        # adding for a push
         pass
 
     def togAdvancedSearch(self):
