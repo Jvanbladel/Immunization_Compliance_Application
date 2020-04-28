@@ -15,7 +15,7 @@ class SQLConnection():
             self.conn = pyodbc.connect('Driver={SQL Server};\
                             Server=pacific-ica.cvb4dklzq2km.us-west-1.rds.amazonaws.com, 1433;\
                             Database=db_pacific_ica;uid=admin;pwd=Animal05;', timeout = 3)
-            print("Database Connection Established")
+            #print("Database Connection Established")
             self.online = 1
         except:
             print("Database Connection Failed")
@@ -29,7 +29,7 @@ class SQLConnection():
                 self.conn = pyodbc.connect('Driver={SQL Server};\
                             Server=pacific-ica.cvb4dklzq2km.us-west-1.rds.amazonaws.com, 1433;\
                             Database=db_pacific_ica;uid=admin;pwd=Animal05;', timeout = 3)
-                print("Database Connection Established")
+                #print("Database Connection Established")
                 self.online = 1
                 return 1
             except:
@@ -240,7 +240,7 @@ class SQLConnection():
             return
         sql = self.loadQuerry("Individual_Work")
         data = pd.read_sql(sql, self.conn, params={userId})
-        print(sql)
+        #print(sql)
         if data.empty:
             return
         #data = data.values.tolist()
