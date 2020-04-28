@@ -1,0 +1,11 @@
+Select
+ServiceDetails.DateofService,
+ServiceDetails.ImmunizationId,
+ServiceDetails.CompletionStatus,
+ServiceDetails.InformationSource,
+ServiceDetails.ServiceDetailsSourceSystem,
+ServiceDetails.AllergicReactions
+From
+ServiceDetails
+Where
+ServiceDetails.ServiceDetailsId = ?

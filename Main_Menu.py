@@ -356,13 +356,13 @@ class mainMenu(ICA_super.icaSCREENS):
         optionsBUTTON = Button(self.root,text="Options",command=lambda: self.togOptionsTab())
         optionsBUTTON.place(x=50,y=0,height=30,width=50)
 
-        reportBUTTON = Button(self.root,text="Reports",command=lambda: self.togReportTab())
-        reportBUTTON.place(x=100,y=0,height=30,width=50)
+        #reportBUTTON = Button(self.root,text="Reports",command=lambda: self.togReportTab())
+        #reportBUTTON.place(x=100,y=0,height=30,width=50)
 
         helpBUTTON = Button(self.root,text="Help",command=lambda: self.togHelpTab())
-        helpBUTTON.place(x=150,y=0,height=30,width=50)
+        helpBUTTON.place(x=100,y=0,height=30,width=50)
 
-        currentX = 200
+        currentX = 150
         if not self.user.permissions == None:
             if self.user.permissions.viewSelfAnalytics == 1 or self.user.permissions.viewSystemAnalytics == 1:
                 self.analyticTABX = currentX
@@ -370,11 +370,11 @@ class mainMenu(ICA_super.icaSCREENS):
                 analyticBUTTON.place(x=currentX,y=0,height=30,width=60)
                 currentX = currentX + 60
 
-            if self.user.permissions.viewHistoryOfSelf == 1 or self.user.permissions.viewHistoryOfEntireSystem == 1:
-                self.historyTABX = currentX
-                historyButton = Button(self.root,text="History",command=lambda: self.togHistoryTab())
-                historyButton.place(x=currentX,y=0,height=30,width=50)
-                currentX = currentX + 50
+           # if self.user.permissions.viewHistoryOfSelf == 1 or self.user.permissions.viewHistoryOfEntireSystem == 1:
+           #     self.historyTABX = currentX
+           #     historyButton = Button(self.root,text="History",command=lambda: self.togHistoryTab())
+           #     historyButton.place(x=currentX,y=0,height=30,width=50)
+           #     currentX = currentX + 50
 
             if self.user.permissions.approveUsers == 1 or self.user.permissions.setPermissions == 1 or self.user.permissions.createAlerts == 1 or self.user.permissions.createAlerts == 1 or self.user.permissions.consoleCommands == 1:
                 self.adminTABX = currentX
@@ -511,8 +511,8 @@ class mainMenu(ICA_super.icaSCREENS):
             #self.advancedsearchBUTTON.place(x=20, y = 320, width = 75, height = 32.5)
 
 
-            #self.advancedSearchFRAME = LabelFrame(self.root)
-            #self.advancedSearchFRAME.place(x=0,y=370,height=230,width=225)
+            self.advancedSearchFRAME = LabelFrame(self.root)
+            self.advancedSearchFRAME.place(x=0,y=370,height=230,width=225)
         
             self.searchBox = 1
             #self.advancedSearch = 0
@@ -520,23 +520,23 @@ class mainMenu(ICA_super.icaSCREENS):
             self.searchFRAME.destroy()
             self.searchTXT.destroy()
             self.searchENTRY.destroy()
-            self.closeSearch.destroy()
+            #self.closeSearch.destroy()
             self.FnameSearch.destroy()
-            self.fNameCombo.destroy()
+            #self.fNameCombo.destroy()
             self.LnameSearch.destroy()
-            self.LnameCombo.destroy()
+            #self.LnameCombo.destroy()
             self.DOBSearch.destroy()
-            self.DOBCombo.destroy()
+            #self.DOBCombo.destroy()
             self.MRNSearch.destroy()
-            self.MRNCombo.destroy()
+            #self.MRNCombo.destroy()
             self.ImmunTypeSearch.destroy()
-            self.ImmunTypeCombo.destroy()
+            #self.ImmunTypeCombo.destroy()
             self.searchforBUTTON.destroy()
-            self.advancedsearchBUTTON.destroy()
+            #self.advancedsearchBUTTON.destroy()
             self.advancedSearchFRAME.destroy()
             self.defaultQueueBUTTON.destroy()
-            if self.advancedSearch == 1:
-                self.togAdvancedSearch()
+            # if self.advancedSearch == 1:
+                #self.togAdvancedSearch()
             self.searchBox = 0
 
     def searchFunc(self):
@@ -710,7 +710,7 @@ class mainMenu(ICA_super.icaSCREENS):
             self.SexFilterCombo=Combobox(self.root, values=SexfiterOptions)
             self.SexFilterCombo.place(x=110, y=475, width = 100)
 
-            ImmunizationfilterOptions=("Vaccine 1", "Vaccine 2", "Vaccine 3", "Vaccine 4")
+            ImmunizationfilterOptions=("Influenza")
             self.filterVar5 = IntVar()
             self.ImmunizationFilter = Checkbutton(self.root, text="Immunization", variable=self.filterVar5)
             self.ImmunizationFilter.place(x=2.5,y=500)
@@ -870,10 +870,10 @@ class mainMenu(ICA_super.icaSCREENS):
             currentY = currentY + 30
 
             if not self.user.permissions == None:
-                if self.user.permissions.importData == 1:
-                    self.importData = Button(self.root, text = "Import", justify = LEFT,anchor=W)
-                    self.importData.place(x=0,y=currentY,height=30,width=100)
-                    currentY = currentY + 30
+                #if self.user.permissions.importData == 1:
+                #    self.importData = Button(self.root, text = "Import", justify = LEFT,anchor=W)
+                #    self.importData.place(x=0,y=currentY,height=30,width=100)
+                #    currentY = currentY + 30
 
                 if self.user.permissions.exportData == 1:
                     self.export = Button(self.root, text = "Export", justify = LEFT,anchor=W, command=lambda: self.togExportTab())
@@ -881,10 +881,10 @@ class mainMenu(ICA_super.icaSCREENS):
                     currentY = currentY + 30
 
 
-                if self.user.permissions.printFiles == 1:
-                    self.print = Button(self.root, text = "Print", justify = LEFT,anchor=W)
-                    self.print.place(x=0,y=currentY,height=30,width=100)
-                    currentY = currentY + 30
+                #if self.user.permissions.printFiles == 1:
+                #    self.print = Button(self.root, text = "Print", justify = LEFT,anchor=W)
+                #    self.print.place(x=0,y=currentY,height=30,width=100)
+                #    currentY = currentY + 30
             
             self.logout = Button(self.root, text = "Log out", justify = LEFT,anchor=W, command=lambda: self.logoutofApp())
             self.logout.place(x=0,y=currentY,height=30,width=100)
@@ -899,27 +899,27 @@ class mainMenu(ICA_super.icaSCREENS):
                     if self.exportTAB == 1:
                         self.togExportTab()
                     self.export.destroy()
-                if self.user.permissions.printFiles == 1:
-                    self.print.destroy()
-                if self.user.permissions.importData == 1:
-                    self.importData.destroy()
+                #if self.user.permissions.printFiles == 1:
+                #    self.print.destroy()
+                #if self.user.permissions.importData == 1:
+                #   self.importData.destroy()
             self.file = 0
 
     def togExportTab(self):
         if self.exportTAB == 0:
 
-            self.pdf = Button(self.root, text = ".PDF", justify = LEFT,anchor=W)
-            self.pdf.place(x=100,y=30,height=30,width=50)
+            #self.pdf = Button(self.root, text = ".PDF", justify = LEFT,anchor=W)
+            #self.pdf.place(x=100,y=30,height=30,width=50)
 
             self.txt = Button(self.root, text = ".TXT", justify = LEFT,anchor=W,command=self.exportTXT)
-            self.txt.place(x=100,y=60,height=30,width=50)
+            self.txt.place(x=100,y=30,height=30,width=50)
 
-            self.cvs = Button(self.root, text = ".CVS", justify = LEFT,anchor=W)
-            self.cvs.place(x=100,y=90,height=30,width=50)
+            self.cvs = Button(self.root, text = ".CSV", justify = LEFT,anchor=W)
+            self.cvs.place(x=100,y=60,height=30,width=50)
             
             self.exportTAB = 1
         else:
-            self.pdf.destroy()
+            #self.pdf.destroy()
             self.txt.destroy()
             self.cvs.destroy()
             self.exportTAB = 0
@@ -961,13 +961,13 @@ class mainMenu(ICA_super.icaSCREENS):
         if self.help == 0:
             self.closeALLTabs()
             self.helpFRAME = LabelFrame(self.root)
-            self.helpFRAME.place(x=150,y=30,height=60,width=110)
+            self.helpFRAME.place(x=100,y=30,height=60,width=110)
 
             self.guide= Button(self.root, text = "Guide", justify = LEFT,anchor=W)
-            self.guide.place(x=150,y=30,height=30,width=110)
+            self.guide.place(x=100,y=30,height=30,width=110)
             
             self.aboutUs= Button(self.root, text = "About US", justify = LEFT,anchor=W)
-            self.aboutUs.place(x=150,y=60,height=30,width=110)
+            self.aboutUs.place(x=100,y=60,height=30,width=110)
             
             self.help = 1
         else:
@@ -1005,7 +1005,7 @@ class mainMenu(ICA_super.icaSCREENS):
                     self.systemAnalytics.destroy()
             self.analytics = 0
     def drawDiagrams(self, type):
-        if type is 'I':
+        if type == 'I':
             dataGraphics.ind(self.user.userId)
         else:
             dataGraphics.performanceMeasurement()
@@ -1048,10 +1048,10 @@ class mainMenu(ICA_super.icaSCREENS):
                     self.createAlerts.place(x=self.adminTABX,y=currentY,height=30,width=125)
                     currentY = currentY + 30
 
-                if self.user.permissions.approveUsers == 1:
-                    self.accountManager = Button(self.root, text = "Account Manager", justify = LEFT,anchor=W)
-                    self.accountManager.place(x=self.adminTABX,y=currentY,height=30,width=125)
-                    currentY = currentY + 30
+                #if self.user.permissions.approveUsers == 1:
+                #    self.accountManager = Button(self.root, text = "Account Manager", justify = LEFT,anchor=W)
+                #    self.accountManager.place(x=self.adminTABX,y=currentY,height=30,width=125)
+                #    currentY = currentY + 30
 
                 if self.user.permissions.setPermissions == 1:
                     self.permissions = Button(self.root, text = "Permission Manager", justify = LEFT,anchor=W, command=lambda: self.showPermissionsSCREEN())
@@ -1059,30 +1059,30 @@ class mainMenu(ICA_super.icaSCREENS):
                     currentY = currentY + 30
 
                 #print(self.user.permissions.setSystemOptions)
-                if self.user.permissions.setSystemOptions == 1:
-                    self.systemOptions = Button(self.root, text = "System Manager", justify = LEFT, anchor=W)
-                    self.systemOptions.place(x=self.adminTABX,y=currentY,height=30,width=125)
-                    currentY = currentY + 30
+                #if self.user.permissions.setSystemOptions == 1:
+                #    self.systemOptions = Button(self.root, text = "System Manager", justify = LEFT, anchor=W)
+                #    self.systemOptions.place(x=self.adminTABX,y=currentY,height=30,width=125)
+                #    currentY = currentY + 30
 
                 #print(self.user.permissions.consoleCommands)
-                if self.user.permissions.consoleCommands == 1:
-                    self.systemConsole = Button(self.root, text = "Console", justify = LEFT, anchor=W, command=lambda: self.showConsole())
-                    self.systemConsole.place(x=self.adminTABX,y=currentY,height=30,width=125)
-                    currentY = currentY + 30
+                #if self.user.permissions.consoleCommands == 1:
+                #    self.systemConsole = Button(self.root, text = "Console", justify = LEFT, anchor=W, command=lambda: self.showConsole())
+                #    self.systemConsole.place(x=self.adminTABX,y=currentY,height=30,width=125)
+                #    currentY = currentY + 30
 
             self.admin = 1
         else:
             if not self.user.permissions == None:
                 if self.user.permissions.createAlerts == 1:
                     self.createAlerts.destroy()
-                if self.user.permissions.approveUsers == 1:
-                    self.accountManager.destroy()
-                if self.user.permissions.setSystemOptions == 1:
-                    self.systemOptions.destroy()
+                #if self.user.permissions.approveUsers == 1:
+                #    self.accountManager.destroy()
+                #if self.user.permissions.setSystemOptions == 1:
+                #    self.systemOptions.destroy()
                 if self.user.permissions.setPermissions == 1:
                     self.permissions.destroy()
-                if self.user.permissions.consoleCommands == 1:
-                    self.systemConsole.destroy()
+                #if self.user.permissions.consoleCommands == 1:
+                #    self.systemConsole.destroy()
             self.admin = 0
 
     def showPermissionsSCREEN(self):
@@ -1501,7 +1501,7 @@ class mainMenu(ICA_super.icaSCREENS):
         newWindow.destroy()
         self.currentPopOut -= 1
 
-    def xPand(self,patient):
+    def xPand(self,patient, selectedScreen = 0, serviceId = 0):
 
         if self.currentPopOut >= self.user.permissions.numberOfPatientsOpen:
             messagebox.showerror("error window", "Too many windows already open!")
@@ -1509,7 +1509,7 @@ class mainMenu(ICA_super.icaSCREENS):
 
         newWindow = Toplevel()
         newWindow.title("Patient Details MRN: " + str(patient.MRN))
-        patientInfo = med_INFO_SCREEN(newWindow,patient, self.user)
+        patientInfo = med_INFO_SCREEN(newWindow,patient, self.user, selectedScreen,serviceId)
         self.currentPopOut += 1
 
         #closeButton = Button(newWindow,text="Go Back",command= lambda:self.destroyPopOut(newWindow))
@@ -1597,7 +1597,7 @@ class mainMenu(ICA_super.icaSCREENS):
         self.pcanvas.create_window((0,0),window=self.pframe,anchor='nw')
         self.pframe.bind("<Configure>", self.pmyfunction)
 
-        self.pVaccine(historyToShow)
+        self.pVaccine(historyToShow, patient)
 
         headerText = '{0:<15}{1:<8}'.format("Vaccine" , "Date")
         self.pheaderLabel = Label(self.root, text = headerText, font = ("Consolas", 10))
@@ -1637,7 +1637,7 @@ class mainMenu(ICA_super.icaSCREENS):
             self.pcanvas.configure(scrollregion=self.pcanvas.bbox("all"),width=300,height=170)
 
 
-    def pVaccine(self, vList):
+    def pVaccine(self, vList, patient):
         self.pVaccineList = []
         for i in range(len(vList)):
 
@@ -1646,10 +1646,10 @@ class mainMenu(ICA_super.icaSCREENS):
             #b = Button(self.pframe, text = pstr,anchor=W, justify=LEFT, width = 46, font = ('Consolas', 10))
             #print(vList[i])
             #print(vList[i][7], vList[i][2])
-            
+            #print(vList[i])
             pstr = '{0:<15}{1:<8}'.format(vList[i][7], vList[i][2])
             #FONT has to be monospaced or it wont work
-            b = Button(self.pframe, text = pstr,anchor=W, justify=LEFT, width = 46, font = ('Consolas', 10))
+            b = Button(self.pframe, text = pstr,anchor=W, justify=LEFT, width = 46, font = ('Consolas', 10), command=lambda i=i: self.xPand(patient, 1, vList[i][1]))#
             b.grid(row=i)
             self.pVaccineList.append(b)
             #b.configure(command=lambda i=i: self.showPatient(patientList[i].MRN, self.bList[i]))

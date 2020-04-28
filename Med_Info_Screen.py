@@ -12,7 +12,7 @@ from datetime import date
 class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
 
-    def __init__(self, window, Patient, user):
+    def __init__(self, window, Patient, user, selectedScreen = 0, serviveIdToOpen = 0):
         super().__init__(window)
         self.root.geometry("850x730")
         self.bindKey("<Escape>",self.closeWindow)
@@ -98,6 +98,9 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         #will hold the previous location in the service page
         self.previousLocation = 0
 
+        if selectedScreen == 1:
+            self.patientNotebook.select(1)
+            self.loadService(serviveIdToOpen)
 
 
     def showImmunizationHistory(self):
@@ -647,7 +650,8 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
             self.myScrollBar.pack(side="right", fill="y")
 
 
-
+        self.serviceHistory = [] # holds all service
+        
         for index in range(len(serviceHistory)): # This is where we would queue the database for information. Probably modify to only do once
             # print((serviceHistory.ServiceDetailsId))
             serviceID = str(serviceHistory.ServiceDetailsId[index])
@@ -659,10 +663,9 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
                            serviceHistory.DateofService[index]]
             buttonINFO = self.formatService(patientINFO)
 
-            self.serviceHistory = [] # holds all service
             button = Button(self.newnewFrame, text = buttonINFO,anchor=W,justify=LEFT, width = 102, font=('Consolas', 11))
             button.grid(row=index)
-            button.configure(command=lambda x=patientINFO: self.loadService(x))
+            button.configure(command=lambda x=serviceID: self.loadService(x))
             self.serviceHistory.append(button)
 
 
@@ -705,19 +708,22 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
 
 
-    def loadService(self,patientINFO): # will display specific service in expansion window
+    def loadService(self, serviceID): # will display specific service in expansion window
 
+        #print(serviceID)
         #does basic setup for the service screen
         self.hideServiceHistory()
 
         # resets the header
         self.formatLabel.destroy()
-        self.formatLabel = Label(self.servicePage,text="Showing details for Service #" + patientINFO[0],font=('Consolas', 11)
+        self.formatLabel = Label(self.servicePage,text="Showing details for Service #" + str(serviceID),font=('Consolas', 11)
               , relief="raised", width=800, height=2)
         self.formatLabel.pack()
 
         self.myScrollBar.pack_forget()
         self.canvas.yview_moveto(0)
+
+        
 
 
         #general widget settings
@@ -727,12 +733,18 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         theFrame.configure(width=850,height=700)
 
 
+        listToAdd = self.SQL.getService(serviceID)
 
+        print(listToAdd)
         #static data that is used during developement
-        DOS = "1/1/2000"
-        receivedImmunization = "diphtheria, tetanus toxoids, and acellular pertussis"
-        immunizationABBV = "DTaP"
-        allergicReactions = "N/A"
+        DOS = listToAdd[0]
+        receivedImmunization = listToAdd[1]
+        immunizationABBV = ""
+        completionStatus = listToAdd[2]
+        informationSource = listToAdd[3]
+        sourceSystem = listToAdd[4]
+        allergicReaction = listToAdd[5]
+        provicerName = "Angela"
 
         xPos = 200
         yPos = 10
@@ -778,7 +790,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
                                         "Influenza Vaccine quad split virus Prev Free ID Use"]
 
 
-        immunizationsReceived = Combobox(serviceFrame,values=immuReceived)
+        immunizationsReceived = Combobox(serviceFrame,values=immunizationABBV)
         immunizationsReceived.set(immuReceived) # is set to the first value of the list
 
         immunizationsReceived.place(x=immuX,y=yPos)
@@ -788,7 +800,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
         immuXtension = immunizationsReceived.winfo_width() + immunizationsReceived.winfo_x() + 10
         extendImmunizationButton = Button(serviceFrame,text="Information on \nSelected Immunization",
-                                        command= lambda : self.immunizationINFO(immunizationsReceived.get()))
+                                        command= lambda : self.immunizationINFO(immunizationsReceived))
         extendImmunizationButton.place(x=immuXtension,y=yPos)
 
 
@@ -804,6 +816,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
         completionStatusText = Text(serviceFrame,width=15,font=generalFont,height=1)
         completionStatusText.place(x=completionX,y=yPos)
+        completionStatusText.insert('end',completionStatus)
         completionStatusText.configure(state=DISABLED)
 
 
@@ -818,6 +831,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
         informationSourceText = Text(serviceFrame,width=15,font=generalFont,height=1)
         informationSourceText.place(x=informationX,y=yPos)
+        informationSourceText.insert('end',informationSource)
         informationSourceText.configure(state=DISABLED)
 
 
@@ -832,6 +846,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
         sourceSystemText = Text(serviceFrame,width=15,font=generalFont,height=1)
         sourceSystemText.place(x=sourceX,y=yPos)
+        sourceSystemText.insert('end',sourceSystem)
         sourceSystemText.configure(state=DISABLED)
 
 
@@ -858,6 +873,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
         allergicReactionsText = Text(serviceFrame,width=30,height=3)
         allergicReactionsText.place(x=textX,y=yPos)
+        allergicReactionsText.insert('end',allergicReaction)
         allergicReactionsText.configure(state=DISABLED)
         allergicReactionsText.update()
 
