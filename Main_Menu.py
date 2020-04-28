@@ -1975,3 +1975,8 @@ class mainMenu(ICA_super.icaSCREENS):
             newFILE.write(appendString)
 
         newFILE.close()
+
+    def showGuide(self): # will clear the page and show the PDF guide
+
+        
+

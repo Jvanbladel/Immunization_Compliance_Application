@@ -8,6 +8,7 @@ s.InformationSource,
 i.ImmDisplayDescription,
 i.ImmunizationType,
 i.ImmunizationID,
+
 prd.ProviderLastName,
 prd.ProviderFirstName,
 prd.ProviderNPI,

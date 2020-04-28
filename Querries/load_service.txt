@@ -4,8 +4,9 @@ ServiceDetails.ImmunizationId,
 ServiceDetails.CompletionStatus,
 ServiceDetails.InformationSource,
 ServiceDetails.ServiceDetailsSourceSystem,
-ServiceDetails.AllergicReactions
+ServiceDetails.AllergicReactions,
+Immunization.ImmLongDescription
 From
-ServiceDetails
+ServiceDetails Inner Join Immunization On Immunization.ImmunizationID = ServiceDetails.ImmunizationId
 Where
 ServiceDetails.ServiceDetailsId = ?

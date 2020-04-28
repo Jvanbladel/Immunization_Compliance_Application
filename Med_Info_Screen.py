@@ -27,6 +27,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         #print(self.demoGraphics.address)
         #print(self.demoGraphics.demographics)
         #print(self.demoGraphics.contact)
+        self.root.resizable(False, False)
 
         self.currentUser = None
         self.insurance = None
@@ -171,38 +172,15 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
         serviceHistory = serviceHistory.groupby(['ImmDisplayDescription'])['PatientLastVisitDate'].apply(', '.join)
         datesAdministered = serviceHistory.tolist()
-        #print("169")
-        #print(datesAdministered)
         immunizationGroups = serviceHistory.index
 
-        #print(immunizationGroups)
-        # Queue the database here for the list of the immunization names
-        '''immunizationGroups = ["Influenza Vaccine Prev Free 0.25 ml", "Influenza Vaccine quad split virus 0.5 ml",
-                              "Influenza Vaccine quad split virus Prev Free ID Use",
-                              "Influenza Vaccine quad split virus Prev Free 0.25 ml"]'''
-
-
-        # Queue the database for the list of dates administered here
-        '''datesAdministered = [["8/9/2002", "7/16/1998", "10/10/1997", "8/15/1997", "6/17/1997"],
-                             ["3/9/1998","8/15/1997","6/17/1997"],
-                             ["7/16/1998","10/10/1997", "8/15/1997", "6/17/1997"],
-                             ["7/16/1998","10/10/1997", "8/15/1997", "6/17/1997"],
-                             ["7/16/1998","10/10/1997", "8/15/1997", "6/17/1997"],
-                             ["7/16/1998","10/10/1997", "8/15/1997", "6/17/1997"],
-                             ["7/16/1998","10/10/1997", "8/15/1997", "6/17/1997"]]'''
-
-
-        staticURL = "www.google.com"
-
-
-        #nextY = 5
         addedFrames = []
         canvasWidth = self.immunizationCanvas.winfo_width()
 
         for index in range(len(immunizationGroups)):
 
-            #staticURL = self.switchURL[immunizationGroups[index]]
-            staticURL = ""
+            staticURL = self.switchURL[immunizationGroups[index]]
+
             newFrame = self.addImmunization(self.immunizationCanvas,nextY,canvasWidth,immunizationGroups[index],
                                  datesAdministered[index],staticURL)
             newFrame.update()
@@ -224,8 +202,8 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
         immunizationName = "ImmunizationName: " + immunizationName
 
-        administeredString = "Adminstered: "
-        administeredString = datesAdministered
+
+        administeredString = "Administered: " + datesAdministered
 
         administeredString = administeredString.rstrip(", ")
 
@@ -744,23 +722,16 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         #static data that is used during developement
 
         DOS = listToAdd[0]
-        receivedImmunization = listToAdd[1]
-        immunizationABBV = ""
+        immunizationABBV  = listToAdd[6]
+        #immunizationABBV = listToAdd[1]
         completionStatus = listToAdd[2]
         informationSource = listToAdd[3]
         sourceSystem = listToAdd[4]
         allergicReaction = listToAdd[5]
         provicerName = "Angela"
-#=======
-#        DOS = patientINFO[3]
-#        receivedImmunization = patientINFO[1]
-#        #print(receivedImmunization)
-#        immunizationABBV = "DTaP"
-#        allergicReactions = patientINFO[4]
-#        print(allergicReactions)
-#>>>>>>> 9ef74b67bf63867522ef7145086c062aff40184e
 
-        xPos = 150
+
+        xPos = 50
         yPos = 10
         increment = 20
         textX = 300
@@ -801,52 +772,46 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
         immuX = immunizationLabel.winfo_width() + immunizationLabel.winfo_x() + increment
 
-
+        yPos = immunizationLabel.winfo_y()
 
         # place the immunizations received into this list
-        immuReceived = receivedImmunization
 
+        if len(immunizationABBV) > 15:
+            firstHalf = immunizationABBV[:len(immunizationABBV)]  # first half
 
+            immunizationABBV = firstHalf + '\n' + immunizationABBV[len(immunizationABBV):]
 
-        immunizationsReceived = Text(theFrame, width=len(immunizationABBV),font=generalFont, height=1 )
-        #immunizationsReceived.set(immuReceived[0]) # is set to the first value of the list
+        immunizationsReceived = Text(theFrame, width=len(immunizationABBV),font=generalFont, height=1)
         immunizationsReceived.insert('end',immunizationABBV)
         immunizationsReceived.place(x=immuX,y=yPos)
         immunizationsReceived.configure(state=DISABLED)
         immunizationsReceived.update()
 
+        immuXtension = immunizationsReceived.winfo_width() + immunizationsReceived.winfo_x() + 5
+
+        extendImmunizationButton = Button(serviceFrame,text="Info on immunization",font=generalFont,bg="royalblue3",fg="white",
+                                        command= lambda : self.immunizationINFO(immunizationABBV))
 
 
-        immuXtension = immunizationsReceived.winfo_width() + immunizationsReceived.winfo_x() + increment
-
-        extendImmunizationButton = Button(serviceFrame,text="Information on \nSelected Immunization",
-
-                                        command= lambda : self.immunizationINFO(immunizationsReceived))
-        extendImmunizationButton.place(x=immuXtension,y=yPos)
-#=======
-#                                        command= lambda : self.immunizationINFO(immunizationsReceived.get()))
-#        extendImmunizationButton.place(x=immuXtension-150,y=yPos+40)
-#>>>>>>> 9ef74b67bf63867522ef7145086c062aff40184e
 
 
-        yPos = immunizationLabel.winfo_y() + immunizationLabel.winfo_height() + increment
+        yPos = immunizationLabel.winfo_y() + immunizationLabel.winfo_height() + (increment * 2)
 
 
         completionStatusLabel = Label(serviceFrame,text="Completion Status",bg=generalBG,font=generalFont)
         completionStatusLabel.place(x=xPos,y=yPos)
         completionStatusLabel.update()
 
+        yPos = completionStatusLabel.winfo_y()
 
-        completionX = completionStatusLabel.winfo_x() + completionStatusLabel.winfo_width() + 5
+
+        completionX = completionStatusLabel.winfo_x() + completionStatusLabel.winfo_width() + increment
 
         completionStatusText = Text(theFrame,width=len(completionStatus),font=generalFont,height=1)
 
         completionStatusText.place(x=completionX,y=yPos)
 
         completionStatusText.insert('end',completionStatus)
-#=======
-#        completionStatusText.insert('end',(patientINFO[2]))
-#>>>>>>> 9ef74b67bf63867522ef7145086c062aff40184e
         completionStatusText.configure(state=DISABLED)
 
 
@@ -857,18 +822,15 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         informationSourceLabel.place(x=xPos,y=yPos)
         informationSourceLabel.update()
 
-        informationX = informationSourceLabel.winfo_width() + informationSourceLabel.winfo_x() + 5
+        informationX = informationSourceLabel.winfo_width() + informationSourceLabel.winfo_x() + increment
+        yPos = informationSourceLabel.winfo_y()
 
         informationSourceText = Text(serviceFrame,width=15,font=generalFont,height=1)
-        informationSourceText.place(x=informationX,y=yPos)
+        informationSourceText.place(x=informationX,y=yPos-15)
 
         informationSourceText.insert('end',informationSource)
-#=======
-#        #print(patientINFO[7])
-#        informationSourceText.insert('end', patientINFO[7])
-#>>>>>>> 9ef74b67bf63867522ef7145086c062aff40184e
-        informationSourceText.configure(state=DISABLED)
 
+        informationSourceText.configure(state=DISABLED)
 
         yPos = informationSourceLabel.winfo_y() + informationSourceLabel.winfo_height() + increment
 
@@ -876,49 +838,30 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         sourceSystemLabel.place(x=xPos,y=yPos)
         sourceSystemLabel.update()
 
-        sourceX = sourceSystemLabel.winfo_x() + sourceSystemLabel.winfo_width() + 5
+        yPos = sourceSystemLabel.winfo_y()
+        sourceX = sourceSystemLabel.winfo_x() + sourceSystemLabel.winfo_width() + increment
 
 
         sourceSystemText = Text(serviceFrame,width=15,font=generalFont,height=1)
-        sourceSystemText.place(x=sourceX,y=yPos)
+        sourceSystemText.place(x=sourceX,y=yPos-15)
 
         sourceSystemText.insert('end',sourceSystem)
-#=======
-#        sourceSystemText.insert('end','EMR')
-#>>>>>>> 9ef74b67bf63867522ef7145086c062aff40184e
         sourceSystemText.configure(state=DISABLED)
-
-
-
 
         yPos = sourceSystemLabel.winfo_y() + sourceSystemLabel.winfo_height() + increment
 
-        '''
-        reactionsHeader = Label(serviceFrame, text="Reactions", width=theFrame.winfo_width(), height=1,
-                                     bg="RoyalBlue3", font=generalFont, fg="white", anchor=W)
-
-        reactionsHeader.place(x=0,y=yPos + 30)
-        reactionsHeader.update()
-    
-        yPos = reactionsHeader.winfo_height() + reactionsHeader.winfo_y() + increment
-        '''
 
 
         allergicReactionsLabel = Label(serviceFrame,text="Allergic Reactions",bg=generalBG,font=generalFont)
         allergicReactionsLabel.place(x=xPos,y=yPos)
         allergicReactionsLabel.update()
-
-
-
+        yPos = allergicReactionsLabel.winfo_y()
+        textX = allergicReactionsLabel.winfo_x() + allergicReactionsLabel.winfo_width() + increment
 
         allergicReactionsText = Text(serviceFrame,width=30,height=3)
-        allergicReactionsText.place(x=textX,y=yPos)
+        allergicReactionsText.place(x=textX,y=yPos-15)
         allergicReactionsText.insert('end',allergicReaction)
-#=======
-#        allergicReactionsText = Text(theFrame,width=30,height=3)
-#        allergicReactionsText.place(x=textX+30,y=yPos)
-#        allergicReactionsText.insert('end', allergicReactions)
-#>>>>>>> 9ef74b67bf63867522ef7145086c062aff40184e
+
         allergicReactionsText.configure(state=DISABLED)
         allergicReactionsText.update()
 
@@ -935,31 +878,18 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         yPos = serviceProviderHeader.winfo_height() + serviceProviderHeader.winfo_y() + increment
         '''
 
-
-        serviceProviderLabel = Label(serviceFrame,text="Provider Name",bg=generalBG,font=generalFont)
-        serviceProviderLabel.place(x=xPos,y=yPos)
-        serviceDateLabel.update()
-
-        providerX = serviceDateLabel.winfo_x() + serviceDateLabel.winfo_width() + 10
-
-
-        serviceProviderText = Text(serviceFrame,width=20,height=1,font=generalFont)
-        serviceProviderText.place(x=providerX,y=yPos)
-        serviceProviderText.update()
-
-        yPos += (serviceProviderText.winfo_height() + increment + 25)
-
-
         returnButton = Button(serviceFrame,text="Back to Service History",bg="RoyalBlue3",fg="white",font=generalFont,
                               command=self.displayServiceHistory)
         returnButton.place(x=xPos,y=yPos)
+        returnButton.update()
+
+        newX = returnButton.winfo_width() + returnButton.winfo_x() + increment
+
+        extendImmunizationButton.place(x=newX, y=yPos)
+
 
     def immunizationINFO(self,immunization): # will display the webpage for the immunization
-
-        # kinda brute force but it works
-        immunization = immunization.strip("{")
-        immunization = immunization.strip("}")
-
+        immunization = immunization.strip("\n")
         try:
             url = self.switchURL[immunization]
             self.openWebPage(url)
@@ -1566,9 +1496,6 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
 
         #We could also populate the referenced links in the database if we wanted as well
-
-
-
         self.switchURL = { # immunization names and corresponding links are placed in here
             "Why is it important to get annual flu vaccine?": "https://www.cdc.gov/flu/prevent/keyfacts.htm",
             "What are the benefits of flu vaccination": "https://www.cdc.gov/flu/prevent/vaccine-benefits.htm",
@@ -1604,14 +1531,15 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
             self.switchURL[newInfo] = 'https://www.cdc.gov/flu/about/qa/vaxadmin.htm'
 
 
+
+
     def openWebPage(self,url): # will open the web browser from the buttom
 
         if url in self.switchURL.keys():
             webbrowser.open(self.switchURL[url],new=0,autoraise=True)
         else:
             webbrowser.open(url,new=0,autoraise=True)
-        #print(self.switchURL[url])
-        #webbrowser.open_new_tab(url)
+
 
 
     def updateContactNotes(self, notes, pid):
