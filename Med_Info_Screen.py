@@ -1089,7 +1089,8 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
             newLabel.update()
             xPos = newLabel.winfo_x() + newLabel.winfo_width() + 15
 
-            outReachAttempt = self.SQL.getOutReachAttempt(self.thisPatient.patientID)
+            outReachAttempt = str(self.SQL.getOutReachAttempt(self.thisPatient.patientID))
+            outReachAttempt = outReachAttempt.strip("[]")
             if label != "Outcome" and label != "Method":
 
                 if label == "Date":
@@ -1207,17 +1208,17 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         clearEmail = Button(buttonFrame, text="Clear Email", command=self.clearEmailEntry)
         clearEmail.place(x=nextX, y=startingY + 75)
 
-    def showOutreachAttempt(self,thisAttempt = None):
+    def showOutreachAttempt(self,thisAttempt):
 
         for widget in self.outreachDetailsFrame.winfo_children():
             widget.destroy() # clear the attempt buttons
 
+        print("Attempt Number")
+        print(thisAttempt)
 
-        attemptNumber = 1 # would get the attempt number from the list information
-        self.outreachDetailsFrame.configure(text="Attempt #" + str(attemptNumber))
+        self.checkNone(thisAttempt)
+        self.outreachDetailsFrame.configure(text="Attempt #" + str(thisAttempt[3]))
 
-        if thisAttempt == None:
-            thisAttempt = ["","","","",""] # empty spots to hold the strings
 
         generalBG = "light blue"
         generalFont = ('consolas', 14)
@@ -1228,6 +1229,10 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         currentIndex = 0
         for index in range(len(detailsLabels)):
 
+            inserttedText = thisAttempt[index]
+            if type(inserttedText) == type(str):
+                inserttedText = inserttedText.strip("[]\'\"")
+
             newLabel = Label(self.outreachDetailsFrame, text=detailsLabels[index], font=generalFont, bg=generalBG)
             newLabel.place(x=xPos, y=yPos)
             newLabel.update()
@@ -1236,13 +1241,13 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
             newText = Text(self.outreachDetailsFrame, width=20, height=1)
             newText.place(x=xPos, y=yPos)
-            newText.insert(END,thisAttempt[index])
+            newText.insert(END,inserttedText)
             newText.configure(state=DISABLED)
             newText.update()
             self.outreachWidgets.append(newText)
             yPos = newLabel.winfo_height() + newLabel.winfo_y()
             xPos = 5
-            currentIndex = index
+            currentIndex += 1
 
         outReachNotesLabel = Label(self.outreachDetailsFrame, text="Outreach Notes", bg=generalBG, font=generalFont)
         outReachNotesLabel.place(x=550, y=0)
@@ -1296,19 +1301,24 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         self.outreachDetailsFrame.configure(text="Previous Attempts")
 
         # this would be the queue from the database
-        attempts = [["","","","","",""]] # this would be a 2D array of info that can be populated back into the frame
+
+        attempts = self.SQL.getOutReachAttempts(self.thisPatient.patientID) # 2D array of the attempts that were made
+
+        
+        print(attempts)
 
 
-        attemptIndex = 0 # temp for now to show index
-        for attempt in attempts:
+        attemptIndex = 1 # temp for now to show index
+        for index in range(len(attempts)):
             newButton = Button(self.outreachDetailsFrame,text="Attempt#" + str(attemptIndex),font=generalFont,
-                               command=lambda : self.showOutreachAttempt(attempt))
+                               command=lambda x=attempts[index]: self.showOutreachAttempt(x))
             newButton.place(x=xPos,y=yPos)
             yPos += 50
+            attemptIndex += 1
 
 
-        goBackButton = Button(self.outreachDetailsFrame,text="Go Back",command=self.resetOutReachPage)
-        goBackButton.place(x=700,y=600)
+        goBackButton = Button(self.outreachDetailsFrame,text="Go Back",font=generalFont,command=self.resetOutReachPage)
+        goBackButton.place(x=700,y=170)
 
 
     def resetOutReachPage(self):

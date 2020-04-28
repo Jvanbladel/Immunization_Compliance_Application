@@ -8,3 +8,4 @@ From
 Outreach_Details
 Where
 Outreach_Details.OutreachDetailsPatientId = ?
+and Outreach_Details.Notetype = 'OutreachDetails'

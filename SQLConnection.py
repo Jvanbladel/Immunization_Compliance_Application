@@ -337,7 +337,7 @@ class SQLConnection():
             return
         data = data.values.tolist()
         # print(data)
-        return data[0][0]
+        return data
 
     def executeQuery(self, query):
         data = pd.read_sql(query, self.conn)
