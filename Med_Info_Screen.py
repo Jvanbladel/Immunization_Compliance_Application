@@ -199,7 +199,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
                                      highlightcolor="white",highlightthickness=2,bd=0)
         newImmunization.place(x=5, y=startingY)
 
-
+        iname = immunizationName
         immunizationName = "ImmunizationName: " + immunizationName
 
 
@@ -220,7 +220,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         nextY = administeredLabel.winfo_height() + administeredLabel.winfo_y() + 30
 
 
-        learnMoreButton = Button(newImmunization, text="Learn more", font=generalFont,command=lambda: self.openWebPage(url))
+        learnMoreButton = Button(newImmunization, text="Learn more", font=generalFont, command=lambda: self.openWebPage(iname))
         learnMoreButton.place(x=5,y=nextY)
 
 
