@@ -64,7 +64,7 @@ class mainMenu(ICA_super.icaSCREENS):
 
 
         #Notifications based on user in future
-        self.setUpNotifications([[3,"Very Important Message!"],[2,"Important Message."],[1,"Notification Message"]])
+        #self.setUpNotifications([[3,"Very Important Message!"],[2,"Important Message."],[1,"Notification Message"]])
 
 
         #update current time
@@ -353,16 +353,16 @@ class mainMenu(ICA_super.icaSCREENS):
         fileBUTTON = Button(self.root,text="File",command=lambda: self.togFileTab())
         fileBUTTON.place(x=0,y=0,height=30,width=50)
 
-        optionsBUTTON = Button(self.root,text="Options",command=lambda: self.togOptionsTab())
-        optionsBUTTON.place(x=50,y=0,height=30,width=50)
+        #optionsBUTTON = Button(self.root,text="Options",command=lambda: self.togOptionsTab())
+        #optionsBUTTON.place(x=50,y=0,height=30,width=50)
 
         #reportBUTTON = Button(self.root,text="Reports",command=lambda: self.togReportTab())
         #reportBUTTON.place(x=100,y=0,height=30,width=50)
 
         helpBUTTON = Button(self.root,text="Help",command=lambda: self.togHelpTab())
-        helpBUTTON.place(x=100,y=0,height=30,width=50)
+        helpBUTTON.place(x=50,y=0,height=30,width=50)
 
-        currentX = 150
+        currentX = 100
         if not self.user.permissions == None:
             if self.user.permissions.viewSelfAnalytics == 1 or self.user.permissions.viewSystemAnalytics == 1:
                 self.analyticTABX = currentX
@@ -924,31 +924,31 @@ class mainMenu(ICA_super.icaSCREENS):
             self.cvs.destroy()
             self.exportTAB = 0
 
-    def togOptionsTab(self):
-        if self.option == 0:
-            self.closeALLTabs()
+   # def togOptionsTab(self):
+   #     if self.option == 0:
+   #         self.closeALLTabs()
+   #
+   #         if self.notificationsTABState == 0:
+   #             self.toggleNotifications = Button(self.root, text = "Hide Notifications", justify = LEFT,anchor=W, command=lambda: self.togNotifications())
+   #             self.toggleNotifications.place(x=50,y=30,height=30,width=110)
+   #         else:
+   ##             self.toggleNotifications = Button(self.root, text = "Show Notifications", justify = LEFT,anchor=W, command=lambda: self.togNotifications())
+   #             self.toggleNotifications.place(x=50,y=30,height=30,width=110)
+   #         self.option = 1
+   #     else:
+   #         self.option = 0
+   #         self.toggleNotifications.destroy()
 
-            if self.notificationsTABState == 0:
-                self.toggleNotifications = Button(self.root, text = "Hide Notifications", justify = LEFT,anchor=W, command=lambda: self.togNotifications())
-                self.toggleNotifications.place(x=50,y=30,height=30,width=110)
-            else:
-                self.toggleNotifications = Button(self.root, text = "Show Notifications", justify = LEFT,anchor=W, command=lambda: self.togNotifications())
-                self.toggleNotifications.place(x=50,y=30,height=30,width=110)
-            self.option = 1
-        else:
-            self.option = 0
-            self.toggleNotifications.destroy()
-
-    def togNotifications(self):
-        self.closeALLTabs()
-        if self.notificationsTABState == 0:
-            for n in self.notificationList:
-                n.destroy()
-            self.notificationList = []
-            self.notificationsTABState = 1
-        else:
-            self.setUpNotifications([[3,"Very Important Message!"],[2,"Important Message."],[1,"Notification Message"]])
-            self.notificationsTABState = 0
+   #def togNotifications(self):
+   #    self.closeALLTabs()
+   #     if self.notificationsTABState == 0:
+   #         for n in self.notificationList:
+   #             n.destroy()
+   #         self.notificationList = []
+   #         self.notificationsTABState = 1
+   #     else:
+   #         self.setUpNotifications([[3,"Very Important Message!"],[2,"Important Message."],[1,"Notification Message"]])
+   #         self.notificationsTABState = 0
 
     def togReportTab(self):
         if self.report == 0:
@@ -961,13 +961,13 @@ class mainMenu(ICA_super.icaSCREENS):
         if self.help == 0:
             self.closeALLTabs()
             self.helpFRAME = LabelFrame(self.root)
-            self.helpFRAME.place(x=100,y=30,height=60,width=110)
+            self.helpFRAME.place(x=50,y=30,height=60,width=110)
 
             self.guide= Button(self.root, text = "Guide", justify = LEFT,anchor=W)
-            self.guide.place(x=100,y=30,height=30,width=110)
+            self.guide.place(x=50,y=30,height=30,width=110)
             
             self.aboutUs= Button(self.root, text = "About US", justify = LEFT,anchor=W)
-            self.aboutUs.place(x=100,y=60,height=30,width=110)
+            self.aboutUs.place(x=50,y=60,height=30,width=110)
             
             self.help = 1
         else:
@@ -1393,8 +1393,8 @@ class mainMenu(ICA_super.icaSCREENS):
         if self.file == 1:
             self.togFileTab()
 
-        if self.option == 1:
-            self.togOptionsTab()
+        #if self.option == 1:
+            #self.togOptionsTab()
 
         if self.report == 1:
             self.togReportTab()
