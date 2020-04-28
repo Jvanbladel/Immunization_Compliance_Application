@@ -221,7 +221,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
                                      highlightcolor="white",highlightthickness=2,bd=0)
         newImmunization.place(x=5, y=startingY)
 
-
+        iname = immunizationName
         immunizationName = "ImmunizationName: " + immunizationName
 
         administeredString = "Adminstered: "
@@ -242,7 +242,7 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
         nextY = administeredLabel.winfo_height() + administeredLabel.winfo_y() + 30
 
 
-        learnMoreButton = Button(newImmunization, text="Learn more", font=generalFont,command=lambda: self.openWebPage(url))
+        learnMoreButton = Button(newImmunization, text="Learn more", font=generalFont, command=lambda: self.openWebPage(iname))
         learnMoreButton.place(x=5,y=nextY)
 
 
@@ -1596,10 +1596,13 @@ class med_INFO_SCREEN(ICA_super.icaSCREENS):
 
     def openWebPage(self,url): # will open the web browser from the buttom
 
+        print(url) 
         if url in self.switchURL.keys():
             webbrowser.open(self.switchURL[url],new=0,autoraise=True)
+            print(1)
         else:
-            webbrowser.open(url,new=0,autoraise=True)
+            webbrowser.open(url)
+            print(2)
         #print(self.switchURL[url])
         #webbrowser.open_new_tab(url)
 
