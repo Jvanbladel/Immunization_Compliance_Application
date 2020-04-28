@@ -191,8 +191,8 @@ class mainMenu(ICA_super.icaSCREENS):
         if self.aboutUsSCREEN == 1:
             self.aboutUsSCREEN = 0
 
-        if self.alertSCREEN ==1:
-            self.alertSCREEN = 0
+        #if self.alertSCREEN ==1:
+        #    self.alertSCREEN = 0
 
     def showConsole(self):
         self.clearAllScreens()
@@ -1044,10 +1044,10 @@ class mainMenu(ICA_super.icaSCREENS):
             currentY = 30
 
             if not self.user.permissions == None:
-                if self.user.permissions.createAlerts == 1:
-                    self.createAlerts = Button(self.root, text = "Alert Manger", justify = LEFT,anchor=W, command=lambda: self.showAlertsSCREEN())
-                    self.createAlerts.place(x=self.adminTABX,y=currentY,height=30,width=125)
-                    currentY = currentY + 30
+                #if self.user.permissions.createAlerts == 1:
+                #    self.createAlerts = Button(self.root, text = "Alert Manger", justify = LEFT,anchor=W, command=lambda: self.showAlertsSCREEN())
+                #    self.createAlerts.place(x=self.adminTABX,y=currentY,height=30,width=125)
+                #    currentY = currentY + 30
 
                 #if self.user.permissions.approveUsers == 1:
                 #    self.accountManager = Button(self.root, text = "Account Manager", justify = LEFT,anchor=W)
@@ -1074,8 +1074,8 @@ class mainMenu(ICA_super.icaSCREENS):
             self.admin = 1
         else:
             if not self.user.permissions == None:
-                if self.user.permissions.createAlerts == 1:
-                    self.createAlerts.destroy()
+                #if self.user.permissions.createAlerts == 1:
+                #    self.createAlerts.destroy()
                 #if self.user.permissions.approveUsers == 1:
                 #    self.accountManager.destroy()
                 #if self.user.permissions.setSystemOptions == 1:
