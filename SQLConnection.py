@@ -232,6 +232,7 @@ class SQLConnection():
         if data.empty:
             return
         #data = data.values.tolist()
+        #print(data)
         return data
 
     def getIndWorkEfficiency(self, userId):
@@ -313,7 +314,7 @@ class SQLConnection():
         #print(data)
         output = [data[0][0], data[0][1], data[0][4], data[0][5], data[0][6] + " " + data[0][7], data[0][8]]
 
-        print(output)
+        #print(output)
         return output
 
     def getImmunizationEducation(self, patientId):
@@ -376,6 +377,16 @@ class SQLConnection():
         self.conn.execute(sql,params)
         self.conn.commit()
 
+    def getService(self, serviceID):
+        if self.checkConnection() == 0:
+            return
+        sql = self.loadQuerry("load_service")
+        data = pd.read_sql(sql, self.conn, params={serviceID})
+        if data.empty:
+            return
+        data = data.values.tolist()
+        #print(data)
+        return data[0]
 
     def getOutReachAttempts(self,patientID): # gets the attempt number
 
